@@ -42,7 +42,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/lista-cursos',
-    name: 'listaCursos',
+    name: 'ListaCursos',  // Make sure name matches exactly
     component: () => import('../pages/ListaCursos.vue'),
     meta: { requiresAuth: true }
   },
@@ -67,12 +67,12 @@ const router = createRouter({
 
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
-  const session = await supabase.auth.getSession()
+  const { data: { session } } = await supabase.auth.getSession()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
 
   if (requiresAuth && !session) {
     next('/login')
-  } else if (!requiresAuth && session && to.path === '/login') {
+  } else if (to.path === '/login' && session) {
     next('/')
   } else {
     next()

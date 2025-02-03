@@ -49,7 +49,7 @@
                 Excluir
               </button>
             </template>
-            
+
             <!-- Botões para certificados emitidos -->
             <template v-if="certificado.status === 'emitido'">
               <button @click="downloadCertificado(certificado)" class="btn-download">
@@ -113,10 +113,8 @@
             <label>Curso*</label>
             <select v-model="novoCertificado.cursoId" required>
               <option value="">Selecione um curso finalizado</option>
-              <option v-for="curso in cursos" 
-                      :key="curso.id" 
-                      :value="curso.id"
-                      :disabled="curso.status !== 'Finalizado'">
+              <option v-for="curso in cursos" :key="curso.id" :value="curso.id"
+                :disabled="curso.status !== 'Finalizado'">
                 {{ curso.nome }} ({{ curso.status }})
               </option>
             </select>
@@ -150,6 +148,7 @@
 import axios from 'axios'
 import API_URL from '../config/api'
 import api from '../services/api'
+import { certificadosService } from '../services/api'
 
 export default {
   name: 'CertificadosAlunos',
@@ -225,33 +224,6 @@ export default {
       setTimeout(() => {
         this.toast.show = false;
       }, 3000);
-    },
-    
-    async emitirCertificado(certificado) {
-      try {
-        // Verificar status atual do curso
-        const cursoResponse = await axios.get(`${API_URL}/cursos/${certificado.curso_id}`);
-        const curso = cursoResponse.data;
-        
-        if (!curso) {
-          throw new Error('Curso não encontrado');
-        }
-    
-        if (curso.status !== 'Finalizado') {
-          throw new Error(`Não é possível emitir certificado para um curso ${curso.status.toLowerCase()}`);
-        }
-    
-        const response = await axios.put(`${API_URL}/certificados/${certificado.id}/emitir`, {
-          data_emissao: new Date(),
-          status: 'emitido'
-        });
-    
-        await this.loadData();
-        this.showToast('Certificado emitido com sucesso!');
-      } catch (error) {
-        console.error('Erro ao emitir certificado:', error);
-        this.showToast(error.message || 'Erro ao emitir certificado', 'error');
-      }
     },
 
     async downloadCertificado(certificado) {
@@ -364,8 +336,8 @@ export default {
 
     async deletarCertificado(id) {
       try {
-        await api.certificados.delete(id)
-        await this.loadCertificados()
+        await certificadosService.delete(id)
+        await this.loadData()
         this.showToast('Certificado excluído com sucesso')
       } catch (error) {
         console.error('Erro ao deletar certificado:', error)
@@ -443,6 +415,17 @@ export default {
         console.error('Erro ao carregar certificados:', error)
         this.showToast('Erro ao carregar certificados', 'error')
       }
+    },
+
+    async emitirCertificado(certificado) {
+      try {
+        await certificadosService.emitir(certificado.id)
+        await this.loadData()
+        this.showToast('Certificado emitido com sucesso!')
+      } catch (error) {
+        console.error('Erro ao emitir certificado:', error)
+        this.showToast(error.message || 'Erro ao emitir certificado', 'error')
+      }
     }
   },
   created() {
@@ -457,7 +440,7 @@ export default {
   font-size: 1.2rem;
   width: 24px;
   text-align: center;
-  filter: brightness(0) invert(1); 
+  filter: brightness(0) invert(1);
 }
 
 .icon-black {
@@ -715,6 +698,7 @@ export default {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;

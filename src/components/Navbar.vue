@@ -57,10 +57,10 @@
 
       <!-- Novo botão de logout -->
       <div class="logout-section">
-        <router-link to="/login" @click="handleLogout" class="logout-btn">
+        <button @click="handleLogout" class="logout-btn"> <!-- Changed to button -->
           <img src="../../public/icons/sair.svg" alt="Sair" class="icon" />
           <span v-if="isExpanded" class="link-text">Sair</span>
-        </router-link>
+        </button>
       </div>
     </nav>
   </div>
@@ -72,6 +72,10 @@ import { useRouter } from 'vue-router'
 
 export default {
   name: 'Navbar',
+  setup() {
+    const router = useRouter()
+    return { router }
+  },
   data() {
     return {
       isExpanded: true
@@ -84,17 +88,22 @@ export default {
     },
     async handleLogout() {
       try {
-        // Sign out from Supabase
         const { error } = await supabase.auth.signOut()
         if (error) throw error
 
-        // Remove any local storage items if needed
-        localStorage.removeItem('isAuthenticated')
+        // Clear all auth data
+        localStorage.clear() // Clear all localStorage
         
-        // Redirect to login page
-        this.$router.push('/login')
+        // Reset any global state if needed
+        this.$store?.commit('resetState') // If using Vuex
+        
+        // Redirect to login and prevent going back
+        await this.$router.push('/login')
+        
+        // Reload page to clear any cached data
+        window.location.reload()
       } catch (error) {
-        console.error('Error logging out:', error)
+        console.error('Erro ao fazer logout:', error)
         alert('Erro ao sair do sistema. Tente novamente.')
       }
     }
@@ -200,14 +209,17 @@ export default {
 }
 
 .logout-btn {
-  color: white;
-  text-decoration: none;
-  padding: 0.75rem 1rem;
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
   transition: all 0.3s ease;
-  border-radius: 8px;
 }
 
 .logout-btn:hover {
