@@ -147,9 +147,9 @@
 </template>
 
 <script>
-import axios from 'axios';
-import api from '../services/api';
-import API_URL from '../config/api';
+import axios from 'axios'
+import API_URL from '../config/api'
+import api from '../services/api'
 
 export default {
   name: 'CertificadosAlunos',
@@ -256,21 +256,17 @@ export default {
 
     async downloadCertificado(certificado) {
       try {
-        const response = await axios.get(
-          `${API_URL}/certificados/${certificado.id}/pdf`,
-          { responseType: 'blob' }
-        );
-
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `certificado-${certificado.codigo}.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
+        const response = await api.certificados.download(certificado.id)
+        const blob = new Blob([response.data], { type: 'application/pdf' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `certificado-${certificado.codigo}.pdf`
+        link.click()
+        window.URL.revokeObjectURL(url)
       } catch (error) {
-        console.error('Erro ao baixar certificado:', error);
-        alert('Erro ao baixar certificado');
+        console.error('Erro ao baixar certificado:', error)
+        this.showToast('Erro ao baixar certificado', 'error')
       }
     },
 
@@ -366,9 +362,15 @@ export default {
       }
     },
 
-    downloadCertificado(certificado) {
-      // Implementar lógica de download do certificado
-      console.log('Download certificado:', certificado.codigo)
+    async deletarCertificado(id) {
+      try {
+        await api.certificados.delete(id)
+        await this.loadCertificados()
+        this.showToast('Certificado excluído com sucesso')
+      } catch (error) {
+        console.error('Erro ao deletar certificado:', error)
+        this.showToast('Erro ao excluir certificado', 'error')
+      }
     },
     viewDetails(certificado) {
       // Implementar visualização detalhada do certificado
@@ -393,32 +395,6 @@ export default {
         alert('Erro ao editar certificado')
       }
     },
-
-    async deletarCertificado(id) {
-      try {
-        const certificado = this.certificados.find(c => c.id === id);
-        if (!certificado) {
-          this.showToast('Certificado não encontrado', 'error');
-          return;
-        }
-    
-        if (certificado.status === 'emitido') {
-          this.showToast('Não é possível excluir um certificado já emitido', 'error');
-          return;
-        }
-    
-        if (confirm('ATENÇÃO: Esta ação excluirá permanentemente o certificado. Esta ação não pode ser desfeita. Você tem certeza que deseja continuar?')) {
-          await api.certificados.delete(id);
-          // Remove o certificado da lista local
-          this.certificados = this.certificados.filter(cert => cert.id !== id);
-          this.showToast('Certificado excluído com sucesso!', 'success');
-        }
-      } catch (error) {
-        console.error('Erro ao deletar certificado:', error);
-        this.showToast(error.message, 'error');
-      }
-    },
-    
 
     async carregarUsuariosAtivos() {
       try {
@@ -461,15 +437,11 @@ export default {
 
     async loadCertificados() {
       try {
-        const response = await axios.get(`${API_URL}/certificados`, {
-          withCredentials: true,
-          params: {
-            include: ['usuario', 'curso']
-          }
-        });
-        this.certificados = response.data;
+        const { data } = await api.certificados.getAll()
+        this.certificados = data
       } catch (error) {
-        console.error('Erro ao carregar certificados:', error);
+        console.error('Erro ao carregar certificados:', error)
+        this.showToast('Erro ao carregar certificados', 'error')
       }
     }
   },

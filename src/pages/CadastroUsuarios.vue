@@ -146,8 +146,7 @@
 </template>
 
 <script>
-import api from '../config/axios'
-import API_URL from '../config/api'
+import api from '../services/api'
 
 export default {
   name: 'CadastroUsuarios',
@@ -161,7 +160,7 @@ export default {
         documento: '',
         cidade: '',
         estado: '',
-        setor: '',
+        setor: ''
       },
       errors: {},
       estados: [
