@@ -88,28 +88,29 @@ const handleLogin = async () => {
     
     if (authError) throw authError
 
-    // Get the user's profile from the profiles table
+    // Check if user has a profile
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', authData.user.id)
       .single()
 
+    // If no profile exists, update the existing one
     if (profileError) {
-      // If profile doesn't exist, create it
-      const { error: insertError } = await supabase
+      const { error: updateError } = await supabase
         .from('profiles')
-        .insert([
-          {
-            id: authData.user.id,
-            email: email.value,
-            status: 'ativo'
-          }
-        ])
+        .upsert({
+          id: authData.user.id,
+          email: email.value,
+          status: 'ativo',
+          nome: email.value.split('@')[0],
+          updated_at: new Date().toISOString()
+        })
 
-      if (insertError) throw insertError
+      if (updateError) throw updateError
     }
-    
+
+    // Redirect to dashboard on success
     router.push('/dashboard')
   } catch (e) {
     console.error('Login error:', e)
@@ -117,22 +118,23 @@ const handleLogin = async () => {
   }
 }
 
-// Function to register new users
+// Updated registration function
 const handleRegister = async () => {
   try {
-    const { data, error: authError } = await supabase.auth.signUp({
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
     })
     
     if (authError) throw authError
-    
+
     // Profile will be created automatically by the database trigger
+    // Show success message
+    alert('Registro realizado com sucesso! Verifique seu email para confirmar a conta.')
     
-    alert('Registro realizado com sucesso! Verifique seu email.')
   } catch (e) {
     console.error('Registration error:', e)
-    error.value = 'Erro ao registrar usuário.'
+    error.value = 'Erro ao registrar usuário. Tente novamente.'
   }
 }
 </script>
