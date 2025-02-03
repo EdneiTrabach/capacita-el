@@ -87,88 +87,131 @@
 </template>
 
 <script>
-import api from '../config/axios'
+import { ref, onMounted } from 'vue'
+import { supabase } from '../config/supabase'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'ListaCursos',
-  data() {
-    return {
-      cursos: [],
-      searchTerm: '',
-      statusFilter: '',
-      loading: false,
-      error: null
-    }
-  },
-  computed: {
-    cursosFiltrados() {
-      // First sort the courses by creation date
-      const sortedCursos = [...this.cursos].sort((a, b) => {
-        // Sort by createdAt date, newest first
-        return new Date(b.createdAt) - new Date(a.createdAt)
-      })
+  setup() {
+    const cursos = ref([])
+    const loading = ref(false)
+    const error = ref(null)
+    const searchTerm = ref('')
+    const statusFilter = ref('')
+    const router = useRouter()
 
-      // Then apply the filters
-      return sortedCursos.filter(curso => {
-        const matchSearch = !this.searchTerm ||
-          curso.nome.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          curso.descricao?.toLowerCase().includes(this.searchTerm.toLowerCase())
-
-        const matchStatus = !this.statusFilter || curso.status === this.statusFilter
-
-        return matchSearch && matchStatus
-      })
-    }
-  },
-  methods: {
-    formatDate(date) {
-      if (!date) return '--'
-      return new Date(date).toLocaleDateString('pt-BR')
-    },
-    async loadCursos() {
-      this.loading = true
+    // Load courses from Supabase
+    const loadCursos = async () => {
       try {
-        const response = await api.get('/cursos')
-        this.cursos = response.data
-      } catch (error) {
-        console.error('Erro ao carregar cursos:', error)
-        this.error = 'Erro ao carregar cursos'
+        loading.value = true
+        const { data, error: supabaseError } = await supabase
+          .from('cursos')
+          .select(`
+            *,
+            modulos (
+              id,
+              nome,
+              carga_horaria
+            )
+          `)
+          .order('created_at', { ascending: false })
+
+        if (supabaseError) throw supabaseError
+
+        cursos.value = data
+      } catch (err) {
+        console.error('Error loading courses:', err)
+        error.value = 'Erro ao carregar cursos'
       } finally {
-        this.loading = false
+        loading.value = false
       }
-    },
-    async deletarCurso(id) {
+    }
+
+    // Toggle course status
+    const toggleStatus = async (curso, newStatus) => {
+      try {
+        const { error: updateError } = await supabase
+          .from('cursos')
+          .update({ status: newStatus })
+          .eq('id', curso.id)
+
+        if (updateError) throw updateError
+
+        // Reload courses after update
+        await loadCursos()
+      } catch (err) {
+        console.error('Error updating course status:', err)
+        alert('Erro ao atualizar status do curso')
+      }
+    }
+
+    // Delete course
+    const deletarCurso = async (id) => {
       if (confirm('ATENÇÃO: Esta ação excluirá permanentemente o curso. Esta ação não pode ser desfeita. Você tem certeza que deseja continuar?')) {
         try {
-          await api.delete(`/cursos/${id}`)
-          await this.loadCursos()
+          const { error: deleteError } = await supabase
+            .from('cursos')
+            .delete()
+            .eq('id', id)
+
+          if (deleteError) throw deleteError
+
+          await loadCursos()
           alert('Curso excluído com sucesso')
-        } catch (error) {
-          console.error('Erro ao deletar curso:', error)
-          alert('Erro ao excluir curso. Por favor, tente novamente.')
+        } catch (err) {
+          console.error('Error deleting course:', err)
+          alert('Erro ao excluir curso')
         }
       }
-    },
-    editarCurso(curso) {
-      this.$router.push({
+    }
+
+    // Edit course
+    const editarCurso = (curso) => {
+      router.push({
         name: 'CadastroCursos',
         params: { id: curso.id },
         query: { edit: true }
       })
-    },
-    async toggleStatus(curso, status) {
-      try {
-        curso.status = status
-        await api.put(`/cursos/${curso.id}`, curso)
-        await this.loadCursos()
-      } catch (error) {
-        console.error('Erro ao atualizar status do curso:', error)
-        alert('Erro ao atualizar status do curso. Por favor, tente novamente.')
-      }
     }
-  },
-  created() {
-    this.loadCursos()
+
+    // Format date helper
+    const formatDate = (date) => {
+      if (!date) return '--'
+      return new Date(date).toLocaleDateString('pt-BR')
+    }
+
+    // Computed property for filtered courses
+    const cursosFiltrados = computed(() => {
+      return cursos.value.filter(curso => {
+        const matchSearch = !searchTerm.value || 
+          curso.nome.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+          curso.descricao?.toLowerCase().includes(searchTerm.value.toLowerCase())
+
+        const matchStatus = !statusFilter.value || curso.status === statusFilter.value
+
+        return matchSearch && matchStatus
+      })
+    })
+
+    // Load courses on component mount
+    onMounted(() => {
+      loadCursos()
+    })
+
+    return {
+      cursos,
+      cursosFiltrados,
+      loading,
+      error,
+      searchTerm,
+      statusFilter,
+      loadCursos,
+      toggleStatus,
+      deletarCurso,
+      editarCurso,
+      formatDate
+    }
   }
 }
 </script>

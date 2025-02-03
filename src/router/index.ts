@@ -18,14 +18,48 @@ const router = createRouter({
       meta: { requiresAuth: false }
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('../pages/Dashboard.vue'),
+      meta: { requiresAuth: true }
     },
-  ],
+    {
+      path: '/usuarios',
+      name: 'cadastroUsuarios',
+      component: () => import('../pages/CadastroUsuarios.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/lista-usuarios',
+      name: 'listaUsuarios',
+      component: () => import('../pages/ListaUsuarios.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/certificados',
+      name: 'certificados',
+      component: () => import('../pages/CertificadosAlunos.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios',
+      name: 'relatorios',
+      component: () => import('../pages/Relatorios.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/cursos',
+      name: 'cadastroCursos',
+      component: () => import('../pages/CadastroCursos.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/lista-cursos',
+      name: 'listaCursos',
+      component: () => import('../pages/ListaCursos.vue'),
+      meta: { requiresAuth: true }
+    }
+  ]
 })
 
 // Navigation guard to protect routes

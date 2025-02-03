@@ -115,84 +115,164 @@
   </div>
 </template>
 
-<script>
-import api from '../config/axios'
-import axios from 'axios'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { supabase } from '../config/supabase'
+import { useRouter, useRoute } from 'vue-router'
 
-export default {
-  name: 'CadastroCursos',
-  data() {
-    return {
-      formData: {
-        nome: '',
-        descricao: '',
-        duracao_horas: '',
-        data_inicio: '',
-        professor_responsavel: '',
-        status: 'ativo',
-        modulos: []
-      },
-      errors: {},
-      isEditing: false
-    }
-  },
-  methods: {
-    validateForm() {
-      this.errors = {}
-      
-      if (!this.formData.nome) this.errors.nome = 'Nome é obrigatório'
-      if (!this.formData.duracao_horas) this.errors.duracao_horas = 'Carga horária é obrigatória'
-      if (!this.formData.data_inicio) this.errors.data_inicio = 'Data de início é obrigatória'
-      if (!this.formData.professor_responsavel) this.errors.professor_responsavel = 'Professor responsável é obrigatório'
-      if (!this.formData.descricao) this.errors.descricao = 'Descrição é obrigatória'
-      
-      return Object.keys(this.errors).length === 0
-    },
-    adicionarModulo() {
-      this.formData.modulos.push({
-        nome: '',
-        carga_horaria: ''
-      })
-    },
-    removerModulo(index) {
-      this.formData.modulos.splice(index, 1)
-    },
-    async handleSubmit() {
-      if (this.validateForm()) {
-        try {
-          if (this.isEditing) {
-            await api.put(`/cursos/${this.$route.params.id}`, this.formData)
+const router = useRouter()
+const route = useRoute()
+const formData = ref({
+  nome: '',
+  descricao: '',
+  duracao_horas: '',
+  data_inicio: '',
+  professor_responsavel: '',
+  status: 'Em andamento',
+  modulos: []
+})
+
+const errors = ref({})
+const isEditing = ref(false)
+
+const validateForm = () => {
+  errors.value = {}
+  
+  if (!formData.value.nome) errors.value.nome = 'Nome é obrigatório'
+  if (!formData.value.duracao_horas) errors.value.duracao_horas = 'Carga horária é obrigatória'
+  if (!formData.value.data_inicio) errors.value.data_inicio = 'Data de início é obrigatória'
+  if (!formData.value.professor_responsavel) errors.value.professor_responsavel = 'Professor responsável é obrigatório'
+  if (!formData.value.descricao) errors.value.descricao = 'Descrição é obrigatória'
+  
+  return Object.keys(errors.value).length === 0
+}
+
+const handleSubmit = async () => {
+  if (validateForm()) {
+    try {
+      if (isEditing.value) {
+        // Update existing course
+        const { error: updateError } = await supabase
+          .from('cursos')
+          .update({
+            nome: formData.value.nome,
+            descricao: formData.value.descricao,
+            duracao_horas: formData.value.duracao_horas,
+            data_inicio: formData.value.data_inicio,
+            professor_responsavel: formData.value.professor_responsavel,
+            status: formData.value.status
+          })
+          .eq('id', route.params.id)
+
+        if (updateError) throw updateError
+
+        // Update modules
+        for (const modulo of formData.value.modulos) {
+          if (modulo.id) {
+            // Update existing module
+            await supabase
+              .from('modulos')
+              .update({
+                nome: modulo.nome,
+                carga_horaria: modulo.carga_horaria
+              })
+              .eq('id', modulo.id)
           } else {
-            await api.post('/cursos', this.formData)
+            // Insert new module
+            await supabase
+              .from('modulos')
+              .insert({
+                curso_id: route.params.id,
+                nome: modulo.nome,
+                carga_horaria: modulo.carga_horaria
+              })
           }
-          this.$router.push('/lista-cursos')
-        } catch (error) {
-          console.error('Erro ao salvar curso:', error)
-          alert('Erro ao salvar curso. Por favor, tente novamente.')
+        }
+      } else {
+        // Insert new course
+        const { data: newCourse, error: insertError } = await supabase
+          .from('cursos')
+          .insert([{
+            nome: formData.value.nome,
+            descricao: formData.value.descricao,
+            duracao_horas: formData.value.duracao_horas,
+            data_inicio: formData.value.data_inicio,
+            professor_responsavel: formData.value.professor_responsavel,
+            status: 'Em andamento'
+          }])
+          .select()
+          .single()
+
+        if (insertError) throw insertError
+
+        // Insert modules
+        if (formData.value.modulos.length > 0) {
+          await supabase
+            .from('modulos')
+            .insert(
+              formData.value.modulos.map(modulo => ({
+                curso_id: newCourse.id,
+                nome: modulo.nome,
+                carga_horaria: modulo.carga_horaria
+              }))
+            )
         }
       }
-    },
-    async loadCurso(id) {
-      try {
-        const response = await api.get(`/cursos/${id}`)
-        this.formData = {
-          ...response.data,
-          data_inicio: response.data.data_inicio?.split('T')[0],
-          modulos: response.data.modulos || []
-        }
-      } catch (error) {
-        console.error('Erro ao carregar curso:', error)
-        alert('Erro ao carregar curso. Por favor, tente novamente.')
-      }
-    }
-  },
-  async created() {
-    this.isEditing = !!this.$route.query.edit
-    if (this.isEditing && this.$route.params.id) {
-      await this.loadCurso(this.$route.params.id)
+
+      router.push('/lista-cursos')
+    } catch (err) {
+      console.error('Error saving course:', err)
+      alert('Erro ao salvar curso')
     }
   }
 }
+
+const loadCurso = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from('cursos')
+      .select(`
+        *,
+        modulos (
+          id,
+          nome,
+          carga_horaria
+        )
+      `)
+      .eq('id', id)
+      .single()
+
+    if (error) throw error
+
+    formData.value = {
+      ...data,
+      data_inicio: data.data_inicio?.split('T')[0],
+      modulos: data.modulos || []
+    }
+  } catch (err) {
+    console.error('Error loading course:', err)
+    alert('Erro ao carregar curso')
+  }
+}
+
+const adicionarModulo = () => {
+  formData.value.modulos.push({
+    nome: '',
+    carga_horaria: ''
+  })
+}
+
+const removerModulo = (index) => {
+  formData.value.modulos.splice(index, 1)
+}
+
+onMounted(() => {
+  isEditing.value = !!route.query.edit
+  if (isEditing.value && route.params.id) {
+    loadCurso(route.params.id)
+  }
+})
+
 </script>
 
 <style scoped>

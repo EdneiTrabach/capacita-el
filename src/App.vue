@@ -3,7 +3,7 @@ import { RouterView } from 'vue-router'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from './config/supabase'
-import Navbar from './components/Navbar.vue' // Uncomment and fix the import path
+import Navbar from './components/Navbar.vue'
 
 const route = useRoute()
 const isSidebarCollapsed = ref(false)
