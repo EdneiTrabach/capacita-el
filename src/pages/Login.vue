@@ -80,17 +80,59 @@ const generateRandomChars = () => {
 
 const handleLogin = async () => {
   try {
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
+    // Sign in with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value,
+    })
+    
+    if (authError) throw authError
+
+    // Get the user's profile from the profiles table
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', authData.user.id)
+      .single()
+
+    if (profileError) {
+      // If profile doesn't exist, create it
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            id: authData.user.id,
+            email: email.value,
+            status: 'ativo'
+          }
+        ])
+
+      if (insertError) throw insertError
+    }
+    
+    router.push('/dashboard')
+  } catch (e) {
+    console.error('Login error:', e)
+    error.value = 'Erro ao fazer login. Verifique suas credenciais.'
+  }
+}
+
+// Function to register new users
+const handleRegister = async () => {
+  try {
+    const { data, error: authError } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
     })
     
     if (authError) throw authError
     
-    router.push('/dashboard')
+    // Profile will be created automatically by the database trigger
+    
+    alert('Registro realizado com sucesso! Verifique seu email.')
   } catch (e) {
-    error.value = 'Error logging in'
-    console.error(e)
+    console.error('Registration error:', e)
+    error.value = 'Erro ao registrar usuário.'
   }
 }
 </script>
