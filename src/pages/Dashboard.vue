@@ -7,6 +7,7 @@
     <div v-else-if="loading" class="loading">
       Carregando...
     </div>
+    
     <header class="dashboard-header">
       <h1>Dashboard</h1>
       <button @click="atualizarDados" class="refresh-btn">
@@ -62,117 +63,108 @@
   </div>
 </template>
 
-<script>
-import api from '../config/axios'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale
+} from 'chart.js'
 import DashboardChart from '../components/DashboardChart.vue'
+import { supabase } from '../config/supabase'
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
-export default {
-  name: 'Dashboard',
-  components: { DashboardChart },
-  data() {
-    return {
-      totalUsuarios: 0,
-      cursosAtivos: 0,
-      matriculasMes: 0,
-      matriculasPorCurso: {},
-      usuariosTendencia: 0,
-      cursosConcluidos: 0,
-      matriculasTotal: 0,
-      alunosAtivos: 0,
-      alunosCursando: 0,
-      loading: false,
-      error: null
-    }
-  },
-  async created() {
-    await this.carregarEstatisticas()
-  },
-  methods: {
-    async carregarEstatisticas() {
-      this.loading = true
-      this.error = null
+const totalUsuarios = ref(0)
+const cursosAtivos = ref(0)
+const matriculasMes = ref(0)
+const matriculasPorCurso = ref({})
+const usuariosTendencia = ref(0)
+const cursosConcluidos = ref(0)
+const matriculasTotal = ref(0)
+const alunosAtivos = ref(0)
+const alunosCursando = ref(0)
+const loading = ref(false)
+const error = ref(null)
 
-      try {
-        // Buscar dados de usuários
-        const usuariosRes = await api.get('/usuarios')
-        const usuarios = usuariosRes.data
+const carregarEstatisticas = async () => {
+  try {
+    // Get users data
+    const { data: usuarios, error: usersError } = await supabase
+      .from('usuarios')
+      .select('*')
 
-        this.totalUsuarios = usuarios.length
-        this.alunosAtivos = usuarios.filter(u => u.status === 'ativo').length
-        this.alunosCursando = usuarios.filter(u => u.status === 'cursando').length
+    if (usersError) throw usersError
 
-        // Calcular tendência de usuários
-        this.usuariosTendencia = 5 
+    totalUsuarios.value = usuarios.length
+    alunosAtivos.value = usuarios.filter(u => u.status === 'ativo').length
+    alunosCursando.value = usuarios.filter(u => u.status === 'cursando').length
 
-        // Buscar dados dos cursos
-        try {
-          const cursosRes = await api.get('/cursos')
-          const cursos = cursosRes.data
-          const hoje = new Date()
+    // Get courses data
+    const { data: cursos, error: coursesError } = await supabase
+      .from('cursos')
+      .select('*')
 
-          this.cursosAtivos = cursos.filter(curso =>
-            new Date(curso.data_fim) > hoje
-          ).length
+    if (coursesError) throw coursesError
 
-          this.cursosConcluidos = cursos.filter(curso =>
-            new Date(curso.data_fim) <= hoje
-          ).length
+    const hoje = new Date()
+    cursosAtivos.value = cursos.filter(curso => 
+      new Date(curso.data_fim) > hoje
+    ).length
 
-        } catch (error) {
-          console.error('Erro ao carregar cursos:', error)
-          this.cursosAtivos = 0
-          this.cursosConcluidos = 0
-        }
+    cursosConcluidos.value = cursos.filter(curso => 
+      new Date(curso.data_fim) <= hoje
+    ).length
 
-        // Buscar dados de matrículas
-        try {
-          const matriculasRes = await api.get('/matriculas')
-          const matriculas = matriculasRes.data
-          const hoje = new Date()
-          const currentMonth = hoje.getMonth()
-          const currentYear = hoje.getFullYear()
+    // Get enrollments data
+    const { data: matriculas, error: enrollmentsError } = await supabase
+      .from('matriculas')
+      .select('*, curso:cursos(*)')
 
-          this.matriculasMes = matriculas.filter(matricula => {
-            const dataMatricula = new Date(matricula.data_matricula)
-            return dataMatricula.getMonth() === currentMonth &&
-              dataMatricula.getFullYear() === currentYear
-          }).length
+    if (enrollmentsError) throw enrollmentsError
 
-          this.matriculasTotal = matriculas.filter(matricula =>
-            matricula.status === 'ativo'
-          ).length
+    const currentMonth = hoje.getMonth()
+    const currentYear = hoje.getFullYear()
 
-          this.matriculasPorCurso = matriculas.reduce((acc, matricula) => {
-            if (matricula.curso) {
-              const cursoNome = matricula.curso.nome
-              acc[cursoNome] = (acc[cursoNome] || 0) + 1
-            }
-            return acc
-          }, {})
+    matriculasMes.value = matriculas.filter(matricula => {
+      const dataMatricula = new Date(matricula.data_matricula)
+      return dataMatricula.getMonth() === currentMonth &&
+        dataMatricula.getFullYear() === currentYear
+    }).length
 
-        } catch (error) {
-          console.error('Erro ao carregar matrículas:', error)
-          this.matriculasMes = 0
-          this.matriculasTotal = 0
-          this.matriculasPorCurso = {}
-        }
+    matriculasTotal.value = matriculas.filter(matricula => 
+      matricula.status === 'ativo'
+    ).length
 
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error)
-        this.error = 'Erro ao carregar estatísticas'
-      } finally {
-        this.loading = false
+    matriculasPorCurso.value = matriculas.reduce((acc, matricula) => {
+      if (matricula.curso) {
+        const cursoNome = matricula.curso.nome
+        acc[cursoNome] = (acc[cursoNome] || 0) + 1
       }
-    },
-    async atualizarDados() {
-      await this.carregarEstatisticas()
-    }
+      return acc
+    }, {})
+
+  } catch (err) {
+    console.error('Error loading statistics:', err)
+    error.value = 'Erro ao carregar estatísticas'
   }
 }
+
+onMounted(() => {
+  carregarEstatisticas()
+})
 </script>
 
 <style scoped>

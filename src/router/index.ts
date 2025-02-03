@@ -1,65 +1,68 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '../config/supabase'
+import type { RouteRecordRaw } from 'vue-router'
 import Home from '../pages/Home.vue'
+
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    name: 'home',
+    component: Home,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('../pages/Login.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('../pages/Dashboard.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/usuarios',
+    name: 'cadastroUsuarios',
+    component: () => import('../pages/CadastroUsuarios.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/lista-usuarios',
+    name: 'listaUsuarios',
+    component: () => import('../pages/ListaUsuarios.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/cursos',
+    name: 'cadastroCursos',
+    component: () => import('../pages/CadastroCursos.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/lista-cursos',
+    name: 'listaCursos',
+    component: () => import('../pages/ListaCursos.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/certificados',
+    name: 'certificados',
+    component: () => import('../pages/CertificadosAlunos.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/relatorios',
+    name: 'relatorios',
+    component: () => import('../pages/Relatorios.vue'),
+    meta: { requiresAuth: true }
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: Home,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('../pages/Login.vue'),
-      meta: { requiresAuth: false }
-    },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: () => import('../pages/Dashboard.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/usuarios',
-      name: 'cadastroUsuarios',
-      component: () => import('../pages/CadastroUsuarios.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/lista-usuarios',
-      name: 'listaUsuarios',
-      component: () => import('../pages/ListaUsuarios.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/cursos',
-      name: 'cadastroCursos',
-      component: () => import('../pages/CadastroCursos.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/lista-cursos',
-      name: 'listaCursos',
-      component: () => import('../pages/ListaCursos.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/certificados',
-      name: 'certificados',
-      component: () => import('../pages/CertificadosAlunos.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/relatorios',
-      name: 'relatorios',
-      component: () => import('../pages/Relatorios.vue'),
-      meta: { requiresAuth: true }
-    }
-  ]
+  routes
 })
 
 // Navigation guard
