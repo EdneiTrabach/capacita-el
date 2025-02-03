@@ -1,28 +1,39 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import Navbar from './components/layouts/Navbar.vue' // Updated import path
+import Navbar from './layouts/Navbar.vue' // Updated import path
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { supabase } from './config/supabase'
 
 const route = useRoute()
-// Update thist to use proper authentication state management
-const isAuthenticated = computed(() => {
-  const auth = localStorage.getItem('isAuthenticated')
-  return auth === 'true'
-})
-const showNavbar = computed(() => isAuthenticated.value && route.path !== '/login')
-
 const isSidebarCollapsed = ref(false)
 
-// Add type annotation for collapsed parameter
+// Use Supabase session for authentication
+const isAuthenticated = computed(() => {
+  return !!supabase.auth.getSession()
+})
+
+const showNavbar = computed(() => isAuthenticated.value && route.path !== '/login')
+
 const handleSidebarToggle = (collapsed: boolean): void => {
   isSidebarCollapsed.value = collapsed
 }
+
+// Listen for auth state changes
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN') {
+    // Handle sign in
+    console.log('User signed in:', session)
+  } else if (event === 'SIGNED_OUT') {
+    // Handle sign out
+    console.log('User signed out')
+  }
+})
 </script>
 <template>
 
   <div class="app-container">
-    <Navbar v-if="isAuthenticated" @sidebar-toggle="handleSidebarToggle" />
+    <Navbar v-if="showNavbar" @sidebar-toggle="handleSidebarToggle" />
     <main :class="{ 'with-sidebar': showNavbar, 'sidebar-collapsed': isSidebarCollapsed }">
       <RouterView />
     </main>

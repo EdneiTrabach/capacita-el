@@ -24,13 +24,13 @@
             <span class="input-icon">👤</span>
             <input 
               type="text" 
-              v-model="username"
+              v-model="email"
               placeholder=" "
-              :class="{ error: errors.username }"
+              :class="{ error: error }"
             />
-            <label>Usuário</label>
+            <label>Email</label>
           </div>
-          <span class="error-message" v-if="errors.username">{{ errors.username }}</span>
+          <span class="error-message" v-if="error">{{ error }}</span>
         </div>
         
         <div class="form-group">
@@ -40,11 +40,11 @@
               type="password" 
               v-model="password"
               placeholder=" "
-              :class="{ error: errors.password }"
+              :class="{ error: error }"
             />
             <label>Senha</label>
           </div>
-          <span class="error-message" v-if="errors.password">{{ errors.password }}</span>
+          <span class="error-message" v-if="error">{{ error }}</span>
         </div>
 
         <div class="forgot-password">
@@ -57,68 +57,29 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Login',
-  data() {
-    return {
-      logoClicks: 0,
-      showMatrix: false,
-      username: '',
-      password: '',
-      errors: {
-        username: '',
-        password: ''
-      }
-    }
-  },
-  methods: {
-    handleLogoClick() {
-      this.logoClicks++
-      if (this.logoClicks === 5) {
-        this.showMatrix = true
-        setTimeout(() => {
-          this.showMatrix = false
-          this.logoClicks = 0
-        }, 8000)
-      }
-    },
-    handleLogin() {
-      // Reset errors
-      this.errors = {
-        username: '',
-        password: ''
-      }
+<script setup lang="ts">
+import { ref } from 'vue'
+import { supabase } from '../config/supabase'
+import { useRouter } from 'vue-router'
 
-      // Validate fields
-      if (!this.username) {
-        this.errors.username = 'Usuário é obrigatório'
-      }
-      if (!this.password) {
-        this.errors.password = 'Senha é obrigatória'
-      }
+const router = useRouter()
+const email = ref('')
+const password = ref('')
+const error = ref('')
 
-      // Check credentials (mock)
-      const mockUser = {
-        username: 'admin',
-        password: '123456'
-      }
-
-      if (this.username === mockUser.username && this.password === mockUser.password) {
-        localStorage.setItem('isAuthenticated', 'true')
-        this.$router.push('/')
-        // Force a page reload to ensure sidebar updates
-        window.location.reload()
-      } else {
-        this.errors.password = 'Usuário ou senha inválidos'
-      }
-    },
-    generateRandomChars() {
-      const chars = '01アイウエオカキクケコサシスセソタチツテト'
-      return Array.from({length: 20}, () => 
-        chars[Math.floor(Math.random() * chars.length)]
-      ).join('\n')
-    }
+const handleLogin = async () => {
+  try {
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value,
+    })
+    
+    if (authError) throw authError
+    
+    router.push('/dashboard')
+  } catch (e) {
+    error.value = 'Error logging in'
+    console.error(e)
   }
 }
 </script>
