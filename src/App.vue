@@ -3,6 +3,7 @@ import { RouterView } from 'vue-router'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from './config/supabase'
+import Navbar from './src/components/layouts/Navbar.vue'
 
 const route = useRoute()
 const isSidebarCollapsed = ref(false)
@@ -30,12 +31,10 @@ supabase.auth.onAuthStateChange((event, session) => {
 })
 </script>
 <template>
-
-  <div class="app-container">
-    <Navbar v-if="showNavbar" @sidebar-toggle="handleSidebarToggle" />
-    <main :class="{ 'with-sidebar': showNavbar, 'sidebar-collapsed': isSidebarCollapsed }">
-      <RouterView />
-    </main>
+  <router-view v-if="route.path === '/login'" />
+  <div v-else class="app-container">
+    <Navbar v-if="showNavbar" @toggle-sidebar="handleSidebarToggle" />
+    <router-view />
   </div>
 </template>
 
