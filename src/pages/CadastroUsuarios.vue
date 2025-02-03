@@ -108,11 +108,11 @@
 
         <div class="form-actions">
           <button type="button" class="btn-cancelar" @click="$router.push('/')">
-            <img src="../../public/icons/fechar.svg" alt="Cancelar" class="icon"/>
+            <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon"/>
             Cancelar
           </button>
           <button type="submit" class="btn-salvar">
-            <img src="../../public/icons/save-fill.svg" alt="Salvar" class="icon"/>
+            <img src="/public/icons/save-fill.svg" alt="Salvar" class="icon"/>
             Salvar
           </button>
         </div>
@@ -131,11 +131,11 @@
           </div>
           <div class="modal-actions">
             <button @click="showSetorModal = false" class="btn-cancelar">
-              <img src="../../public/icons/fechar.svg" alt="Cancelar" class="icon"/>
+              <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon"/>
               Cancelar
             </button>
             <button @click="cadastrarNovoSetor" class="btn-salvar">
-              <img src="../../public/icons/save-fill.svg" alt="Salvar" class="icon"/>
+              <img src="/public/icons/save-fill.svg" alt="Salvar" class="icon"/>
               Salvar
             </button>
           </div>

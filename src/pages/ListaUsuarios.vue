@@ -3,7 +3,7 @@
     <header class="usuarios-header">
       <h1>Alunos Cadastrados</h1>
       <button @click="$router.push('/usuarios')" class="btn-novo">
-        <img src="../../public/icons/adicao.svg" alt="Novo" class="icon-black" />
+        <img src="/public/icons/adicao.svg" alt="Novo" class="icon-black" />
         Novo Aluno
       </button>
     </header>
@@ -39,11 +39,11 @@
           <span class="usuario-avatar">{{ getInitials(usuario.nome) }}</span>
           <div class="actions">
             <button @click="editarUsuario(usuario)" class="btn-edit">
-              <img src="../../public/icons/edicao.svg" alt="Editar" class="icon"/>
+              <img src="/public/icons/edicao.svg" alt="Editar" class="icon"/>
               Editar
             </button>
             <button @click="deletarUsuario(usuario.id)" class="btn-delete">
-              <img src="../../public/icons/lixeira.svg" alt="Excluir" class="icon"/>
+              <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon"/>
               Excluir
             </button>
           </div>
@@ -83,21 +83,21 @@
             <button 
               @click="toggleStatus(usuario, 'ativo')" 
               :class="['status-btn', { active: usuario.status === 'ativo' }]">
-            <img src="../../public/icons/check.svg" alt="Ativo" class="icon-black"/>
+            <img src="/public/icons/check.svg" alt="Ativo" class="icon-black"/>
             Ativo
           </button>
             <button 
               @click="toggleStatus(usuario, 'cursando')" 
               :class="['status-btn', { active: usuario.status === 'cursando' }]"
             >
-            <img src="../../public/icons/cursando.svg" alt="Cursando" class="icon-black"/>
+            <img src="/public/icons/cursando.svg" alt="Cursando" class="icon-black"/>
             Cursando
             </button>
             <button 
               @click="toggleStatus(usuario, 'inativo')" 
               :class="['status-btn', { active: usuario.status === 'inativo' }]"
             >
-            <img src="../../public/icons/fechar.svg" alt="Editar" class="icon-black"/>
+            <img src="/public/icons/fechar.svg" alt="Editar" class="icon-black"/>
             Inativo
             </button>
           </div>

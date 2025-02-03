@@ -3,7 +3,7 @@
     <header class="cursos-header">
       <h1>Cursos Cadastrados</h1>
       <button @click="$router.push('/cursos')" class="btn-novo">
-        <img src="../../public/icons/adicao.svg" alt="Novo" class="icon-black" />
+        <img src="/public/icons/adicao.svg" alt="Novo" class="icon-black" />
         Novo Curso
       </button>
     </header>
@@ -24,11 +24,11 @@
           <h3>{{ curso.nome }}</h3>
           <div class="actions">
             <button @click="editarCurso(curso)" class="btn-edit">
-              <img src="../../public/icons/adicao.svg" alt="Editar" class="icon" />
+              <img src="/public/icons/adicao.svg" alt="Editar" class="icon" />
               Editar
             </button>
             <button @click="deletarCurso(curso.id)" class="btn-delete">
-              <img src="../../public/icons/lixeira.svg" alt="Excluir" class="icon" />
+              <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon" />
               Excluir
             </button>
           </div>
@@ -65,17 +65,17 @@
             <div class="status-toggle">
               <button @click="toggleStatus(curso, 'Em andamento')"
                 :class="['status-btn', { active: curso.status === 'Em andamento' }]">
-                <img src="../../public/icons/cursando.svg" alt="Cursando" class="icon-black" />
+                <img src="/public/icons/cursando.svg" alt="Cursando" class="icon-black" />
                 Em Andamento
               </button>
               <button @click="toggleStatus(curso, 'Finalizado')"
                 :class="['status-btn', { active: curso.status === 'Finalizado' }]">
-                <img src="../../public/icons/check.svg" alt="Finalizado" class="icon-black" />
+                <img src="/public/icons/check.svg" alt="Finalizado" class="icon-black" />
                 Finalizado
               </button>
               <button @click="toggleStatus(curso, 'Cancelado')"
                 :class="['status-btn', { active: curso.status === 'Cancelado' }]">
-                <img src="../../public/icons/fechar.svg" alt="Finalizado" class="icon-black" />
+                <img src="/public/icons/fechar.svg" alt="Finalizado" class="icon-black" />
                 Cancelado
               </button>
             </div>

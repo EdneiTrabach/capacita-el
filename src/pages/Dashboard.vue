@@ -10,7 +10,7 @@
     <header class="dashboard-header">
       <h1>Dashboard</h1>
       <button @click="atualizarDados" class="refresh-btn">
-        <img src="../../public/icons/cursando.svg" alt="Atualizar" class="icon-black" />
+        <img src="/public/icons/cursando.svg" alt="Atualizar" class="icon-black" />
         Atualizar Dados
       </button>
     </header>

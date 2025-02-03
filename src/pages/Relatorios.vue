@@ -9,7 +9,7 @@
       <div class="report-header">
         <h2>Relatório de Certificados Emitidos</h2>
         <button @click="showCertificadosReport = false" class="btn-voltar">
-          <img src="../../public/icons/voltar.svg" alt="Voltar" class="icon" />
+          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
           Voltar
         </button>
       </div>
@@ -64,11 +64,11 @@
 
       <div class="actions-bar">
         <button @click="gerarRelatorioCertificados" class="btn-gerar-pdf">
-          <img src="../../public/icons/pdf.svg" alt="PDF" class="icon" />
+          <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
           Gerar PDF
         </button>
         <button @click="exportarCertificadosExcel" class="btn-export-excel">
-          <img src="../../public/icons/excel.svg" alt="EXCEL" class="icon" />
+          <img src="/public/icons/excel.svg" alt="EXCEL" class="icon" />
           Exportar Excel
         </button>
       </div>
@@ -79,7 +79,7 @@
       <div class="report-header">
         <h2>Relatório de Alunos por Curso</h2>
         <button @click="showAlunosReport = false" class="btn-voltar">
-          <img src="../../public/icons/voltar.svg" alt="Voltar" class="icon" />
+          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
           Voltar</button>
       </div>
 
@@ -125,11 +125,11 @@
 
       <div class="actions-bar">
         <button @click="gerarRelatorioAlunos" class="btn-gerar-pdf">
-          <img src="../../public/icons/pdf.svg" alt="PDF" class="icon" />
+          <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
           Gerar PDF
         </button>
         <button @click="exportarAlunosExcel" class="btn-export-excel">
-          <img src="../../public/icons/excel.svg" alt="EXCEL" class="icon" />
+          <img src="/public/icons/excel.svg" alt="EXCEL" class="icon" />
           Exportar Excel
         </button>
       </div>
@@ -139,7 +139,7 @@
     <div v-if="!showCertificadosReport && !showAlunosReport" class="relatorios-grid">
       <div class="relatorio-card" @click="showAlunosReport = true">
         <div class="card-icon">
-          <img src="../../public/icons/relatorio.svg" alt="Alunos por Curso" class="icon-black" />
+          <img src="/public/icons/relatorio.svg" alt="Alunos por Curso" class="icon-black" />
         </div>
         <h3>Alunos por Curso</h3>
         <p>Visualize a distribuição de alunos em cada curso</p>
@@ -150,7 +150,7 @@
 
       <div class="relatorio-card" @click="showCertificadosReport = true">
         <div class="card-icon">
-          <img src="../../public/icons/grafico-linha.svg" alt="Certificados Emitidos" class="icon-black" />
+          <img src="/public/icons/grafico-linha.svg" alt="Certificados Emitidos" class="icon-black" />
         </div>
         <h3>Certificados Emitidos</h3>
         <p>Relatório de certificados emitidos por período</p>

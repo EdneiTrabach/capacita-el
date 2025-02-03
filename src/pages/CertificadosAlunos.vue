@@ -7,7 +7,7 @@
     <header class="certificados-header">
       <h1>Gestão de Certificados</h1>
       <button @click="abrirModal" class="btn-novo">
-        <img src="../../public/icons/adicao.svg" alt="Novo" class="icon-black" />
+        <img src="/public/icons/adicao.svg" alt="Novo" class="icon-black" />
         Novo Certificado
       </button>
     </header>
@@ -37,15 +37,15 @@
             <!-- Botões para certificados pendentes -->
             <template v-if="certificado.status === 'pendente'">
               <button @click="emitirCertificado(certificado)" class="btn-emit">
-                <img src="../../public/icons/imprimir.svg" alt="Emitir" class="icon" />
+                <img src="/public/icons/imprimir.svg" alt="Emitir" class="icon" />
                 Emitir
               </button>
               <button @click="editarCertificado(certificado)" class="btn-edit">
-                <img src="../../public/icons/edicao.svg" alt="Editar" class="icon" />
+                <img src="/public/icons/edicao.svg" alt="Editar" class="icon" />
                 Editar
               </button>
               <button @click="deletarCertificado(certificado.id)" class="btn-delete">
-                <img src="../../public/icons/lixeira.svg" alt="Excluir" class="icon" />
+                <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon" />
                 Excluir
               </button>
             </template>

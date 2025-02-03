@@ -6,50 +6,50 @@
       </button>
       
       <div class="logo-section">
-        <img src="../../public/icons/logo-itilh.svg" alt="Logo" class="logo" />
+        <img src="/public/icons/logo-itilh.svg" alt="Logo" class="logo" />
         <span v-if="isExpanded">Treinamentos</span>
       </div>
 
       <ul class="nav-links">
         <li>
           <router-link to="/">
-            <img src="../../public/icons/home.svg" alt="Home" class="icon" />
+            <img src="/public/icons/home.svg" alt="Home" class="icon" />
             <span v-if="isExpanded" class="link-text">Home</span>
           </router-link>
         </li>
         <li>
           <router-link to="/dashboard">
-            <img src="../../public/icons/grafico.svg" alt="Dashboard" class="icon" />
+            <img src="/public/icons/grafico.svg" alt="Dashboard" class="icon" />
             <span v-if="isExpanded" class="link-text">Dashboard</span>
           </router-link>
         </li>
         <li>
           <router-link to="/usuarios">
-            <img src="../../public/icons/add-usuario.svg" alt="Cadastro de Usuário" class="icon" />
+            <img src="/public/icons/add-usuario.svg" alt="Cadastro de Usuário" class="icon" />
             <span v-if="isExpanded" class="link-text">Cadastro de Alunos</span>
           </router-link>
         </li>
         <li>
           <router-link to="/lista-usuarios">
-            <img src="../../public/icons/config-usuario.svg" alt="Configuracoes de Usuário" class="icon" />
+            <img src="/public/icons/config-usuario.svg" alt="Configuracoes de Usuário" class="icon" />
             <span v-if="isExpanded" class="link-text">Gestão de Alunos</span>
           </router-link>
         </li>
         <li>
           <router-link to="/certificados">
-            <img src="../../public/icons/certificado.svg" alt="Certificados" class="icon" />
+            <img src="/public/icons/certificado.svg" alt="Certificados" class="icon" />
             <span v-if="isExpanded" class="link-text">Certificados</span>
           </router-link>
         </li>
         <li>
           <router-link to="/relatorios">
-            <img src="../../public/icons/relatorio.svg" alt="Relatórios" class="icon" />
+            <img src="/public/icons/relatorio.svg" alt="Relatórios" class="icon" />
             <span v-if="isExpanded" class="link-text">Relatórios</span>
           </router-link>
         </li>
         <li>
           <router-link to="/lista-cursos">
-            <img src="../../public/icons/livros.svg" alt="Cursos" class="icon" />
+            <img src="/public/icons/livros.svg" alt="Cursos" class="icon" />
             <span v-if="isExpanded" class="link-text">Cursos</span>
           </router-link>
         </li>
@@ -58,7 +58,7 @@
       <!-- Novo botão de logout -->
       <div class="logout-section">
         <router-link to="/login" @click="handleLogout" class="logout-btn">
-          <img src="../../public/icons/sair.svg" alt="Sair" class="icon" />
+          <img src="/public/icons/sair.svg" alt="Sair" class="icon" />
           <span v-if="isExpanded" class="link-text">Sair</span>
         </router-link>
       </div>
@@ -236,4 +236,3 @@ export default {
   }
 }
 </style>
-

@@ -11,7 +11,7 @@
 
       <div class="nav-card" @click="$router.push('/dashboard')">
         <div class="card-icon">
-          <img src="../../public/icons/grafico.svg" alt="Dashboard" class="icon-home" />
+          <img src="/public/icons/grafico.svg" alt="Dashboard" class="icon-home" />
         </div>
         <h2>Dashboard</h2>
         <p>Visualizar relatórios e estatísticas</p>
@@ -20,7 +20,7 @@
 
       <div class="nav-card" @click="$router.push('/usuarios')">
         <div class="card-icon">
-          <img src="../../public/icons/add-usuario.svg" alt="Cadastro de Alunos" class="icon-home" />
+          <img src="./public/icons/add-usuario.svg" alt="Cadastro de Alunos" class="icon-home" />
         </div>
         <h2>Cadastro de Alunos</h2>
         <p>Gerenciar cadastros e edições de alunos</p>
@@ -29,7 +29,7 @@
 
       <div class="nav-card" @click="$router.push('/lista-usuarios')">
         <div class="card-icon">
-          <img src="../../public/icons/config-usuario.svg" alt="Gestao de Alunos" class="icon-home" />
+          <img src="/public/icons/config-usuario.svg" alt="Gestao de Alunos" class="icon-home" />
         </div>
         <h2>Gestão de Alunos</h2>
         <p>Visualizar e gerenciar alunos cadastrados</p>
@@ -38,7 +38,7 @@
 
       <div class="nav-card" @click="$router.push('/certificados')">
         <div class="card-icon">
-          <img src="../../public/icons/certificado.svg" alt="Certificados" class="icon-home" />
+          <img src="/public/icons/certificado.svg" alt="Certificados" class="icon-home" />
         </div>
         <h2>Certificados</h2>
         <p>Gerenciar emissão de certificados</p>
@@ -47,7 +47,7 @@
 
       <div class="nav-card" @click="$router.push('/relatorios')">
         <div class="card-icon">
-          <img src="../../public/icons/relatorio.svg" alt="Relatorios" class="icon-home" />
+          <img src="/public/icons/relatorio.svg" alt="Relatorios" class="icon-home" />
         </div>
         <h2>Relatórios</h2>
         <p>Visualizar relatórios e estatísticas detalhadas</p>
@@ -56,7 +56,7 @@
 
       <div class="nav-card" @click="$router.push('/lista-cursos')">
         <div class="card-icon">
-          <img src="../../public/icons/livros.svg" alt="Cursos" class="icon-home" />
+          <img src="/public/icons/livros.svg" alt="Cursos" class="icon-home" />
         </div>
         <h2>Cursos</h2>
         <p>Explorar Cursos</p>
@@ -65,7 +65,7 @@
 
       <div class="nav-card info-card">
         <div class="card-icon">
-          <img src="../../public/icons/informacao.svg" alt="Info" class="icon-home" />
+          <img src="/public/icons/informacao.svg" alt="Info" class="icon-home" />
         </div>
         <h2 class="about">Sobre o Sistema</h2>
         <p>Sistema desenvolvido por Ednei Trabach</p>

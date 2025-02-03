@@ -14,7 +14,7 @@
     <!-- Existing Login Card -->
     <div class="login-card">
       <div class="logo-container" @click="handleLogoClick">
-        <img src="../../public/icons/logo-itilh.svg" alt="Logo Itilh" class="logo" />
+        <img src="/public/icons/logo-itilh.svg" alt="Logo Itilh" class="logo" />
         <h1>Cenecte-se</h1>
       </div>
 

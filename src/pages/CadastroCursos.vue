@@ -76,7 +76,7 @@
             <div class="modulo-header">
               <h4>Módulo {{ index + 1 }}</h4>
               <button type="button" @click="removerModulo(index)" class="btn-remove">
-                <img src="../../public/icons/lixeira.svg" alt="Info" class="icon" />
+                <img src="/public/icons/lixeira.svg" alt="Info" class="icon" />
               </button>
             </div>
             <div class="modulo-form">
@@ -95,18 +95,18 @@
           </div>
           
           <button type="button" @click="adicionarModulo" class="btn-add-modulo">
-            <img src="../../public/icons/adicao.svg" alt="Info" class="icon" />
+            <img src="/public/icons/adicao.svg" alt="Info" class="icon" />
             Adicionar Módulo
           </button>
         </div>
 
         <div class="form-actions">
           <button type="button" @click="$router.push('/lista-cursos')" class="btn-cancelar">
-            <img src="../../public/icons/fechar.svg" alt="Dashboard" class="icon" />
+            <img src="/public/icons/fechar.svg" alt="Dashboard" class="icon" />
             Cancelar
           </button>
           <button type="submit" class="btn-salvar">
-            <img src="../../public/icons/save-fill.svg" alt="Salvar" class="icon" />
+            <img src="/public/icons/save-fill.svg" alt="Salvar" class="icon" />
             {{ isEditing ? 'Atualizar' : 'Salvar' }}
           </button>
         </div>
