@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import Navbar from './layouts/Navbar.vue' // Updated import path
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from './config/supabase'

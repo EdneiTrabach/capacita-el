@@ -66,6 +66,17 @@ const router = useRouter()
 const email = ref('')
 const password = ref('')
 const error = ref('')
+const showMatrix = ref(false)
+
+const handleLogoClick = () => {
+  showMatrix.value = !showMatrix.value
+}
+
+const generateRandomChars = () => {
+  return Array(20).fill(0)
+    .map(() => String.fromCharCode(33 + Math.floor(Math.random() * 94)))
+    .join('')
+}
 
 const handleLogin = async () => {
   try {
