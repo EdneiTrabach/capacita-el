@@ -36,18 +36,6 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/certificados',
-      name: 'certificados',
-      component: () => import('../pages/CertificadosAlunos.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/relatorios',
-      name: 'relatorios',
-      component: () => import('../pages/Relatorios.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
       path: '/cursos',
       name: 'cadastroCursos',
       component: () => import('../pages/CadastroCursos.vue'),
@@ -58,11 +46,23 @@ const router = createRouter({
       name: 'listaCursos',
       component: () => import('../pages/ListaCursos.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/certificados',
+      name: 'certificados',
+      component: () => import('../pages/CertificadosAlunos.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios',
+      name: 'relatorios',
+      component: () => import('../pages/Relatorios.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
 
-// Navigation guard to protect routes
+// Navigation guard
 router.beforeEach(async (to, from, next) => {
   const session = await supabase.auth.getSession()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
