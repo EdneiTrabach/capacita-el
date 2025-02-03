@@ -147,6 +147,8 @@
 
 <script>
 import api from '../services/api'
+import axios from 'axios'
+import { API_URL } from '../config/api'
 
 export default {
   name: 'CadastroUsuarios',
@@ -216,7 +218,7 @@ export default {
     },
     async loadUsuario(id) {
       try {
-        const response = await api.get(`/usuarios/${id}`)
+        const response = await axios.get(`${API_URL}/usuarios/${id}`)
         this.formData = {
           ...response.data,
           dataNascimento: response.data.data_nascimento?.split('T')[0]
@@ -230,10 +232,10 @@ export default {
       if (this.validateForm()) {
         try {
           if (this.$route.query.edit) {
-            await api.put(`/usuarios/${this.$route.params.id}`, this.formData)
+            await axios.put(`${API_URL}/usuarios/${this.$route.params.id}`, this.formData)
             alert('Usuário atualizado com sucesso!')
           } else {
-            await api.post('/usuarios', this.formData)
+            await axios.post(`${API_URL}/usuarios`, this.formData)
             alert('Usuário cadastrado com sucesso!')
           }
           this.$router.push('/lista-usuarios')
@@ -245,7 +247,7 @@ export default {
     },
     async loadSetores() {
       try {
-        const response = await api.get('/setores')
+        const response = await axios.get(`${API_URL}/setores`)
         this.setores = response.data.map(s => s.nome)
       } catch (error) {
         console.error('Erro ao carregar setores:', error)
@@ -259,7 +261,7 @@ export default {
       }
 
       try {
-        await api.post('/setores', {
+        await axios.post(`${API_URL}/setores`, {
           nome: this.novoSetor
         })
         
