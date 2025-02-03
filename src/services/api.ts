@@ -1,9 +1,7 @@
 import axios from 'axios'
-import { API_URL } from '../config/api'
+import { API_URL, API_CONFIG } from '../config/api'
 
-const api = axios.create({
-  baseURL: API_URL
-})
+const api = axios.create(API_CONFIG)
 
 // Add auth token to requests
 api.interceptors.request.use(async (config) => {
@@ -25,4 +23,5 @@ export const certificadosService = {
   emitir: (id: string) => api.put(`/certificados/${id}/emitir`)
 }
 
+export { api }
 export default api

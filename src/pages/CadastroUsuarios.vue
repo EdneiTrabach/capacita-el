@@ -148,7 +148,7 @@
 <script>
 import api from '../services/api'
 import axios from 'axios'
-import { API_URL } from '../config/api' // Use named import
+import { API_URL } from '../config/api'
 
 export default {
   name: 'CadastroUsuarios',
