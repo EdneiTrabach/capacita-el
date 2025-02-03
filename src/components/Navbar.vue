@@ -67,6 +67,9 @@
 </template>
 
 <script>
+import { supabase } from '../config/supabase'
+import { useRouter } from 'vue-router'
+
 export default {
   name: 'Navbar',
   data() {
@@ -79,8 +82,21 @@ export default {
       this.isExpanded = !this.isExpanded
       this.$emit('sidebar-toggle', !this.isExpanded)
     },
-    handleLogout() {
-      localStorage.removeItem('isAuthenticated')
+    async handleLogout() {
+      try {
+        // Sign out from Supabase
+        const { error } = await supabase.auth.signOut()
+        if (error) throw error
+
+        // Remove any local storage items if needed
+        localStorage.removeItem('isAuthenticated')
+        
+        // Redirect to login page
+        this.$router.push('/login')
+      } catch (error) {
+        console.error('Error logging out:', error)
+        alert('Erro ao sair do sistema. Tente novamente.')
+      }
     }
   }
 }
@@ -236,4 +252,3 @@ export default {
   }
 }
 </style>
-

@@ -20,7 +20,7 @@
 
       <div class="nav-card" @click="$router.push('/usuarios')">
         <div class="card-icon">
-          <img src="./public/icons/add-usuario.svg" alt="Cadastro de Alunos" class="icon-home" />
+          <img src="/public/icons/add-usuario.svg" alt="Cadastro de Alunos" class="icon-home" />
         </div>
         <h2>Cadastro de Alunos</h2>
         <p>Gerenciar cadastros e edições de alunos</p>
@@ -77,12 +77,25 @@
 </template>
 
 <script>
+import { supabase } from '../config/supabase'
+
 export default {
   name: 'Home',
   methods: {
-    handleLogout() {
-      localStorage.removeItem('isAuthenticated')
-      this.$router.push('/login')
+    async handleLogout() {
+      try {
+        const { error } = await supabase.auth.signOut()
+        if (error) throw error
+        
+        // Clear local storage
+        localStorage.removeItem('isAuthenticated')
+        
+        // Redirect to login
+        this.$router.push('/login')
+      } catch (error) {
+        console.error('Erro ao sair:', error)
+        alert('Erro ao sair do sistema. Tente novamente.')
+      }
     }
   }
 }

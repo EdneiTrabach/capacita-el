@@ -80,7 +80,6 @@ const generateRandomChars = () => {
 
 const handleLogin = async () => {
   try {
-    // Sign in with Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
@@ -95,7 +94,6 @@ const handleLogin = async () => {
       .eq('id', authData.user.id)
       .single()
 
-    // If no profile exists, update the existing one
     if (profileError) {
       const { error: updateError } = await supabase
         .from('profiles')
@@ -110,8 +108,8 @@ const handleLogin = async () => {
       if (updateError) throw updateError
     }
 
-    // Redirect to dashboard on success
-    router.push('/dashboard')
+    // Redirect to home page instead of dashboard
+    router.push('/')
   } catch (e) {
     console.error('Login error:', e)
     error.value = 'Erro ao fazer login. Verifique suas credenciais.'

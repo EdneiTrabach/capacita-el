@@ -1,25 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import Login from '.././pages/Login.vue'
 import { supabase } from '../config/supabase'
+import Home from '../pages/Home.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/login'
+      name: 'home',
+      component: Home,
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',
-      name: 'Login',
-      component: Login,
+      name: 'login',
+      component: () => import('../pages/Login.vue'),
       meta: { requiresAuth: false }
-    },
-    {
-      path: '/home',
-      name: 'home',
-      component: HomeView,
     },
     {
       path: '/about',
@@ -33,11 +29,14 @@ const router = createRouter({
 })
 
 // Navigation guard to protect routes
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!supabase.auth.getSession()
-  
-  if (to.meta.requiresAuth && !isAuthenticated) {
+router.beforeEach(async (to, from, next) => {
+  const session = await supabase.auth.getSession()
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+
+  if (requiresAuth && !session) {
     next('/login')
+  } else if (!requiresAuth && session && to.path === '/login') {
+    next('/')
   } else {
     next()
   }

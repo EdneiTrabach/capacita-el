@@ -3,7 +3,7 @@ import { RouterView } from 'vue-router'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from './config/supabase'
-// import Navbar from './components/layouts/Navbar.vue'
+import Navbar from './components/Navbar.vue' // Uncomment and fix the import path
 
 const route = useRoute()
 const isSidebarCollapsed = ref(false)
@@ -33,8 +33,10 @@ supabase.auth.onAuthStateChange((event, session) => {
 <template>
   <router-view v-if="route.path === '/login'" />
   <div v-else class="app-container">
-    <Navbar v-if="showNavbar" @toggle-sidebar="handleSidebarToggle" />
-    <router-view />
+    <Navbar v-if="showNavbar" @sidebar-toggle="handleSidebarToggle" />
+    <main :class="{ 'with-sidebar': showNavbar, 'sidebar-collapsed': isSidebarCollapsed }">
+      <router-view />
+    </main>
   </div>
 </template>
 
