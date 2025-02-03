@@ -120,19 +120,44 @@ import { ref, onMounted } from 'vue'
 import { supabase } from '../config/supabase'
 import { useRouter, useRoute } from 'vue-router'
 
+interface Modulo {
+  id?: string
+  nome: string
+  carga_horaria: number
+  curso_id?: string
+}
+
+interface FormData {
+  nome: string
+  descricao: string
+  duracao_horas: number
+  data_inicio: string
+  professor_responsavel: string
+  status: string
+  modulos: Modulo[]
+}
+
+interface Errors {
+  nome?: string
+  descricao?: string
+  duracao_horas?: string
+  data_inicio?: string
+  professor_responsavel?: string
+}
+
 const router = useRouter()
 const route = useRoute()
-const formData = ref({
+const formData = ref<FormData>({
   nome: '',
   descricao: '',
-  duracao_horas: '',
+  duracao_horas: 0,
   data_inicio: '',
   professor_responsavel: '',
   status: 'Em andamento',
   modulos: []
 })
 
-const errors = ref({})
+const errors = ref<Errors>({})
 const isEditing = ref(false)
 
 const validateForm = () => {
@@ -227,7 +252,7 @@ const handleSubmit = async () => {
   }
 }
 
-const loadCurso = async (id) => {
+const loadCurso = async (id: string) => {
   try {
     const { data, error } = await supabase
       .from('cursos')
@@ -258,18 +283,18 @@ const loadCurso = async (id) => {
 const adicionarModulo = () => {
   formData.value.modulos.push({
     nome: '',
-    carga_horaria: ''
+    carga_horaria: 0
   })
 }
 
-const removerModulo = (index) => {
+const removerModulo = (index: number) => {
   formData.value.modulos.splice(index, 1)
 }
 
 onMounted(() => {
   isEditing.value = !!route.query.edit
   if (isEditing.value && route.params.id) {
-    loadCurso(route.params.id)
+    loadCurso(route.params.id as string)
   }
 })
 

@@ -90,14 +90,14 @@ ChartJS.register(
 const totalUsuarios = ref(0)
 const cursosAtivos = ref(0)
 const matriculasMes = ref(0)
-const matriculasPorCurso = ref({})
+const matriculasPorCurso = ref<Record<string, number>>({})
 const usuariosTendencia = ref(0)
 const cursosConcluidos = ref(0)
 const matriculasTotal = ref(0)
 const alunosAtivos = ref(0)
 const alunosCursando = ref(0)
 const loading = ref(false)
-const error = ref(null)
+const error = ref<string | null>(null)
 
 const carregarEstatisticas = async () => {
   try {
@@ -160,6 +160,10 @@ const carregarEstatisticas = async () => {
     console.error('Error loading statistics:', err)
     error.value = 'Erro ao carregar estatísticas'
   }
+}
+
+const atualizarDados = async () => {
+  await carregarEstatisticas()
 }
 
 onMounted(() => {
