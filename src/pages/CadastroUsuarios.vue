@@ -153,10 +153,32 @@ import { setorService } from '../services/api'
 import { supabase } from '../config/supabase'
 import { useRouter, useRoute } from 'vue-router'
 
+interface FormData {
+  nome: string
+  email: string
+  dataNascimento: string
+  telefone: string
+  documento: string
+  cidade: string
+  estado: string
+  setor: string
+}
+
+interface FormErrors {
+  nome?: string
+  email?: string
+  dataNascimento?: string
+  telefone?: string
+  documento?: string
+  cidade?: string
+  estado?: string
+  setor?: string
+}
+
 const router = useRouter()
 const route = useRoute()
 
-const formData = ref({
+const formData = ref<FormData>({
   nome: '',
   email: '',
   dataNascimento: '',
@@ -167,7 +189,7 @@ const formData = ref({
   setor: ''
 })
 
-const errors = ref({})
+const errors = ref<FormErrors>({})
 const setores = ref<Array<{ id: string, nome: string }>>([])
 const novoSetor = ref('')
 const showSetorModal = ref(false)
@@ -281,9 +303,9 @@ const handleSubmit = async () => {
       setTimeout(() => {
         router.push('/lista-usuarios')
       }, 2000)
-    } catch (error) {
-      console.error('Erro ao salvar usuário:', error)
-      showToast(error.message || 'Erro ao salvar usuário', 'error')
+    } catch (err: any) {
+      console.error('Erro ao salvar usuário:', err)
+      showToast(err.message || 'Erro ao salvar usuário', 'error')
     }
   }
 }
