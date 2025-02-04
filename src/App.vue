@@ -43,9 +43,11 @@ const shouldShowNavbar = computed(() => {
 })
 </script>
 <template>
-  <div id="app">
-    <Navbar v-if="shouldShowNavbar" />
-    <router-view />
+  <div id="app" class="app-container">
+    <Navbar v-if="shouldShowNavbar" @sidebar-toggle="handleSidebarToggle" />
+    <main class="main-content" :class="{ 'with-sidebar': shouldShowNavbar, 'sidebar-collapsed': isSidebarCollapsed }">
+      <router-view />
+    </main>
   </div>
 </template>
 
@@ -176,5 +178,25 @@ body {
   max-width: none;
   margin: 0;
   padding: 0;
+}
+
+.main-content {
+  flex: 1;
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.with-sidebar {
+  margin-left: 250px; /* Largura do sidebar expandido */
+}
+
+.main-content.with-sidebar.sidebar-collapsed {
+  margin-left: 60px; /* Largura do sidebar recolhido */
+}
+
+/* Para telas de autenticação (login e reset) */
+.reset-container,
+.login-container {
+  margin-left: 0 !important;
+  width: 100% !important;
 }
 </style>
