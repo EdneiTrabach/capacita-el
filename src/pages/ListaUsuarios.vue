@@ -108,6 +108,93 @@
         </div>
       </div>
     </div>
+    <!-- Adicione o modal após o grid de usuários -->
+    <div v-if="showEditModal" class="modal-overlay">
+      <div class="modal-content">
+        <h2>Editar Aluno</h2>
+        <form @submit.prevent="handleEditSubmit" class="edit-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nome Completo*</label>
+              <input 
+                type="text" 
+                v-model="editingUser.nome"
+                placeholder="Digite o nome completo"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Email</label>
+              <input 
+                type="email" 
+                v-model="editingUser.email"
+                placeholder="Digite o email"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Data de Nascimento</label>
+              <input 
+                type="date" 
+                v-model="editingUser.data_nascimento"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Telefone</label>
+              <input 
+                type="tel" 
+                v-model="editingUser.telefone"
+                placeholder="(00) 00000-0000"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Cidade</label>
+              <input 
+                type="text" 
+                v-model="editingUser.cidade"
+                placeholder="Digite a cidade"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Estado</label>
+              <select v-model="editingUser.estado">
+                <option value="">Selecione um estado</option>
+                <option v-for="estado in estados" :key="estado.uf" :value="estado.uf">
+                  {{ estado.nome }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Origem*</label>
+              <div class="setor-input-group">
+                <select v-model="editingUser.setor" required>
+                  <option value="">Selecione uma origem</option>
+                  <option v-for="setor in setores" :key="setor.id" :value="setor.nome">
+                    {{ setor.nome }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" @click="closeEditModal" class="btn-cancelar">
+              <img src="/icons/fechar.svg" alt="Cancelar" class="icon"/>
+              Cancelar
+            </button>
+            <button type="submit" class="btn-salvar" :disabled="loading">
+              <img src="/icons/save-fill.svg" alt="Salvar" class="icon"/>
+              {{ loading ? 'Salvando...' : 'Salvar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -132,7 +219,23 @@ export default {
         show: false,
         message: '',
         type: 'success'
-      }
+      },
+      showEditModal: false,
+      editingUser: {
+        id: null,
+        nome: '',
+        email: '',
+        data_nascimento: '',
+        telefone: '',
+        cidade: '',
+        estado: '',
+        setor: ''
+      },
+      estados: [
+        { uf: 'AC', nome: 'Acre' },
+        { uf: 'AL', nome: 'Alagoas' },
+        // ... adicione todos os estados ...
+      ]
     }
   },
   async created() {
@@ -241,16 +344,53 @@ export default {
         }
       }
     },
-    async editarUsuario(usuario) {
+    editarUsuario(usuario) {
+      this.editingUser = { ...usuario }
+      if (this.editingUser.data_nascimento) {
+        this.editingUser.data_nascimento = this.editingUser.data_nascimento.split('T')[0]
+      }
+      this.showEditModal = true
+    },
+    closeEditModal() {
+      this.showEditModal = false
+      this.editingUser = {
+        id: null,
+        nome: '',
+        email: '',
+        data_nascimento: '',
+        telefone: '',
+        cidade: '',
+        estado: '',
+        setor: ''
+      }
+    },
+    async handleEditSubmit() {
       try {
-        await this.$router.push({
-          name: 'CadastroUsuarios', // Use o name em vez do path
-          params: { id: usuario.id },
-          query: { edit: 'true' }
-        })
+        this.loading = true
+        const { error } = await supabase
+          .from('usuarios')
+          .update({
+            nome: this.editingUser.nome,
+            email: this.editingUser.email,
+            data_nascimento: this.editingUser.data_nascimento,
+            telefone: this.editingUser.telefone,
+            cidade: this.editingUser.cidade,
+            estado: this.editingUser.estado,
+            setor: this.editingUser.setor,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', this.editingUser.id)
+
+        if (error) throw error
+
+        this.showToast('Usuário atualizado com sucesso!', 'success')
+        await this.loadUsuarios() // Recarrega a lista
+        this.closeEditModal()
       } catch (error) {
-        console.error('Erro ao editar usuário:', error)
-        this.showToast('Erro ao editar usuário', 'error')
+        console.error('Erro ao atualizar usuário:', error)
+        this.showToast('Erro ao atualizar usuário', 'error')
+      } finally {
+        this.loading = false
       }
     },
     async alterarStatus(usuario) {
@@ -292,7 +432,9 @@ export default {
     },
     formatDate(date) {
       if (!date) return '--'
-      return new Date(date).toLocaleDateString('pt-BR')
+      // Força a data para o timezone local
+      const [year, month, day] = date.split('-')
+      return new Date(year, month - 1, day).toLocaleDateString('pt-BR')
     },
     showToast(message, type = 'success') {
       this.toast = {
@@ -949,6 +1091,78 @@ export default {
 
   .certificados-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content h2 {
+  color: #193155;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e4e8;
+}
+
+.edit-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e4e8;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .edit-form .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
   }
 }
 </style>
