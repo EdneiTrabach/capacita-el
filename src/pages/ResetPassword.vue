@@ -10,28 +10,26 @@
         <div class="form-group">
           <div class="input-container">
             <span class="input-icon">🔒</span>
-            <input 
-              type="password"
-              v-model="password"
-              placeholder=" "
-              :class="{ error: error }"
-              required
-            />
-            <label>Nova Senha</label>
+            <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Nova Senha"
+              :class="{ error: error }" required />
+            <button type="button" class="toggle-password" @click="showPassword = !showPassword">
+              <span class="toggle-password-icon">
+                {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+              </span>
+            </button>
           </div>
         </div>
 
         <div class="form-group">
           <div class="input-container">
             <span class="input-icon">🔒</span>
-            <input 
-              type="password"
-              v-model="confirmPassword"
-              placeholder=" "
-              :class="{ error: error }"
-              required
-            />
-            <label>Confirmar Senha</label>
+            <input :type="showConfirmPassword ? 'text' : 'password'" v-model="confirmPassword" placeholder="Confirmar Senha"
+              :class="{ error: error }" required />
+            <button type="button" class="toggle-password" @click="showConfirmPassword = !showConfirmPassword">
+              <span class="toggle-password-icon">
+                {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+              </span>
+            </button>
           </div>
           <span class="error-message" v-if="error">{{ error }}</span>
         </div>
@@ -42,12 +40,7 @@
             Cancelar
           </button>
           <button type="submit" class="reset-button" :disabled="loading">
-            <img 
-              v-if="!loading"
-              src="/icons/save-fill.svg"
-              alt="Salvar"
-              class="icon-white"
-            />
+            <img v-if="!loading" src="/icons/save-fill.svg" alt="Salvar" class="icon-white" />
             <span v-else>...</span>
             {{ loading ? 'Alterando...' : 'Alterar Senha' }}
           </button>
@@ -63,31 +56,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { supabase } from '../config/supabase'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 const password = ref('')
 const confirmPassword = ref('')
 const error = ref('')
 const loading = ref(false)
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+
 const toast = ref({
   show: false,
   message: '',
   type: 'success'
 })
-
-const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-  toast.value = {
-    show: true,
-    message,
-    type
-  }
-  setTimeout(() => {
-    toast.value.show = false
-  }, 3000)
-}
 
 const handleResetPassword = async () => {
   try {
@@ -99,6 +85,23 @@ const handleResetPassword = async () => {
       return
     }
 
+    // Obter o token da URL
+    const hashParams = new URLSearchParams(window.location.hash.substring(1))
+    const accessToken = hashParams.get('access_token')
+
+    if (!accessToken) {
+      throw new Error('Token de recuperação não encontrado')
+    }
+
+    // Configurar a sessão com o token
+    const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: '' // Não é necessário para reset de senha
+    })
+
+    if (sessionError) throw sessionError
+
+    // Atualizar a senha usando updateUser
     const { error: resetError } = await supabase.auth.updateUser({
       password: password.value
     })
@@ -106,6 +109,9 @@ const handleResetPassword = async () => {
     if (resetError) throw resetError
 
     showToast('Senha alterada com sucesso!', 'success')
+    
+    // Fazer logout para garantir que o usuário não fique logado
+    await supabase.auth.signOut()
 
     setTimeout(() => {
       router.push('/login')
@@ -113,7 +119,7 @@ const handleResetPassword = async () => {
 
   } catch (e: any) {
     console.error('Erro ao redefinir senha:', e)
-    error.value = e.message || 'Erro ao redefinir senha'
+    error.value = 'Erro ao redefinir senha. Por favor, solicite um novo link de recuperação.'
     showToast('Erro ao redefinir senha', 'error')
   } finally {
     loading.value = false
@@ -122,6 +128,18 @@ const handleResetPassword = async () => {
 
 const handleCancel = () => {
   router.push('/login')
+}
+const showToast = (message: string, type: string) => {
+  toast.value = {
+    show: true,
+    message,
+    type
+  }
+
+  // Hide toast after 3 seconds
+  setTimeout(() => {
+    toast.value.show = false
+  }, 3000)
 }
 </script>
 
@@ -148,7 +166,7 @@ const handleCancel = () => {
 
 .header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 4rem;
 }
 
 .header img {
@@ -207,10 +225,10 @@ label {
   font-size: 0.9rem;
 }
 
-input:focus + label,
-input:not(:placeholder-shown) + label {
-  top: -0.5rem;
-  left: 0.75rem;
+input:focus+label,
+input:not(:placeholder-shown)+label {
+  top: -1.5rem;
+  left: -0.25rem;
   font-size: 0.75rem;
   background: white;
   padding: 0 0.5rem;
@@ -333,5 +351,36 @@ input.error {
   .header h1 {
     font-size: 1.5rem;
   }
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-toggle {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.toggle-password:hover .icon-toggle {
+  opacity: 1;
+}
+
+/* Ajuste o padding do input para acomodar o ícone */
+input[type="password"],
+input[type="text"] {
+  padding-right: 40px;
 }
 </style>

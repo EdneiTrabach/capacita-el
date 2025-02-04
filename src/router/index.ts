@@ -70,7 +70,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../pages/ResetPassword.vue'),
     meta: { 
       requiresAuth: false,
-      isAuthRoute: true // Nova meta para identificar rotas de autenticação
+      isAuthRoute: true,
+      allowResetPassword: true // Nova flag para identificar a rota de reset
     }
   }
 ]
@@ -85,6 +86,13 @@ router.beforeEach(async (to, from, next) => {
   const { data: { session } } = await supabase.auth.getSession()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const isAuthRoute = to.matched.some(record => record.meta.isAuthRoute)
+  const allowResetPassword = to.matched.some(record => record.meta.allowResetPassword)
+
+  // Permitir acesso à página de reset de senha mesmo com sessão ativa
+  if (allowResetPassword) {
+    next()
+    return
+  }
 
   // Verifica se é uma rota de autenticação (login, reset-password)
   if (isAuthRoute) {
