@@ -30,14 +30,22 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('User signed out')
   }
 })
+
+// Computed property para controlar visibilidade do Navbar
+const shouldShowNavbar = computed(() => {
+  // Não mostra o navbar em rotas de autenticação
+  if (route.meta.isAuthRoute) return false
+  
+  // Não mostra o navbar em rotas que não requerem autenticação
+  if (!route.meta.requiresAuth) return false
+  
+  return true
+})
 </script>
 <template>
-  <router-view v-if="route.path === '/login'" />
-  <div v-else class="app-container">
-    <Navbar v-if="showNavbar" @sidebar-toggle="handleSidebarToggle" />
-    <main :class="{ 'with-sidebar': showNavbar, 'sidebar-collapsed': isSidebarCollapsed }">
-      <router-view />
-    </main>
+  <div id="app">
+    <Navbar v-if="shouldShowNavbar" />
+    <router-view />
   </div>
 </template>
 

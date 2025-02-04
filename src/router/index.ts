@@ -63,6 +63,15 @@ const routes: RouteRecordRaw[] = [
     name: 'relatorios',
     component: () => import('../pages/Relatorios.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: () => import('../pages/ResetPassword.vue'),
+    meta: { 
+      requiresAuth: false,
+      isAuthRoute: true // Nova meta para identificar rotas de autenticação
+    }
   }
 ]
 
@@ -75,14 +84,31 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const { data: { session } } = await supabase.auth.getSession()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const isAuthRoute = to.matched.some(record => record.meta.isAuthRoute)
 
-  if (requiresAuth && !session) {
-    next('/login')
-  } else if (to.path === '/login' && session) {
-    next('/')
-  } else {
-    next()
+  // Verifica se é uma rota de autenticação (login, reset-password)
+  if (isAuthRoute) {
+    // Se tiver uma sessão ativa, redireciona para home
+    if (session) {
+      next('/')
+    } else {
+      next() // Permite acesso à rota de autenticação
+    }
+    return
   }
+
+  // Verifica se a rota requer autenticação
+  if (requiresAuth) {
+    if (!session) {
+      next('/login')
+    } else {
+      next()
+    }
+    return
+  }
+
+  // Para outras rotas
+  next()
 })
 
 export default router
