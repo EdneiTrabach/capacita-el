@@ -210,6 +210,16 @@ import { supabase } from '../config/supabase'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
+const formatDate = (date) => {
+  if (!date) return '--'
+  try {
+    return date.split('T')[0].split('-').reverse().join('/')
+  } catch (error) {
+    console.error('Erro ao formatar data:', error)
+    return '--'
+  }
+}
+
 export default {
   name: 'ListaUsuarios',
   data() {

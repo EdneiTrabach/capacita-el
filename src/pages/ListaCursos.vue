@@ -182,7 +182,12 @@ export default {
     // Format date helper
     const formatDate = (date) => {
       if (!date) return '--'
-      return new Date(date).toLocaleDateString('pt-BR')
+      try {
+        return date.split('T')[0].split('-').reverse().join('/')
+      } catch (error) {
+        console.error('Erro ao formatar data:', error)
+        return '--'
+      }
     }
 
     // Computed property for filtered courses

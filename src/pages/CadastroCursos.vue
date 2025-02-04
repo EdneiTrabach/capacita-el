@@ -291,6 +291,16 @@ const removerModulo = (index: number) => {
   formData.value.modulos.splice(index, 1)
 }
 
+const formatDate = (date: string | undefined): string => {
+  if (!date) return '--'
+  try {
+    return date.split('T')[0].split('-').reverse().join('/')
+  } catch (error) {
+    console.error('Erro ao formatar data:', error)
+    return '--'
+  }
+}
+
 onMounted(() => {
   isEditing.value = !!route.query.edit
   if (isEditing.value && route.params.id) {

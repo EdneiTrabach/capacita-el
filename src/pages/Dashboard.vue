@@ -54,6 +54,82 @@
           <small>Cursando: {{ alunosCursando }}</small>
         </div>
       </div>
+
+      <div class="stat-card expandable" @click="toggleCursosDetails">
+        <div class="stat-header">
+          <div class="stat-icon">📚</div>
+          <div class="stat-info">
+            <h3>Cursos</h3>
+            <p class="stat-number">{{ totalCursos }}</p>
+            <div class="stat-details">
+              <span class="status-badge em-andamento">
+                {{ cursosEmAndamento }} Em Andamento
+              </span>
+              <span class="status-badge finalizados">
+                {{ cursosConcluidos }} Concluídos
+              </span>
+              <span class="status-badge cancelados">
+                {{ cursosCancelados }} Cancelados
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção expandível com detalhes -->
+        <div v-if="showCursosDetails" class="stat-expanded">
+          <div class="filters-section">
+            <div class="filter-group">
+              <label>Período</label>
+              <div class="date-range">
+                <input 
+                  type="date" 
+                  v-model="cursosFilters.dataInicio"
+                  @change="filtrarCursos"
+                >
+                <span>até</span>
+                <input 
+                  type="date" 
+                  v-model="cursosFilters.dataFim"
+                  @change="filtrarCursos"
+                >
+              </div>
+            </div>
+            <div class="filter-group">
+              <label>Status</label>
+              <select v-model="cursosFilters.status" @change="filtrarCursos">
+                <option value="">Todos</option>
+                <option value="Em andamento">Em Andamento</option>
+                <option value="Finalizado">Finalizados</option>
+                <option value="Cancelado">Cancelados</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cursos-list">
+            <div v-for="curso in cursosFiltrados" :key="curso.id" class="curso-item">
+              <h4>{{ curso.nome }}</h4>
+              <div class="curso-info">
+                <span>Professor: {{ curso.professor_responsavel }}</span>
+                <span>Início: {{ formatDate(curso.data_inicio) }}</span>
+                <span :class="'status-' + curso.status.toLowerCase()">
+                  {{ curso.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="export-actions">
+            <button @click="exportarPDF" class="btn-export">
+              <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
+              Exportar PDF
+            </button>
+            <button @click="exportarExcel" class="btn-export">
+              <img src="/public/icons/excel.svg" alt="Excel" class="icon" />
+              Exportar Excel
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="chart-container">
@@ -64,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -98,6 +174,27 @@ const alunosAtivos = ref(0)
 const alunosCursando = ref(0)
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+const showCursosDetails = ref(false)
+interface Curso {
+  id: number
+  nome: string
+  professor_responsavel: string
+  data_inicio: string
+  data_fim: string
+  status: string
+}
+
+const cursos = ref<Curso[]>([])
+const cursosFilters = ref({
+  dataInicio: '',
+  dataFim: '',
+  status: ''
+})
+
+const totalCursos = ref(0)
+const cursosEmAndamento = ref(0)
+const cursosCancelados = ref(0)
 
 const carregarEstatisticas = async () => {
   try {
@@ -166,9 +263,127 @@ const atualizarDados = async () => {
   await carregarEstatisticas()
 }
 
+const toggleCursosDetails = () => {
+  showCursosDetails.value = !showCursosDetails.value
+}
+
+const carregarCursos = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('cursos')
+      .select('*')
+      .order('data_inicio', { ascending: false })
+
+    if (error) throw error
+
+    cursos.value = data
+    atualizarContadores()
+  } catch (error) {
+    console.error('Erro ao carregar cursos:', error)
+  }
+}
+
+const atualizarContadores = () => {
+  totalCursos.value = cursos.value.length
+  cursosEmAndamento.value = cursos.value.filter(c => c.status === 'Em andamento').length
+  cursosConcluidos.value = cursos.value.filter(c => c.status === 'Finalizado').length
+  cursosCancelados.value = cursos.value.filter(c => c.status === 'Cancelado').length
+}
+
+const cursosFiltrados = computed(() => {
+  return cursos.value.filter(curso => {
+    const matchStatus = !cursosFilters.value.status || 
+      curso.status === cursosFilters.value.status
+    
+    const matchDates = checkDateRange(
+      curso.data_inicio,
+      cursosFilters.value.dataInicio,
+      cursosFilters.value.dataFim
+    )
+
+    return matchStatus && matchDates
+  })
+})
+
+const formatDate = (date: string): string => {
+  if (!date) return '--'
+  return new Date(date).toLocaleDateString('pt-BR')
+}
+
 onMounted(() => {
   carregarEstatisticas()
+  carregarCursos()
 })
+
+const exportarPDF = () => {
+  // Implement PDF export logic here
+  console.log('Exportando PDF...')
+}
+
+const exportarExcel = () => {
+  // Implement Excel export logic here
+  console.log('Exportando Excel...')
+}
+
+const filtrarCursos = () => {
+  // The filtering is already handled by the computed property cursosFiltrados
+  // This function is just a handler for the @change event
+  console.log('Filtros atualizados')
+}
+function checkDateRange(data_inicio: string, dataInicio: string, dataFim: string): boolean {
+  // If no dates are specified, return true
+  if (!dataInicio && !dataFim) return true
+  
+  const cursoDate = new Date(data_inicio)
+  
+  // Check start date if specified
+  if (dataInicio && cursoDate < new Date(dataInicio)) {
+    return false
+  }
+  
+  // Check end date if specified
+  if (dataFim && cursoDate > new Date(dataFim)) {
+    return false
+  }
+  interface CursosFilters {
+    dataInicio: string;
+    dataFim: string;
+    status: string;
+  }
+
+  interface MatriculaPorCurso {
+    [key: string]: number;
+  }
+
+  interface Usuario {
+    id: number;
+    status: string;
+  }
+
+  interface Matricula {
+    data_matricula: string;
+    status: string;
+    curso: Curso | null;
+  }
+
+  // Update/add type annotations
+  const cursos = ref<Curso[]>([])
+  const cursosFilters = ref<CursosFilters>({
+    dataInicio: '',
+    dataFim: '',
+    status: ''
+  })
+
+  const matriculasPorCurso = ref<MatriculaPorCurso>({})
+  const error = ref<string | null>(null)
+
+  const formatDate = (date: string): string => {
+    if (!date) return '--'
+    return new Date(date).toLocaleDateString('pt-BR')
+  }
+
+  return true
+}
 </script>
 
 <style scoped>
@@ -372,5 +587,92 @@ onMounted(() => {
   .stat-number {
     font-size: 1.5rem;
   }
+}
+
+.stat-card.expandable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.stat-card.expandable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.stat-expanded {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e4e8;
+}
+
+.filters-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-badge.em-andamento { color: #007bff; }
+.status-badge.finalizados { color: #28a745; }
+.status-badge.cancelados { color: #dc3545; }
+
+.cursos-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 1rem 0;
+}
+
+.curso-item {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e4e8;
+}
+
+.curso-info {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.export-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-export:hover {
+  transform: translateY(-2px);
 }
 </style>
