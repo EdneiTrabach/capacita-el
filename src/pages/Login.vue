@@ -13,7 +13,7 @@
     
     <!-- Existing Login Card -->
     <div class="login-card">
-      <div class="logo-container" @click="handleLogoClick">
+      <div class="logo-container">
         <img src="/public/icons/logo-itilh.svg" alt="Logo Itilh" class="logo" />
         <h1>Cenecte-se</h1>
       </div>
@@ -48,17 +48,55 @@
         </div>
 
         <div class="forgot-password">
-          <a href="#" class="forgot-link">Esqueci minha senha</a>
+          <a href="#" class="forgot-link" @click="handleForgotClick">Esqueci minha senha</a>
         </div>
 
         <button type="submit" class="login-button">Entrar</button>
       </form>
     </div>
+    
+    <!-- Modal de Recuperação de Senha -->
+    <div v-if="showForgotModal" class="modal-overlay">
+      <div class="modal-content">
+        <h2>Recuperação de Senha</h2>
+        <form @submit.prevent="handleResetPassword" class="reset-form">
+          <div class="form-group">
+            <div class="input-container">
+              <span class="input-icon">📧</span>
+              <input 
+                type="email" 
+                v-model="resetEmail"
+                placeholder=" "
+                required
+              />
+              <label>Email</label>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" @click="showForgotModal = false" class="btn-cancelar">
+              <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon-black"/>
+              Cancelar
+            </button>
+            <button type="submit" class="btn-enviar">
+              <img src="/public/icons/save-fill.svg" alt="Enviar" class="icon-black"/>
+              Enviar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
+
+import { ref, onMounted } from 'vue'
 import { supabase } from '../config/supabase'
 import { useRouter } from 'vue-router'
 
@@ -87,32 +125,23 @@ const handleLogin = async () => {
     
     if (authError) throw authError
 
-    // Check if user has a profile
+    // Check if user has access
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', authData.user.id)
       .single()
 
-    if (profileError) {
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: authData.user.id,
-          email: email.value,
-          status: 'ativo',
-          nome: email.value.split('@')[0],
-          updated_at: new Date().toISOString()
-        })
-
-      if (updateError) throw updateError
+    if (profileError || !profileData) {
+      await supabase.auth.signOut()
+      throw new Error('Usuário não autorizado')
     }
 
-    // Redirect to home page instead of dashboard
+    // Redirect to home page
     router.push('/')
   } catch (e) {
     console.error('Login error:', e)
-    error.value = 'Erro ao fazer login. Verifique suas credenciais.'
+    error.value = 'Erro ao fazer login. Verifique suas credenciais ou contate o administrador.'
   }
 }
 
@@ -135,9 +164,66 @@ const handleRegister = async () => {
     error.value = 'Erro ao registrar usuário. Tente novamente.'
   }
 }
+
+const showForgotModal = ref(false)
+const resetEmail = ref('')
+
+const toast = ref({
+  show: false,
+  message: '',
+  type: 'success'
+})
+
+// Função para mostrar mensagem toast
+const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+  toast.value = {
+    show: true,
+    message,
+    type
+  }
+  setTimeout(() => {
+    toast.value.show = false
+  }, 3000)
+}
+
+// Modifique o link para abrir o modal
+const handleForgotClick = (e: Event) => {
+  e.preventDefault()
+  showForgotModal.value = true
+}
+
+// Função para verificar email e enviar link de recuperação
+const handleResetPassword = async () => {
+  try {
+    // Primeiro, verificamos se o email existe nos usuários autenticados
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.value, {
+      redirectTo: `${window.location.origin}/reset-password`
+    })
+
+    if (error) {
+      showToast('Email não encontrado ou erro ao enviar recuperação', 'error')
+      return
+    }
+
+    // Fechamos o modal e mostramos mensagem de sucesso
+    showForgotModal.value = false
+    showToast('Email de recuperação enviado com sucesso! Verifique sua caixa de entrada.', 'success')
+  } catch (e: any) {
+    console.error('Erro na recuperação de senha:', e)
+    showToast(e.message || 'Erro ao processar a recuperação de senha', 'error')
+  }
+}
 </script>
 
 <style scoped>
+
+.icon-black {
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+  filter: invert(1);
+}
+
 .login-container {
   display: flex;
   justify-content: center;
@@ -450,6 +536,250 @@ input.error {
   to {
     transform: translateY(100vh);
     opacity: 0;
+  }
+}
+
+/* Adicione estes estilos */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.reset-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.recaptcha-container {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-cancelar,
+.btn-enviar {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancelar {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-enviar {
+  background-color: #193155;
+  color: white;
+}
+
+.btn-enviar:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem;
+  border-radius: 8px;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.toast.success {
+  background: #4caf50;
+  color: white;
+}
+
+.toast.error {
+  background: #f44336;
+  color: white;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Modal Content */
+.modal-content {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+}
+
+.modal-content h2 {
+  color: #193155;
+  font-size: 1.5rem;
+  margin-bottom: 3rem;
+  font-weight: 600;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e4e8;
+}
+
+/* Form Styling */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  color: #193155;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem;
+  padding-left: 3rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #193155;
+  box-shadow: 0 0 0 3px rgba(25, 49, 85, 0.1);
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 0rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e4e8;
+}
+
+.btn-cancelar,
+.btn-enviar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancelar {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-enviar {
+  background-color: #193155;
+  color: white;
+}
+
+.btn-cancelar:hover,
+.btn-enviar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-cancelar:hover {
+  background-color: #5a6268;
+}
+
+.btn-enviar:hover {
+  background-color: #254677;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .btn-cancelar,
+  .btn-enviar {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
