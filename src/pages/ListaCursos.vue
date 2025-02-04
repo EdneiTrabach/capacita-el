@@ -24,7 +24,7 @@
           <h3>{{ curso.nome }}</h3>
           <div class="actions">
             <button @click="editarCurso(curso)" class="btn-edit">
-              <img src="/public/icons/adicao.svg" alt="Editar" class="icon" />
+              <img src="/public/icons/edicao.svg" alt="Editar" class="icon" />
               Editar
             </button>
             <button @click="deletarCurso(curso.id)" class="btn-delete">
@@ -188,7 +188,7 @@ export default {
     // Computed property for filtered courses
     const cursosFiltrados = computed(() => {
       return cursos.value.filter(curso => {
-        const matchSearch = !searchTerm.value || 
+        const matchSearch = !searchTerm.value ||
           curso.nome.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
           curso.descricao?.toLowerCase().includes(searchTerm.value.toLowerCase())
 
@@ -221,12 +221,12 @@ export default {
 </script>
 
 <style scoped>
-
 .icon {
   font-size: 1.2rem;
   width: 24px;
   text-align: center;
-  filter: brightness(0) invert(1); /* Add this line to make SVG white */
+  filter: brightness(0) invert(1);
+  /* Add this line to make SVG white */
 }
 
 .icon-black {
@@ -338,8 +338,10 @@ export default {
 
 .curso-header h3 {
   color: #193155;
+  font-size: 1.3rem;
+  margin: 0 0 1.25rem 0;
   font-weight: 600;
-  margin: 0;
+  line-height: 1.2;
 }
 
 /* Status badges com cores distintas */
@@ -741,6 +743,13 @@ export default {
   grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem;
 }
+
+.cursos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
 
 .info-item {
   display: flex;
