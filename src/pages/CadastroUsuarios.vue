@@ -19,6 +19,7 @@
               v-model="formData.nome"
               :class="{ error: errors.nome }"
               placeholder="Digite o nome completo"
+              @blur="validateField('nome', formData.nome)"
             />
             <span class="error-message" v-if="errors.nome">{{ errors.nome }}</span>
           </div>
@@ -61,7 +62,10 @@
               type="text" 
               v-model="formData.documento"
               :class="{ error: errors.documento }"
-              placeholder ="000.000.000-00"
+              placeholder="000.000.000-00"
+              maxlength="14"
+              @input="handleCPFInput"
+              @blur="validateCPFOnBlur"
             />
             <span class="error-message" v-if="errors.documento">{{ errors.documento }}</span>
           </div>
@@ -99,7 +103,11 @@
           <div class="form-group">
             <label>Origem</label>
             <div class="setor-input-group">
-              <select v-model="formData.setor">
+              <select 
+                v-model="formData.setor"
+                :class="{ error: errors.setor }"
+                @blur="validateField('setor', formData.setor)"
+              >
                 <option value="">Selecione um setor</option>
                 <option v-for="setor in setores" :key="setor.id" :value="setor.nome">
                   {{ setor.nome }}
@@ -241,6 +249,18 @@ const cadastrarNovoSetor = async () => {
   }
 
   try {
+    // Verifica se já existe um setor com o mesmo nome
+    const { data: setorExistente } = await supabase
+      .from('setores')
+      .select('id')
+      .ilike('nome', novoSetor.value.trim())
+      .single()
+
+    if (setorExistente) {
+      showToast('Já existe uma origem cadastrada com este nome', 'error')
+      return
+    }
+
     const {
       data: { user },
     } = await supabase.auth.getUser()
@@ -248,22 +268,22 @@ const cadastrarNovoSetor = async () => {
     if (!user) throw new Error('User not authenticated')
 
     const setorData = {
-      nome: novoSetor.value,
+      nome: novoSetor.value.trim(),
       created_by: user.id,
-      created_at: new Date().toISOString(), // Add created_at
+      created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
 
-    // Use setorService instead of direct Supabase call
+    // Cadastra o novo setor
     await setorService.cadastrarSetor(novoSetor.value)
     
     await loadSetores() 
     showSetorModal.value = false
     novoSetor.value = ''
-    showToast('Setor cadastrado com sucesso', 'success')
+    showToast('Origem cadastrada com sucesso', 'success')
   } catch (error) {
-    console.error('Erro ao cadastrar setor:', error)
-    showToast('Erro ao cadastrar novo setor', 'error')
+    console.error('Erro ao cadastrar origem:', error)
+    showToast('Erro ao cadastrar nova origem', 'error')
   }
 }
 
@@ -301,19 +321,119 @@ watch(() => formData.value.estado, (novoEstado) => {
   }
 })
 
-// Função para validar formulário
+// Adicione estas funções no script
+const formatCPF = (cpf) => {
+  // Remove tudo que não é número
+  const cleaned = cpf.replace(/\D/g, '')
+  
+  // Aplica a máscara XXX.XXX.XXX-XX
+  return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+}
+
+const isCPFValid = (cpf) => {
+  // Remove caracteres não numéricos
+  const strCPF = cpf.replace(/\D/g, '')
+  
+  if (strCPF.length !== 11) return false
+  
+  // Verifica CPFs com dígitos iguais
+  if (/^(\d)\1{10}$/.test(strCPF)) return false
+  
+  // Validação dos dígitos verificadores
+  let sum = 0
+  let remainder
+  
+  // Primeiro dígito verificador
+  for (let i = 1; i <= 9; i++) {
+    sum = sum + parseInt(strCPF.substring(i - 1, i)) * (11 - i)
+  }
+  remainder = (sum * 10) % 11
+  if (remainder === 10 || remainder === 11) remainder = 0
+  if (remainder !== parseInt(strCPF.substring(9, 10))) return false
+  
+  // Segundo dígito verificador
+  sum = 0
+  for (let i = 1; i <= 10; i++) {
+    sum = sum + parseInt(strCPF.substring(i - 1, i)) * (12 - i)
+  }
+  remainder = (sum * 10) % 11
+  if (remainder === 10 || remainder === 11) remainder = 0
+  if (remainder !== parseInt(strCPF.substring(10, 11))) return false
+  
+  return true
+}
+
+// Adicione um watch para formatar o CPF enquanto digita
+watch(() => formData.value.documento, (newValue) => {
+  if (!newValue) return
+  
+  // Remove tudo que não é número
+  const justNumbers = newValue.replace(/\D/g, '')
+  
+  // Limita a 11 dígitos
+  if (justNumbers.length > 11) {
+    formData.value.documento = formatCPF(justNumbers.slice(0, 11))
+    return
+  }
+  
+  // Formata o CPF
+  formData.value.documento = formatCPF(justNumbers)
+})
+
+// Função de validação individual para cada campo
+const validateField = (field, value) => {
+  const errors = {}
+  
+  switch (field) {
+    case 'nome':
+      if (!value) errors.nome = 'Nome é obrigatório'
+      break
+      
+    case 'documento':
+      if (value && !isCPFValid(value)) {
+        errors.documento = 'CPF inválido'
+      }
+      break
+      
+    case 'setor':
+      if (!value) errors.setor = 'Origem é obrigatória'
+      break
+      
+    // Adicione mais casos conforme necessário
+  }
+  
+  return errors
+}
+
+// Watchers para cada campo
+watch(() => formData.value.nome, (newValue) => {
+  const fieldErrors = validateField('nome', newValue)
+  errors.value = { ...errors.value, ...fieldErrors }
+})
+
+watch(() => formData.value.documento, (newValue) => {
+  const fieldErrors = validateField('documento', newValue)
+  errors.value = { ...errors.value, ...fieldErrors }
+})
+
+watch(() => formData.value.setor, (newValue) => {
+  const fieldErrors = validateField('setor', newValue)
+  errors.value = { ...errors.value, ...fieldErrors }
+})
+
+// Modifique a função validateForm para usar a mesma lógica
 const validateForm = () => {
   errors.value = {}
   
-  // Apenas nome e setor são obrigatórios
-  if (!formData.value.nome) {
-    errors.value.nome = 'Nome é obrigatório'
+  // Valida todos os campos obrigatórios
+  const allErrors = {
+    ...validateField('nome', formData.value.nome),
+    ...validateField('documento', formData.value.documento),
+    ...validateField('setor', formData.value.setor),
   }
-  if (!formData.value.setor) {
-    errors.value.setor = 'Origem é obrigatória'
-  }
-
-  return Object.keys(errors.value).length === 0
+  
+  errors.value = allErrors
+  return Object.keys(allErrors).length === 0
 }
 
 // Função para salvar/atualizar usuário
@@ -368,6 +488,80 @@ const showToast = (message, type = 'success') => { // Removida a tipagem :string
   setTimeout(() => {
     toast.value.show = false
   }, 3000)
+}
+
+// Função para lidar com o input do CPF
+const handleCPFInput = (e) => {
+  let value = e.target.value.replace(/\D/g, '') // Remove tudo que não é número
+  
+  if (value.length <= 11) {
+    // Formata conforme vai digitando
+    value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, function(regex, arg1, arg2, arg3, arg4) {
+      return `${arg1}.${arg2}.${arg3}-${arg4}`
+    })
+    
+    formData.value.documento = value
+    
+    // Valida apenas quando completar 11 dígitos
+    if (value.replace(/\D/g, '').length === 11) {
+      const isValid = isCPFValid(value)
+      if (!isValid) {
+        errors.value = { ...errors.value, documento: 'CPF inválido' }
+      } else {
+        const { documento, ...restErrors } = errors.value
+        errors.value = restErrors
+      }
+    }
+  }
+}
+
+// Função para validar CPF quando sair do campo
+const validateCPFOnBlur = () => {
+  if (!formData.value.documento) {
+    return // CPF não é obrigatório, então não valida se estiver vazio
+  }
+  
+  const isValid = isCPFValid(formData.value.documento)
+  if (!isValid) {
+    errors.value = { ...errors.value, documento: 'CPF inválido' }
+  } else {
+    const { documento, ...restErrors } = errors.value
+    errors.value = restErrors
+  }
+}
+
+// Função de validação do CPF melhorada
+const validateCPF = (cpf) => {
+  const strCPF = cpf.replace(/\D/g, '')
+  
+  if (strCPF.length !== 11) return false
+  
+  // Verifica CPFs com dígitos iguais
+  if (/^(\d)\1{10}$/.test(strCPF)) return false
+  
+  let sum = 0
+  let remainder
+  
+  // Primeiro dígito verificador
+  for (let i = 1; i <= 9; i++) {
+    sum += parseInt(strCPF.substring(i-1, i)) * (11 - i)
+  }
+  
+  remainder = (sum * 10) % 11
+  if (remainder === 10 || remainder === 11) remainder = 0
+  if (remainder !== parseInt(strCPF.substring(9, 10))) return false
+  
+  // Segundo dígito verificador
+  sum = 0
+  for (let i = 1; i <= 10; i++) {
+    sum += parseInt(strCPF.substring(i-1, i)) * (12 - i)
+  }
+  
+  remainder = (sum * 10) % 11
+  if (remainder === 10 || remainder === 11) remainder = 0
+  if (remainder !== parseInt(strCPF.substring(10, 11))) return false
+  
+  return true
 }
 
 onMounted(loadSetores)
