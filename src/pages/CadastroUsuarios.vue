@@ -41,6 +41,9 @@
               type="date" 
               v-model="formData.dataNascimento"
               :class="{ error: errors.dataNascimento }"
+              :min="'1900-01-01'"
+              :max="maxDate"
+              @change="validateDate"
             />
             <span class="error-message" v-if="errors.dataNascimento">{{ errors.dataNascimento }}</span>
           </div>
@@ -193,6 +196,8 @@ const toast = ref({
 
 // No data/ref
 const municipios = ref([])
+
+const maxDate = ref(new Date().toISOString().split('T')[0])
 
 onMounted(async () => {
   await loadSetores()
@@ -398,6 +403,15 @@ const validateField = (field, value) => {
     case 'setor':
       if (!value) errors.setor = 'Origem é obrigatória'
       break
+
+    case 'dataNascimento':
+      if (value) {
+        const year = new Date(value).getFullYear()
+        if (year < 1900 || year > new Date().getFullYear()) {
+          errors.dataNascimento = 'Data inválida. O ano deve estar entre 1900 e o ano atual.'
+        }
+      }
+      break
       
     // Adicione mais casos conforme necessário
   }
@@ -419,6 +433,13 @@ watch(() => formData.value.documento, (newValue) => {
 watch(() => formData.value.setor, (newValue) => {
   const fieldErrors = validateField('setor', newValue)
   errors.value = { ...errors.value, ...fieldErrors }
+})
+
+watch(() => formData.value.dataNascimento, (newValue) => {
+  // Só valida se o campo tiver uma data completa
+  if (newValue && newValue.length === 10) {
+    validateDate()
+  }
 })
 
 // Modifique a função validateForm para usar a mesma lógica
@@ -562,6 +583,47 @@ const validateCPF = (cpf) => {
   if (remainder !== parseInt(strCPF.substring(10, 11))) return false
   
   return true
+}
+
+const validateDate = () => {
+  const date = formData.value.dataNascimento
+  if (date) {
+    // Só valida se a data estiver completa (YYYY-MM-DD)
+    if (date.length === 10) {
+      const selectedDate = new Date(date)
+      const year = selectedDate.getFullYear()
+      const month = selectedDate.getMonth() + 1 // getMonth() retorna 0-11
+      const day = selectedDate.getDate()
+      
+      // Verifica se é uma data válida
+      const isValidDate = selectedDate instanceof Date && !isNaN(selectedDate)
+      
+      // Recria a data para verificar se os dias batem (isso pega meses com dias inválidos)
+      const testDate = new Date(year, month - 1, day)
+      const isValidDayMonth = testDate.getMonth() === month - 1 && testDate.getDate() === day
+      
+      if (!isValidDate || !isValidDayMonth) {
+        errors.value = {
+          ...errors.value,
+          dataNascimento: 'Data inválida. Por favor, insira uma data válida.'
+        }
+        return
+      }
+
+      // Verifica o intervalo de anos apenas se a data for válida
+      if (year < 1900 || year > new Date().getFullYear()) {
+        errors.value = {
+          ...errors.value,
+          dataNascimento: 'O ano deve estar entre 1900 e o ano atual.'
+        }
+        return
+      }
+
+      // Remove o erro se a data for válida
+      const { dataNascimento, ...restErrors } = errors.value
+      errors.value = restErrors
+    }
+  }
 }
 
 onMounted(loadSetores)
