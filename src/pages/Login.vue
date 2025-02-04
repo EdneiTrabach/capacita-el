@@ -1,5 +1,10 @@
 <template>
   <div class="login-container">
+    <!-- Toast notification -->
+    <div v-if="toast.show" :class="['toast', toast.type]">
+      {{ toast.message }}
+    </div>
+
     <!-- Matrix Effect -->
     <div class="matrix-effect" v-if="showMatrix">
       <div v-for="i in 50" :key="i" class="matrix-column" :style="{ 
@@ -78,9 +83,19 @@
               <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon-black"/>
               Cancelar
             </button>
-            <button type="submit" class="btn-enviar">
-              <img src="/public/icons/save-fill.svg" alt="Enviar" class="icon-black"/>
-              Enviar
+            <button 
+              type="submit" 
+              class="btn-enviar" 
+              :disabled="loading"
+            >
+              <img 
+                v-if="!loading" 
+                src="/public/icons/save-fill.svg" 
+                alt="Enviar" 
+                class="icon-black"
+              />
+              <span v-else>...</span>
+              {{ loading ? 'Enviando...' : 'Enviar' }}
             </button>
           </div>
         </form>
@@ -105,6 +120,7 @@ const email = ref('')
 const password = ref('')
 const error = ref('')
 const showMatrix = ref(false)
+const loading = ref(false)
 
 const handleLogoClick = () => {
   showMatrix.value = !showMatrix.value
@@ -192,25 +208,33 @@ const handleForgotClick = (e: Event) => {
   showForgotModal.value = true
 }
 
-// Função para verificar email e enviar link de recuperação
+// Função de recuperação de senha atualizada
 const handleResetPassword = async () => {
+  console.log('Iniciando recuperação de senha...')
   try {
-    // Primeiro, verificamos se o email existe nos usuários autenticados
+    loading.value = true
+    console.log('Email para recuperação:', resetEmail.value)
+
+    // Enviar solicitação de recuperação
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.value, {
       redirectTo: `${window.location.origin}/reset-password`
     })
 
     if (error) {
-      showToast('Email não encontrado ou erro ao enviar recuperação', 'error')
+      console.error('Erro na recuperação:', error)
+      showToast('Erro ao enviar email de recuperação: ' + error.message, 'error')
       return
     }
 
-    // Fechamos o modal e mostramos mensagem de sucesso
+    console.log('Recuperação solicitada com sucesso')
     showForgotModal.value = false
     showToast('Email de recuperação enviado com sucesso! Verifique sua caixa de entrada.', 'success')
+
   } catch (e: any) {
-    console.error('Erro na recuperação de senha:', e)
-    showToast(e.message || 'Erro ao processar a recuperação de senha', 'error')
+    console.error('Erro inesperado:', e)
+    showToast('Erro ao processar a recuperação de senha', 'error')
+  } finally {
+    loading.value = false
   }
 }
 </script>
@@ -608,20 +632,30 @@ input.error {
   position: fixed;
   top: 20px;
   right: 20px;
-  padding: 1rem;
+  padding: 1rem 2rem;
   border-radius: 8px;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
+  color: white;
+  z-index: 9999;
+  animation: slideIn 0.3s ease-out;
 }
 
 .toast.success {
-  background: #4caf50;
-  color: white;
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
 }
 
 .toast.error {
-  background: #f44336;
-  color: white;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {

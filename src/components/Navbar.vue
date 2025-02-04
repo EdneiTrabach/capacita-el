@@ -41,12 +41,12 @@
             <span v-if="isExpanded" class="link-text">Certificados</span>
           </router-link>
         </li>
-        <li>
+        <!-- <li>
           <router-link to="/relatorios">
             <img src="../../public/icons/relatorio.svg" alt="Relatórios" class="icon" />
             <span v-if="isExpanded" class="link-text">Relatórios</span>
           </router-link>
-        </li>
+        </li> -->
         <li>
           <router-link to="/lista-cursos">
             <img src="../../public/icons/livros.svg" alt="Cursos" class="icon" />

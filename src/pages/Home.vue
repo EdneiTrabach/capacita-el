@@ -45,14 +45,14 @@
         <div class="card-action">Acessar →</div>
       </div>
 
-      <div class="nav-card" @click="$router.push('/relatorios')">
+      <!-- <div class="nav-card" @click="$router.push('/relatorios')">
         <div class="card-icon">
           <img src="/public/icons/relatorio.svg" alt="Relatorios" class="icon-home" />
         </div>
         <h2>Relatórios</h2>
         <p>Visualizar relatórios e estatísticas detalhadas</p>
         <div class="card-action">Acessar →</div>
-      </div>
+      </div> -->
 
       <div class="nav-card" @click="$router.push('/lista-cursos')">
         <div class="card-icon">
