@@ -113,12 +113,15 @@ export default {
               id,
               nome,
               carga_horaria
+            ),
+            matriculas (
+              id,
+              status
             )
           `)
           .order('created_at', { ascending: false })
 
         if (supabaseError) throw supabaseError
-
         cursos.value = data
       } catch (err) {
         console.error('Error loading courses:', err)
@@ -131,13 +134,19 @@ export default {
     // Toggle course status
     const toggleStatus = async (curso, newStatus) => {
       try {
-        await api.put(`cursos/${curso.id}`, {
-          ...curso,
-          status: newStatus
-        })
+        // Only send the status field for update
+        const { error: updateError } = await supabase
+          .from('cursos')
+          .update({ status: newStatus })
+          .eq('id', curso.id)
+
+        if (updateError) throw updateError
+
+        // Reload courses after successful update
         await loadCursos()
       } catch (err) {
         console.error('Error updating course status:', err)
+        alert('Erro ao atualizar status do curso')
       }
     }
 

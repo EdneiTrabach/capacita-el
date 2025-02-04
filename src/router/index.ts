@@ -23,8 +23,8 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/usuarios',
-    name: 'cadastroUsuarios',
+    path: '/usuarios/:id?',
+    name: 'CadastroUsuarios',
     component: () => import('../pages/CadastroUsuarios.vue'),
     meta: { requiresAuth: true }
   },

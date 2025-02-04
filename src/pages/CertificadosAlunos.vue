@@ -147,8 +147,7 @@
 <script>
 import axios from 'axios'
 import API_URL from '../config/api'
-import api from '../services/api'
-import { certificadosService } from '../services/api'
+import api, { certificadosService } from '../services/api'
 
 export default {
   name: 'CertificadosAlunos',
@@ -265,10 +264,10 @@ export default {
     },
     async loadData() {
       try {
-        const { data } = await api.get('certificados?include[]=usuario&include[]=curso')
+        const { data } = await certificadosService.getAll()
         this.certificados = data
       } catch (error) {
-        console.error('Erro ao carregar dados:', error)
+        console.error('Erro ao carregar certificados:', error)
         this.showToast('Erro ao carregar certificados', 'error')
       }
     },
@@ -413,7 +412,8 @@ export default {
 
     async emitirCertificado(certificado) {
       try {
-        await certificadosService.emitir(certificado.id)
+        // Replace certificadosService.emitir with api.put
+        await api.put(`/certificados/${certificado.id}/emitir`)
         await this.loadData()
         this.showToast('Certificado emitido com sucesso!')
       } catch (error) {

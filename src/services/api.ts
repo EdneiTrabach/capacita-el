@@ -1,39 +1,54 @@
-import axios from 'axios'
-import { API_URL } from '../config/api'
+import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../config/supabase'
 
-// Create axios instance with base configuration
-const axiosInstance = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-// Create api object with Axios methods
+// Create api object with Supabase methods
 const api = {
   // Generic CRUD operations
-  get: async (endpoint: string) => {
-    const response = await axiosInstance.get(`/${endpoint}`)
-    return { data: response.data }
+  get: async (table: string) => {
+    const { data, error } = await supabase
+      .from(table)
+      .select()
+    if (error) throw error
+    return { data }
   },
 
-  getById: async (endpoint: string, id: string) => {
-    const response = await axiosInstance.get(`/${endpoint}/${id}`)
-    return { data: response.data }
+  getById: async (table: string, id: string) => {
+    const { data, error } = await supabase
+      .from(table)
+      .select()
+      .eq('id', id)
+      .single()
+    if (error) throw error
+    return { data }
   },
 
-  post: async (endpoint: string, payload: any) => {
-    const response = await axiosInstance.post(`/${endpoint}`, payload)
-    return { data: response.data }
+  post: async (table: string, payload: any) => {
+    const { data, error } = await supabase
+      .from(table)
+      .insert(payload)
+      .select()
+      .single()
+    if (error) throw error
+    return { data }
   },
 
-  put: async (endpoint: string, id: string, payload: any) => {
-    const response = await axiosInstance.put(`/${endpoint}/${id}`, payload)
-    return { data: response.data }
+  put: async (table: string, id: string, payload: any) => {
+    const { data, error } = await supabase
+      .from(table)
+      .update(payload)
+      .eq('id', id)
+      .select()
+      .single()
+    if (error) throw error
+    return { data }
   },
 
-  delete: async (endpoint: string, id: string) => {
-    await axiosInstance.delete(`/${endpoint}/${id}`)
+  delete: async (table: string, id: string) => {
+    const { error } = await supabase
+      .from(table)
+      .delete()
+      .eq('id', id)
+    if (error) throw error
     return { success: true }
   },
 
@@ -45,23 +60,74 @@ const api = {
     update: (id: string, data: any) => api.put('certificados', id, data),
     delete: (id: string) => api.delete('certificados', id),
     emitir: async (id: string) => {
-      const response = await axiosInstance.put(`/certificados/${id}/emitir`, {
-        status: 'emitido',
-        data_emissao: new Date().toISOString()
-      })
-      return { data: response.data }
+      const { data, error } = await supabase
+        .from('certificados')
+        .update({ status: 'emitido', data_emissao: new Date().toISOString() })
+        .eq('id', id)
+      if (error) throw error
+      return { data }
     }
   }
 }
 
-// Add response interceptor for consistent error handling
-axiosInstance.interceptors.response.use(
-  response => response,
-  error => {
-    console.error('API Error:', error)
-    return Promise.reject(error)
-  }
-)
+export const setorService = {
+  async listarSetores() {
+    const { data, error } = await supabase
+      .from('setores')
+      .select('*')
+      .order('nome')
+    
+    if (error) throw error
+    return data
+  },
 
-export { api }
+  async cadastrarSetor(nome: string) {
+    const { data, error } = await supabase
+      .from('setores')
+      .insert({ nome })
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  }
+}
+
+export const usuariosService = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return { data }
+  },
+  
+  async update(id: string, userData: any) {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .update(userData)
+      .eq('id', id)
+      .single()
+    
+    if (error) throw error
+    return { data }
+  },
+  
+  async delete(id: string) {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+    return { data }
+  }
+}
+
+// Export default api
 export default api
+
+// Export other services
+export const certificadosService = { /* ... */ }

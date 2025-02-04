@@ -91,17 +91,15 @@ export default {
         const { error } = await supabase.auth.signOut()
         if (error) throw error
 
-        // Clear all auth data
-        localStorage.clear() // Clear all localStorage
+        // Clear any necessary storage
+        localStorage.clear()
         
-        // Reset any global state if needed
-        this.$store?.commit('resetState') // If using Vuex
-        
-        // Redirect to login and prevent going back
+        // Navigate to login page
         await this.$router.push('/login')
         
-        // Reload page to clear any cached data
-        window.location.reload()
+        // Remove the reload - this was causing the flash
+        // window.location.reload() <- Remove this line
+        
       } catch (error) {
         console.error('Erro ao fazer logout:', error)
         alert('Erro ao sair do sistema. Tente novamente.')

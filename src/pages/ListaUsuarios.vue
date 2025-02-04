@@ -1,5 +1,9 @@
 <template>
   <div class="usuarios-container">
+    <!-- Add toast notification -->
+    <div v-if="toast.show" :class="['toast', toast.type]">
+      {{ toast.message }}
+    </div>
     <header class="usuarios-header">
       <h1>Alunos Cadastrados</h1>
       <button @click="$router.push('/usuarios')" class="btn-novo">
@@ -108,13 +112,13 @@
 </template>
 
 <script>
-import axios from 'axios'
-import ConfirmDialog from '../components/ConfirmDialog.vue'
+import { supabase } from '../config/supabase'
+import { usuariosService } from '../services/api'
 
 export default {
   name: 'ListaUsuarios',
   components: {
-    ConfirmDialog
+    // Remove ConfirmDialog from here
   },
   data() {
     return {
@@ -124,7 +128,12 @@ export default {
       loading: false,
       error: null,
       statusFilter: '',
-      sortBy: 'recent' // Default sorting by most recent
+      sortBy: 'recent', // Default sorting by most recent
+      toast: {
+        show: false,
+        message: '',
+        type: 'success'
+      }
     }
   },
   async created() {
@@ -170,22 +179,26 @@ export default {
         .substring(0, 2) || '??'
     },
     async loadUsuarios() {
-      this.loading = true;
-      this.error = null;
+      this.loading = true
+      this.error = null
       try {
-        const response = await api.get('/usuarios');
-        if (response.data) {
-          this.usuarios = response.data;
-          console.log('Usuários carregados:', this.usuarios.length);
-        }
+        // Try using Supabase directly
+        const { data: users, error } = await supabase
+          .from('usuarios')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (error) throw error
+        
+        this.usuarios = users.map(user => ({
+          ...user,
+          status: user.status || 'ativo' // Ensure status has a default value
+        }))
       } catch (error) {
-        console.error('Erro ao carregar usuários:', error);
-        this.error = 'Erro ao carregar usuários';
-        if (error.response) {
-          console.error('Erro detalhado:', error.response.data);
-        }
+        console.error('Erro ao carregar alunos:', error)
+        this.error = 'Erro ao carregar alunos. Por favor, tente novamente.'
       } finally {
-        this.loading = false;
+        this.loading = false
       }
     },
     async deletarUsuario(id) {
@@ -202,14 +215,14 @@ export default {
     },
     async editarUsuario(usuario) {
       try {
-        this.$router.push({
-          name: 'CadastroUsuarios',
-          params: { id: usuario.id },
-          query: { edit: true }
+        await this.$router.push({
+          path: '/usuarios',
+          query: { edit: 'true' },
+          params: { id: usuario.id }
         })
       } catch (error) {
         console.error('Erro ao editar usuário:', error)
-        alert('Erro ao editar usuário. Por favor, tente novamente.')
+        this.showToast('Erro ao editar usuário. Por favor, tente novamente.', 'error')
       }
     },
     async alterarStatus(usuario) {
@@ -231,23 +244,37 @@ export default {
     async toggleStatus(usuario, status) {
       if (usuario.status !== status) {
         try {
-          await api.put(`/usuarios/${usuario.id}`, {
-            ...usuario,
-            status: status
-          });
-          // Update the user in place instead of reloading all users
-          const index = this.usuarios.findIndex(u => u.id === usuario.id);
+          const { error } = await supabase
+            .from('usuarios')
+            .update({ status })
+            .eq('id', usuario.id)
+
+          if (error) throw error
+
+          // Update local state
+          const index = this.usuarios.findIndex(u => u.id === usuario.id)
           if (index !== -1) {
-            this.usuarios[index] = { ...this.usuarios[index], status: status };
+            this.usuarios[index] = { ...this.usuarios[index], status }
           }
         } catch (error) {
-          console.error('Erro ao atualizar status:', error);
+          console.error('Erro ao atualizar status:', error)
+          alert('Erro ao atualizar status do usuário')
         }
       }
     },
     formatDate(date) {
       if (!date) return '--'
       return new Date(date).toLocaleDateString('pt-BR')
+    },
+    showToast(message, type = 'success') {
+      this.toast = {
+        show: true,
+        message,
+        type
+      }
+      setTimeout(() => {
+        this.toast.show = false
+      }, 3000)
     }
   }
 }

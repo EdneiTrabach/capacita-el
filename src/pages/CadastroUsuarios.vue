@@ -1,5 +1,10 @@
 <template>
   <div class="cadastro-container">
+    <!-- Add toast notification -->
+    <div v-if="toast.show" :class="['toast', toast.type]">
+      {{ toast.message }}
+    </div>
+
     <div class="cadastro-card">
       <header class="cadastro-header">
         <h1>Cadastro de Alunos</h1>
@@ -89,13 +94,10 @@
           <div class="form-group">
             <label>Origem</label>
             <div class="setor-input-group">
-              <select 
-                v-model="formData.setor"
-                :class="{ error: errors.setor }"
-              >
+              <select v-model="formData.setor">
                 <option value="">Selecione um setor</option>
-                <option v-for="setor in setores" :key="setor" :value="setor">
-                  {{ setor }}
+                <option v-for="setor in setores" :key="setor.id" :value="setor.nome">
+                  {{ setor.nome }}
                 </option>
               </select>
               <button type="button" @click="showSetorModal = true" class="btn-add-setor">
@@ -145,143 +147,159 @@
   </div>
 </template>
 
-<script>
-import api from '../services/api'
-import axios from 'axios'
-import { API_URL } from '../config/api'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { setorService } from '../services/api'
+import { supabase } from '../config/supabase'
+import { useRouter, useRoute } from 'vue-router'
 
-export default {
-  name: 'CadastroUsuarios',
-  data() {
-    return {
-      formData: {
-        nome: '',
-        email: '',
-        dataNascimento: '',
-        telefone: '',
-        documento: '',
-        cidade: '',
-        estado: '',
-        setor: ''
-      },
-      errors: {},
-      estados: [
-        { uf: 'AC', nome: 'Acre' },
-        { uf: 'AL', nome: 'Alagoas' },
-        { uf: 'AP', nome: 'Amapá' },
-        { uf: 'AM', nome: 'Amazonas' },
-        { uf: 'BA', nome: 'Bahia' },
-        { uf: 'CE', nome: 'Ceará' },
-        { uf: 'DF', nome: 'Distrito Federal' },
-        { uf: 'ES', nome: 'Espírito Santo' },
-        { uf: 'GO', nome: 'Goiás' },
-        { uf: 'MA', nome: 'Maranhão' },
-        { uf: 'MT', nome: 'Mato Grosso' },
-        { uf: 'MS', nome: 'Mato Grosso do Sul' },
-        { uf: 'MG', nome: 'Minas Gerais' },
-        { uf: 'PA', nome: 'Pará' },
-        { uf: 'PB', nome: 'Paraíba' },
-        { uf: 'PR', nome: 'Paraná' },
-        { uf: 'PE', nome: 'Pernambuco' },
-        { uf: 'PI', nome: 'Piauí' },
-        { uf: 'RJ', nome: 'Rio de Janeiro' },
-        { uf: 'RN', nome: 'Rio Grande do Norte' },
-        { uf: 'RS', nome: 'Rio Grande do Sul' },
-        { uf: 'RO', nome: 'Rondônia' },
-        { uf: 'RR', nome: 'Roraima' },
-        { uf: 'SC', nome: 'Santa Catarina' },
-        { uf: 'SP', nome: 'São Paulo' },
-        { uf: 'SE', nome: 'Sergipe' },
-        { uf: 'TO', nome: 'Tocantins' },
-      ],
-      setores: [],
-      showSetorModal: false,
-      novoSetor: ''
-    }
-  },
-  async created() {
-    await this.loadSetores()
-    if (this.$route.query.edit && this.$route.params.id) {
-      await this.loadUsuario(this.$route.params.id)
-    }
-  },
-  methods: {
-    validateForm() {
-      this.errors = {}
-      
-      // Validar apenas o nome
-      if (!this.formData.nome) {
-        this.errors.nome = 'Nome é obrigatório'
-      }
+const router = useRouter()
+const route = useRoute()
 
-      return Object.keys(this.errors).length === 0
-    },
-    async loadUsuario(id) {
-      try {
-        const response = await axios.get(`${API_URL}/usuarios/${id}`)
-        this.formData = {
-          ...response.data,
-          dataNascimento: response.data.data_nascimento?.split('T')[0]
-        }
-      } catch (error) {
-        console.error('Erro ao carregar usuário:', error)
-        alert('Erro ao carregar dados do usuário')
-      }
-    },
-    async handleSubmit() {
-      if (this.validateForm()) {
-        try {
-          if (this.$route.query.edit) {
-            await axios.put(`${API_URL}/usuarios/${this.$route.params.id}`, this.formData)
-            alert('Usuário atualizado com sucesso!')
-          } else {
-            await axios.post(`${API_URL}/usuarios`, this.formData)
-            alert('Usuário cadastrado com sucesso!')
-          }
-          this.$router.push('/lista-usuarios')
-        } catch (error) {
-          console.error('Erro ao salvar usuário:', error)
-          alert('Erro ao salvar usuário')
-        }
-      }
-    },
-    async loadSetores() {
-      try {
-        const response = await axios.get(`${API_URL}/setores`)
-        this.setores = response.data.map(s => s.nome)
-      } catch (error) {
-        console.error('Erro ao carregar setores:', error)
-      }
-    },
+const formData = ref({
+  nome: '',
+  email: '',
+  dataNascimento: '',
+  telefone: '',
+  documento: '',
+  cidade: '',
+  estado: '',
+  setor: ''
+})
 
-    async cadastrarNovoSetor() {
-      if (!this.novoSetor) {
-        alert('Digite o nome do setor')
-        return
+const errors = ref({})
+const setores = ref<Array<{ id: string, nome: string }>>([])
+const novoSetor = ref('')
+const showSetorModal = ref(false)
+const toast = ref({
+  show: false,
+  message: '',
+  type: 'success'
+})
+
+const estados = [
+  { uf: 'AC', nome: 'Acre' },
+  { uf: 'AL', nome: 'Alagoas' },
+  { uf: 'AP', nome: 'Amapá' },
+  { uf: 'AM', nome: 'Amazonas' },
+  { uf: 'BA', nome: 'Bahia' },
+  { uf: 'CE', nome: 'Ceará' },
+  { uf: 'DF', nome: 'Distrito Federal' },
+  { uf: 'ES', nome: 'Espírito Santo' },
+  { uf: 'GO', nome: 'Goiás' },
+  { uf: 'MA', nome: 'Maranhão' },
+  { uf: 'MT', nome: 'Mato Grosso' },
+  { uf: 'MS', nome: 'Mato Grosso do Sul' },
+  { uf: 'MG', nome: 'Minas Gerais' },
+  { uf: 'PA', nome: 'Pará' },
+  { uf: 'PB', nome: 'Paraíba' },
+  { uf: 'PR', nome: 'Paraná' },
+  { uf: 'PE', nome: 'Pernambuco' },
+  { uf: 'PI', nome: 'Piauí' },
+  { uf: 'RJ', nome: 'Rio de Janeiro' },
+  { uf: 'RN', nome: 'Rio Grande do Norte' },
+  { uf: 'RS', nome: 'Rio Grande do Sul' },
+  { uf: 'RO', nome: 'Rondônia' },
+  { uf: 'RR', nome: 'Roraima' },
+  { uf: 'SC', nome: 'Santa Catarina' },
+  { uf: 'SP', nome: 'São Paulo' },
+  { uf: 'SE', nome: 'Sergipe' },
+  { uf: 'TO', nome: 'Tocantins' },
+]
+
+const loadSetores = async () => {
+  try {
+    setores.value = await setorService.listarSetores()
+  } catch (error) {
+    console.error('Erro ao carregar setores:', error)
+    showToast('Erro ao carregar setores', 'error')
+  }
+}
+
+const cadastrarNovoSetor = async () => {
+  if (!novoSetor.value) {
+    showToast('Digite o nome do setor', 'error')
+    return
+  }
+
+  try {
+    await setorService.cadastrarSetor(novoSetor.value)
+    await loadSetores()
+    showSetorModal.value = false
+    novoSetor.value = ''
+    showToast('Setor cadastrado com sucesso', 'success')
+  } catch (error) {
+    console.error('Erro ao cadastrar setor:', error)
+    showToast('Erro ao cadastrar novo setor', 'error')
+  }
+}
+
+const validateForm = () => {
+  errors.value = {}
+  
+  // Validar apenas o nome
+  if (!formData.value.nome) {
+    errors.value.nome = 'Nome é obrigatório'
+  }
+
+  return Object.keys(errors.value).length === 0
+}
+
+const handleSubmit = async () => {
+  if (validateForm()) {
+    try {
+      const userData = {
+        nome: formData.value.nome,
+        email: formData.value.email,
+        data_nascimento: formData.value.dataNascimento,
+        telefone: formData.value.telefone,
+        documento: formData.value.documento,
+        cidade: formData.value.cidade,
+        estado: formData.value.estado,
+        setor: formData.value.setor,
+        updated_at: new Date().toISOString()
       }
 
-      try {
-        await axios.post(`${API_URL}/setores`, {
-          nome: this.novoSetor
-        })
-        
-        // Atualiza a lista de setores
-        await this.loadSetores()
-        
-        // Seleciona o novo setor
-        this.formData.setor = this.novoSetor
-        
-        // Fecha o modal e limpa o campo
-        this.showSetorModal = false
-        this.novoSetor = ''
-        
-      } catch (error) {
-        console.error('Erro ao cadastrar setor:', error)
-        alert('Erro ao cadastrar novo setor')
+      if (route.query.edit) {
+        const { error } = await supabase
+          .from('usuarios')
+          .update(userData)
+          .eq('id', route.params.id)
+
+        if (error) throw error
+        showToast('Usuário atualizado com sucesso!', 'success')
+      } else {
+        const { error } = await supabase
+          .from('usuarios')
+          .insert([{ ...userData, status: 'ativo' }])
+
+        if (error) throw error
+        showToast('Usuário cadastrado com sucesso!', 'success')
       }
+
+      // Add delay before redirect
+      setTimeout(() => {
+        router.push('/lista-usuarios')
+      }, 2000)
+    } catch (error) {
+      console.error('Erro ao salvar usuário:', error)
+      showToast(error.message || 'Erro ao salvar usuário', 'error')
     }
   }
 }
+
+const showToast = (message: string, type = 'success') => {
+  toast.value = {
+    show: true,
+    message,
+    type
+  }
+  setTimeout(() => {
+    toast.value.show = false
+  }, 3000)
+}
+
+onMounted(loadSetores)
 </script>
 
 <style scoped>
@@ -582,4 +600,37 @@ button {
 .btn-add-setor:hover {
   background-color: #254677;
 }
+
+/* Add toast styles */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  color: white;
+  z-index: 9999;
+  animation: slideIn 0.3s ease-out;
+}
+
+.toast.success {
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+}
+
+.toast.error {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ... rest of your styles */
 </style>
