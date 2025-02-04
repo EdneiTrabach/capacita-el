@@ -173,9 +173,9 @@ export default {
     // Edit course
     const editarCurso = (curso) => {
       router.push({
-        name: 'CadastroCursos',
+        name: 'CadastroCursos', // Use o name em vez do path
         params: { id: curso.id },
-        query: { edit: true }
+        query: { edit: 'true' }
       })
     }
 

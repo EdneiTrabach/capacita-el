@@ -195,18 +195,19 @@ export default {
   methods: {
     async loadData() {
       try {
-        const [alunosRes, cursosRes] = await Promise.all([
-          axios.get(`${API_URL}/usuarios`),
-          axios.get(`${API_URL}/cursos`)
-        ]);
-        this.alunos = alunosRes.data;
-        this.cursos = cursosRes.data;
+        const [{ data: alunos }, { data: cursos }] = await Promise.all([
+          supabase.from('usuarios').select('*'),
+          supabase.from('cursos').select('*')
+        ])
+
+        this.alunos = alunos || []
+        this.cursos = cursos || []
         
         // Generate years for filter (last 5 years)
-        const currentYear = new Date().getFullYear();
-        this.anos = Array.from({length: 5}, (_, i) => currentYear - i);
+        const currentYear = new Date().getFullYear()
+        this.anos = Array.from({length: 5}, (_, i) => currentYear - i)
       } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        console.error('Erro ao carregar dados:', error)
       }
     },
     async gerarRelatorioCertificados() {

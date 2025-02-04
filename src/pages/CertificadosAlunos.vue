@@ -97,7 +97,7 @@
     <!-- Modal de Novo Certificado -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-content">
-        <h2>Novo Certificado</h2>
+        <h2>{{ editingId ? 'Editar Certificado' : 'Novo Certificado' }}</h2>
         <form @submit.prevent="salvarCertificado">
           <div class="form-group">
             <label>Aluno*</label>
@@ -131,11 +131,13 @@
           </div>
 
           <div class="modal-actions">
-            <button type="button" @click="showModal = false" class="btn-cancelar">
+            <button type="button" @click="fecharModal" class="btn-cancelar">
+              <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon"/>
               Cancelar
             </button>
             <button type="submit" class="btn-salvar">
-              Salvar Certificado
+              <img src="/public/icons/save-fill.svg" alt="Salvar" class="icon"/>
+              {{ editingId ? 'Atualizar' : 'Salvar' }}
             </button>
           </div>
         </form>
@@ -145,9 +147,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import API_URL from '../config/api'
-import api, { certificadosService } from '../services/api'
+import { supabase } from '../config/supabase'
 
 export default {
   name: 'CertificadosAlunos',
@@ -264,7 +264,15 @@ export default {
     },
     async loadData() {
       try {
-        const { data } = await certificadosService.getAll()
+        const { data, error } = await supabase
+          .from('certificados')
+          .select(`
+            *,
+            usuario:usuarios(*),
+            curso:cursos(*)
+          `)
+        
+        if (error) throw error
         this.certificados = data
       } catch (error) {
         console.error('Erro ao carregar certificados:', error)
@@ -273,48 +281,43 @@ export default {
     },
     async salvarCertificado() {
       try {
-        // Validar se aluno e curso existem e estão ativos
-        const [aluno, curso] = await Promise.all([
-          axios.get(`${API_URL}/usuarios/${this.novoCertificado.alunoId}`),
-          axios.get(`${API_URL}/cursos/${this.novoCertificado.cursoId}`)
-        ]);
-
-        if (!aluno.data || aluno.data.status !== 'ativo') {
-          throw new Error('Aluno não encontrado ou inativo');
-        }
-
-        // Verificar status atual do curso
-        if (!curso.data) {
-          throw new Error('Curso não encontrado');
-        }
-
-        if (curso.data.status !== 'Finalizado') {
-          throw new Error(`Não é possível criar certificado para um curso ${curso.data.status.toLowerCase()}`);
-        }
-
         const certificadoData = {
           usuario_id: this.novoCertificado.alunoId,
           curso_id: this.novoCertificado.cursoId,
           data_conclusao: this.novoCertificado.dataConclusao,
           observacoes: this.novoCertificado.observacoes,
-          status: 'pendente'
-        };
-
-        if (this.editingId) {
-          await axios.put(`${API_URL}/certificados/${this.editingId}`, certificadoData);
-          this.showToast('Certificado atualizado com sucesso!');
-        } else {
-          await axios.post(`${API_URL}/certificados`, certificadoData);
-          this.showToast('Certificado criado com sucesso!');
+          updated_at: new Date().toISOString()
         }
 
-        this.showModal = false;
-        this.editingId = null;
-        this.resetForm();
-        await this.loadData();
+        if (this.editingId) {
+          // Atualizar certificado existente
+          const { error } = await supabase
+            .from('certificados')
+            .update(certificadoData)
+            .eq('id', this.editingId)
+
+          if (error) throw error
+          this.showToast('Certificado atualizado com sucesso!', 'success')
+        } else {
+          // Inserir novo certificado
+          certificadoData.status = 'pendente'
+          certificadoData.created_at = new Date().toISOString()
+          
+          const { error } = await supabase
+            .from('certificados')
+            .insert([certificadoData])
+
+          if (error) throw error
+          this.showToast('Certificado criado com sucesso!', 'success')
+        }
+
+        this.showModal = false
+        this.editingId = null
+        this.resetForm()
+        await this.loadData()
       } catch (error) {
-        console.error('Erro ao salvar certificado:', error);
-        this.showToast(error.response?.data?.error || error.message || 'Erro ao salvar certificado', 'error');
+        console.error('Erro ao salvar certificado:', error)
+        this.showToast('Erro ao salvar certificado', 'error')
       }
     },
 
@@ -328,13 +331,20 @@ export default {
     },
 
     async deletarCertificado(id) {
-      try {
-        await certificadosService.delete(id)
-        await this.loadData()
-        this.showToast('Certificado excluído com sucesso')
-      } catch (error) {
-        console.error('Erro ao deletar certificado:', error)
-        this.showToast('Erro ao excluir certificado', 'error')
+      if (confirm('Tem certeza que deseja excluir este certificado?')) {
+        try {
+          const { error } = await supabase
+            .from('certificados')
+            .delete()
+            .eq('id', id)
+
+          if (error) throw error
+          await this.loadData()
+          this.showToast('Certificado excluído com sucesso')
+        } catch (error) {
+          console.error('Erro ao deletar certificado:', error)
+          this.showToast('Erro ao excluir certificado', 'error')
+        }
       }
     },
     viewDetails(certificado) {
@@ -344,60 +354,82 @@ export default {
     async editarCertificado(certificado) {
       try {
         if (certificado.status === 'emitido') {
-          alert('Não é possível editar um certificado já emitido');
-          return;
+          this.showToast('Não é possível editar um certificado já emitido', 'error')
+          return
         }
+
+        // Carregar dados dos selects antes de abrir o modal
+        await Promise.all([
+          this.carregarUsuariosAtivos(),
+          this.carregarCursosAtivos()
+        ])
+
+        // Preencher o formulário com os dados existentes
         this.novoCertificado = {
           alunoId: certificado.usuario_id,
           cursoId: certificado.curso_id,
           dataConclusao: certificado.data_conclusao?.split('T')[0],
           observacoes: certificado.observacoes
         }
+        
         this.editingId = certificado.id
         this.showModal = true
       } catch (error) {
         console.error('Erro ao editar certificado:', error)
-        alert('Erro ao editar certificado')
+        this.showToast('Erro ao editar certificado', 'error')
       }
     },
 
     async carregarUsuariosAtivos() {
       try {
-        const response = await axios.get(`${API_URL}/usuarios`, {
-          params: { status: 'ativo' }
-        });
-        this.alunos = response.data;
+        const { data, error } = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('status', 'ativo')
+
+        if (error) throw error
+        this.alunos = data
       } catch (error) {
-        console.error('Erro ao carregar usuários:', error);
-        alert('Erro ao carregar lista de alunos');
+        console.error('Erro ao carregar usuários:', error)
+        this.showToast('Erro ao carregar lista de alunos', 'error')
       }
     },
 
     async carregarCursosAtivos() {
       try {
-        // Buscar todos os cursos para verificar status
-        const response = await axios.get(`${API_URL}/cursos`);
-        // Filtrar apenas cursos finalizados
-        this.cursos = response.data.filter(curso => curso.status === 'Finalizado');
-        console.log('Cursos carregados:', this.cursos);
+        const { data, error } = await supabase
+          .from('cursos')
+          .select('*')
+          .eq('status', 'Finalizado')
+
+        if (error) throw error
+        this.cursos = data
+        console.log('Cursos carregados:', this.cursos)
       } catch (error) {
-        console.error('Erro ao carregar cursos:', error);
-        this.showToast('Erro ao carregar lista de cursos', 'error');
+        console.error('Erro ao carregar cursos:', error)
+        this.showToast('Erro ao carregar lista de cursos', 'error')
       }
     },
 
     async abrirModal() {
       try {
-        // Carrega dados necessários antes de abrir o modal
         await Promise.all([
           this.carregarUsuariosAtivos(),
           this.carregarCursosAtivos()
-        ]);
-        this.showModal = true;
+        ])
+        this.editingId = null // Garante que é um novo certificado
+        this.resetForm() // Limpa o formulário
+        this.showModal = true
       } catch (error) {
-        console.error('Erro ao preparar modal:', error);
-        alert('Erro ao abrir formulário de novo certificado');
+        console.error('Erro ao preparar modal:', error)
+        this.showToast('Erro ao abrir formulário', 'error')
       }
+    },
+
+    fecharModal() {
+      this.showModal = false
+      this.editingId = null
+      this.resetForm()
     },
 
     async loadCertificados() {
@@ -412,13 +444,20 @@ export default {
 
     async emitirCertificado(certificado) {
       try {
-        // Replace certificadosService.emitir with api.put
-        await api.put(`/certificados/${certificado.id}/emitir`)
+        const { error } = await supabase
+          .from('certificados')
+          .update({ 
+            status: 'emitido',
+            data_emissao: new Date().toISOString()
+          })
+          .eq('id', certificado.id)
+
+        if (error) throw error
         await this.loadData()
         this.showToast('Certificado emitido com sucesso!')
       } catch (error) {
         console.error('Erro ao emitir certificado:', error)
-        this.showToast(error.message || 'Erro ao emitir certificado', 'error')
+        this.showToast('Erro ao emitir certificado', 'error')
       }
     }
   },
@@ -785,6 +824,9 @@ export default {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .btn-cancelar {

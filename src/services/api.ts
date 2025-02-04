@@ -82,9 +82,20 @@ export const setorService = {
   },
 
   async cadastrarSetor(nome: string) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) throw new Error('User not authenticated')
+
     const { data, error } = await supabase
       .from('setores')
-      .insert({ nome })
+      .insert({
+        nome,
+        created_by: user.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
       .select()
       .single()
     

@@ -7,7 +7,7 @@
 
     <div class="cadastro-card">
       <header class="cadastro-header">
-        <h1>Cadastro de Alunos</h1>
+        <h1>{{ isEditing ? 'Editar Aluno' : 'Cadastro de Aluno' }}</h1>
       </header>
 
       <form @submit.prevent="handleSubmit" class="cadastro-form">
@@ -115,7 +115,7 @@
           </button>
           <button type="submit" class="btn-salvar">
             <img src="/public/icons/save-fill.svg" alt="Salvar" class="icon"/>
-            Salvar
+            {{ isEditing ? 'Atualizar' : 'Salvar' }}
           </button>
         </div>
       </form>
@@ -147,56 +147,44 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from 'vue'
-import { setorService } from '../services/api'
-import { supabase } from '../config/supabase'
 import { useRouter, useRoute } from 'vue-router'
-
-interface FormData {
-  nome: string
-  email: string
-  dataNascimento: string
-  telefone: string
-  documento: string
-  cidade: string
-  estado: string
-  setor: string
-}
-
-interface FormErrors {
-  nome?: string
-  email?: string
-  dataNascimento?: string
-  telefone?: string
-  documento?: string
-  cidade?: string
-  estado?: string
-  setor?: string
-}
+import { supabase } from '../config/supabase'
+import { setorService } from '../services/api'
 
 const router = useRouter()
 const route = useRoute()
+const isEditing = ref(false)
 
-const formData = ref<FormData>({
+const formData = ref({
   nome: '',
   email: '',
   dataNascimento: '',
   telefone: '',
-  documento: '',
+  documento: '', 
   cidade: '',
   estado: '',
   setor: ''
 })
 
-const errors = ref<FormErrors>({})
-const setores = ref<Array<{ id: string, nome: string }>>([])
+const errors = ref({})
+const setores = ref([])
 const novoSetor = ref('')
 const showSetorModal = ref(false)
 const toast = ref({
   show: false,
   message: '',
   type: 'success'
+})
+
+onMounted(async () => {
+  await loadSetores()
+  // Define isEditing baseado na query da rota
+  isEditing.value = route.query.edit === 'true'
+  if (isEditing.value && route.params.id) {
+    await loadUsuario(route.params.id)
+  }
 })
 
 const estados = [
@@ -245,8 +233,23 @@ const cadastrarNovoSetor = async () => {
   }
 
   try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) throw new Error('User not authenticated')
+
+    const setorData = {
+      nome: novoSetor.value,
+      created_by: user.id,
+      created_at: new Date().toISOString(), // Add created_at
+      updated_at: new Date().toISOString()
+    }
+
+    // Use setorService instead of direct Supabase call
     await setorService.cadastrarSetor(novoSetor.value)
-    await loadSetores()
+    
+    await loadSetores() 
     showSetorModal.value = false
     novoSetor.value = ''
     showToast('Setor cadastrado com sucesso', 'success')
@@ -256,33 +259,38 @@ const cadastrarNovoSetor = async () => {
   }
 }
 
+// Função para validar formulário
 const validateForm = () => {
   errors.value = {}
   
-  // Validar apenas o nome
+  // Apenas nome e setor são obrigatórios
   if (!formData.value.nome) {
     errors.value.nome = 'Nome é obrigatório'
+  }
+  if (!formData.value.setor) {
+    errors.value.setor = 'Origem é obrigatória'
   }
 
   return Object.keys(errors.value).length === 0
 }
 
+// Função para salvar/atualizar usuário
 const handleSubmit = async () => {
   if (validateForm()) {
     try {
       const userData = {
         nome: formData.value.nome,
-        email: formData.value.email,
-        data_nascimento: formData.value.dataNascimento,
-        telefone: formData.value.telefone,
-        documento: formData.value.documento,
-        cidade: formData.value.cidade,
-        estado: formData.value.estado,
+        email: formData.value.email || null,
+        data_nascimento: formData.value.dataNascimento || null,
+        telefone: formData.value.telefone || null,
+        documento: formData.value.documento || null,
+        cidade: formData.value.cidade || null,
+        estado: formData.value.estado || null,
         setor: formData.value.setor,
         updated_at: new Date().toISOString()
       }
 
-      if (route.query.edit) {
+      if (isEditing.value) {
         const { error } = await supabase
           .from('usuarios')
           .update(userData)
@@ -299,18 +307,17 @@ const handleSubmit = async () => {
         showToast('Usuário cadastrado com sucesso!', 'success')
       }
 
-      // Add delay before redirect
       setTimeout(() => {
         router.push('/lista-usuarios')
       }, 2000)
-    } catch (err: any) {
+    } catch (err) { // Removida a tipagem :any
       console.error('Erro ao salvar usuário:', err)
       showToast(err.message || 'Erro ao salvar usuário', 'error')
     }
   }
 }
 
-const showToast = (message: string, type = 'success') => {
+const showToast = (message, type = 'success') => { // Removida a tipagem :string
   toast.value = {
     show: true,
     message,

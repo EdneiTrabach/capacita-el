@@ -113,22 +113,21 @@
 
 <script>
 import { supabase } from '../config/supabase'
-import { usuariosService } from '../services/api'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'ListaUsuarios',
-  components: {
-    // Remove ConfirmDialog from here
-  },
   data() {
     return {
       usuarios: [],
+      setores: [],
       searchTerm: '',
       setorFilter: '',
       loading: false,
       error: null,
       statusFilter: '',
-      sortBy: 'recent', // Default sorting by most recent
+      sortBy: 'recent',
       toast: {
         show: false,
         message: '',
@@ -137,7 +136,15 @@ export default {
     }
   },
   async created() {
-    await this.loadUsuarios()
+    try {
+      await Promise.all([
+        this.loadUsuarios(),
+        this.loadSetores()
+      ])
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error)
+      this.showToast('Erro ao carregar dados', 'error')
+    }
   },
   computed: {
     setoresUnicos() {
@@ -201,28 +208,49 @@ export default {
         this.loading = false
       }
     },
+    async loadSetores() {
+      try {
+        const { data: setores, error } = await supabase
+          .from('setores')
+          .select('*')
+          .order('nome')
+
+        if (error) throw error
+        this.setores = setores
+      } catch (error) {
+        console.error('Erro ao carregar setores:', error)
+        this.showToast('Erro ao carregar setores', 'error')
+      }
+    },
     async deletarUsuario(id) {
       if (confirm('ATENÇÃO: Esta ação excluirá permanentemente o usuário do sistema. Esta ação não pode ser desfeita. Você tem certeza que deseja continuar?')) {
         try {
-          await api.delete(`/usuarios/${id}`)
-          await this.loadUsuarios()
-          alert('Usuário excluído com sucesso')
+          // Usando supabase diretamente ao invés de api
+          const { error } = await supabase
+            .from('usuarios')
+            .delete()
+            .eq('id', id)
+
+          if (error) throw error
+
+          await this.loadUsuarios() // Recarrega a lista
+          this.showToast('Usuário excluído com sucesso', 'success')
         } catch (error) {
           console.error('Erro ao deletar usuário:', error)
-          alert('Erro ao excluir usuário. Por favor, tente novamente.')
+          this.showToast('Erro ao excluir usuário', 'error')
         }
       }
     },
     async editarUsuario(usuario) {
       try {
         await this.$router.push({
-          path: '/usuarios',
-          query: { edit: 'true' },
-          params: { id: usuario.id }
+          name: 'CadastroUsuarios', // Use o name em vez do path
+          params: { id: usuario.id },
+          query: { edit: 'true' }
         })
       } catch (error) {
         console.error('Erro ao editar usuário:', error)
-        this.showToast('Erro ao editar usuário. Por favor, tente novamente.', 'error')
+        this.showToast('Erro ao editar usuário', 'error')
       }
     },
     async alterarStatus(usuario) {
@@ -275,6 +303,93 @@ export default {
       setTimeout(() => {
         this.toast.show = false
       }, 3000)
+    }
+  },
+  setup() {
+    const route = useRoute()
+    const isEditing = ref(false)
+
+    const loadUsuario = async (id) => {
+      try {
+        const { data: usuario, error } = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('id', id)
+          .single()
+
+        if (error) throw error
+
+        formData.value = {
+          nome: usuario.nome,
+          email: usuario.email || '',
+          dataNascimento: usuario.data_nascimento || '',
+          telefone: usuario.telefone || '',
+          documento: usuario.documento || '',
+          cidade: usuario.cidade || '',
+          estado: usuario.estado || '',  
+          setor: usuario.setor || ''
+        }
+      } catch (error) {
+        console.error('Erro ao carregar usuário:', error)
+        showToast('Erro ao carregar dados do usuário', 'error')
+      }
+    }
+
+    onMounted(async () => {
+      await loadSetores()
+      isEditing.value = route.query.edit === 'true'
+      if (isEditing.value && route.params.id) {
+        await loadUsuario(route.params.id)
+      }
+    })
+
+    const handleSubmit = async () => {
+      if (validateForm()) {
+        try {
+          const userData = {
+            nome: formData.value.nome,
+            email: formData.value.email || null,
+            data_nascimento: formData.value.dataNascimento || null,
+            telefone: formData.value.telefone || null,
+            documento: formData.value.documento || null,
+            cidade: formData.value.cidade || null,
+            estado: formData.value.estado || null,
+            setor: formData.value.setor,
+            updated_at: new Date().toISOString()
+          }
+
+          if (isEditing.value) {
+            const { error } = await supabase
+              .from('usuarios')
+              .update(userData)
+              .eq('id', route.params.id)
+
+            if (error) throw error
+            showToast('Usuário atualizado com sucesso!', 'success')
+          } else {
+            const { error } = await supabase
+              .from('usuarios')
+              .insert([{ ...userData, status: 'ativo' }])
+
+            if (error) throw error
+            showToast('Usuário cadastrado com sucesso!', 'success')
+          }
+
+          setTimeout(() => {
+            router.push('/lista-usuarios')
+          }, 2000)
+        } catch (err) {
+          console.error('Erro ao salvar usuário:', err)
+          showToast(err.message || 'Erro ao salvar usuário', 'error')
+        }
+      }
+    }
+
+    return {
+      route,
+      isEditing,
+      loadUsuario,
+      handleSubmit
     }
   }
 }

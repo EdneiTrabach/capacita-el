@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/usuarios/:id?',
+    path: '/usuarios/:id?',  // Adicione parâmetro opcional
     name: 'CadastroUsuarios',
     component: () => import('../pages/CadastroUsuarios.vue'),
     meta: { requiresAuth: true }
@@ -32,6 +32,12 @@ const routes: RouteRecordRaw[] = [
     path: '/lista-usuarios',
     name: 'listaUsuarios',
     component: () => import('../pages/ListaUsuarios.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/cursos/:id?',
+    name: 'CadastroCursos',
+    component: () => import('../pages/CadastroCursos.vue'),
     meta: { requiresAuth: true }
   },
   {
