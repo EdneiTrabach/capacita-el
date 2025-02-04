@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../config/supabase'
 import { useRouter } from 'vue-router'
 
@@ -131,18 +131,13 @@ export default {
     // Toggle course status
     const toggleStatus = async (curso, newStatus) => {
       try {
-        const { error: updateError } = await supabase
-          .from('cursos')
-          .update({ status: newStatus })
-          .eq('id', curso.id)
-
-        if (updateError) throw updateError
-
-        // Reload courses after update
+        await api.put(`cursos/${curso.id}`, {
+          ...curso,
+          status: newStatus
+        })
         await loadCursos()
       } catch (err) {
         console.error('Error updating course status:', err)
-        alert('Erro ao atualizar status do curso')
       }
     }
 

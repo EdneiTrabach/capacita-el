@@ -264,18 +264,12 @@ export default {
       return new Date(date).toLocaleDateString('pt-BR');
     },
     async loadData() {
-      console.log('Carregando dados...');
       try {
-        const certificadosRes = await axios.get(`${API_URL}/certificados`, {
-          params: {
-            include: ['usuario', 'curso']
-          }
-        });
-
-        this.certificados = certificadosRes.data;
-        console.log('Certificados carregados:', this.certificados);
+        const { data } = await api.get('certificados?include[]=usuario&include[]=curso')
+        this.certificados = data
       } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        console.error('Erro ao carregar dados:', error)
+        this.showToast('Erro ao carregar certificados', 'error')
       }
     },
     async salvarCertificado() {

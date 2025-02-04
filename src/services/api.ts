@@ -1,28 +1,67 @@
 import axios from 'axios'
-import { supabase } from '../config/supabase' // Add this import
-import { API_URL, API_CONFIG } from '../config/api'
+import { API_URL } from '../config/api'
 
-const api = axios.create(API_CONFIG)
-
-// Add auth token to requests
-api.interceptors.request.use(async (config) => {
-  const session = await supabase.auth.getSession()
-  if (session?.data?.session?.access_token) {
-    config.headers.Authorization = `Bearer ${session.data.session.access_token}`
+// Create axios instance with base configuration
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json'
   }
-  return config
 })
 
-// API endpoints
-export const certificadosService = {
-  getAll: () => api.get('/certificados'),
-  getById: (id: string) => api.get(`/certificados/${id}`),
-  create: (data: any) => api.post('/certificados', data),
-  update: (id: string, data: any) => api.put(`/certificados/${id}`, data),
-  delete: (id: string) => api.delete(`/certificados/${id}`),
-  download: (id: string) => api.get(`/certificados/${id}/pdf`, { responseType: 'blob' }),
-  emitir: (id: string) => api.put(`/certificados/${id}/emitir`)
+// Create api object with Axios methods
+const api = {
+  // Generic CRUD operations
+  get: async (endpoint: string) => {
+    const response = await axiosInstance.get(`/${endpoint}`)
+    return { data: response.data }
+  },
+
+  getById: async (endpoint: string, id: string) => {
+    const response = await axiosInstance.get(`/${endpoint}/${id}`)
+    return { data: response.data }
+  },
+
+  post: async (endpoint: string, payload: any) => {
+    const response = await axiosInstance.post(`/${endpoint}`, payload)
+    return { data: response.data }
+  },
+
+  put: async (endpoint: string, id: string, payload: any) => {
+    const response = await axiosInstance.put(`/${endpoint}/${id}`, payload)
+    return { data: response.data }
+  },
+
+  delete: async (endpoint: string, id: string) => {
+    await axiosInstance.delete(`/${endpoint}/${id}`)
+    return { success: true }
+  },
+
+  // Specific endpoints
+  certificados: {
+    getAll: () => api.get('certificados'),
+    getById: (id: string) => api.getById('certificados', id),
+    create: (data: any) => api.post('certificados', data),
+    update: (id: string, data: any) => api.put('certificados', id, data),
+    delete: (id: string) => api.delete('certificados', id),
+    emitir: async (id: string) => {
+      const response = await axiosInstance.put(`/certificados/${id}/emitir`, {
+        status: 'emitido',
+        data_emissao: new Date().toISOString()
+      })
+      return { data: response.data }
+    }
+  }
 }
+
+// Add response interceptor for consistent error handling
+axiosInstance.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error)
+    return Promise.reject(error)
+  }
+)
 
 export { api }
 export default api
