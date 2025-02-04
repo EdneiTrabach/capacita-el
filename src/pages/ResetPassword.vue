@@ -88,17 +88,39 @@ const handleResetPassword = async () => {
     // Obter o token da URL
     const hashParams = new URLSearchParams(window.location.hash.substring(1))
     const accessToken = hashParams.get('access_token')
+    const type = hashParams.get('type')
 
-    if (!accessToken) {
-      throw new Error('Token de recuperação não encontrado')
+    if (!accessToken || type !== 'recovery') {
+      throw new Error('Link de recuperação inválido ou expirado')
     }
 
-    // Atualizar a senha usando o token diretamente
-    const { error: resetError } = await supabase.auth.updateUser({
+    // Use setSession first to set the access token
+    const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: ''
+    })
+
+    if (sessionError) throw sessionError
+
+    // Then update the password
+    const { data: { user }, error: updateError } = await supabase.auth.updateUser({
       password: password.value
     })
 
-    if (resetError) throw resetError
+    if (updateError) throw updateError
+
+    if (user) {
+      // Update the profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ 
+          updated_at: new Date().toISOString(),
+          last_password_reset: new Date().toISOString()
+        })
+        .eq('id', user.id)
+
+      if (profileError) throw profileError
+    }
 
     showToast('Senha alterada com sucesso!', 'success')
     
