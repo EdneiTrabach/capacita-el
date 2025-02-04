@@ -93,15 +93,7 @@ const handleResetPassword = async () => {
       throw new Error('Token de recuperação não encontrado')
     }
 
-    // Configurar a sessão com o token
-    const { data: { session }, error: sessionError } = await supabase.auth.setSession({
-      access_token: accessToken,
-      refresh_token: '' // Não é necessário para reset de senha
-    })
-
-    if (sessionError) throw sessionError
-
-    // Atualizar a senha usando updateUser
+    // Atualizar a senha usando o token diretamente
     const { error: resetError } = await supabase.auth.updateUser({
       password: password.value
     })
