@@ -151,20 +151,27 @@
             </div>
 
             <div class="form-group">
-              <label>Cidade</label>
-              <input 
-                type="text" 
-                v-model="editingUser.cidade"
-                placeholder="Digite a cidade"
-              />
-            </div>
-
-            <div class="form-group">
               <label>Estado</label>
-              <select v-model="editingUser.estado">
+              <select 
+                v-model="editingUser.estado" 
+                @change="buscarMunicipios(editingUser.estado)"
+              >
                 <option value="">Selecione um estado</option>
                 <option v-for="estado in estados" :key="estado.uf" :value="estado.uf">
                   {{ estado.nome }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Cidade</label>
+              <select 
+                v-model="editingUser.cidade"
+                :disabled="!editingUser.estado"
+              >
+                <option value="">Selecione uma cidade</option>
+                <option v-for="municipio in municipios" :key="municipio.id" :value="municipio.nome">
+                  {{ municipio.nome }}
                 </option>
               </select>
             </div>
@@ -234,8 +241,33 @@ export default {
       estados: [
         { uf: 'AC', nome: 'Acre' },
         { uf: 'AL', nome: 'Alagoas' },
-        // ... adicione todos os estados ...
-      ]
+        { uf: 'AP', nome: 'Amapá' },
+        { uf: 'AM', nome: 'Amazonas' },
+        { uf: 'BA', nome: 'Bahia' },
+        { uf: 'CE', nome: 'Ceará' },
+        { uf: 'DF', nome: 'Distrito Federal' },
+        { uf: 'ES', nome: 'Espírito Santo' },
+        { uf: 'GO', nome: 'Goiás' },
+        { uf: 'MA', nome: 'Maranhão' },
+        { uf: 'MT', nome: 'Mato Grosso' },
+        { uf: 'MS', nome: 'Mato Grosso do Sul' },
+        { uf: 'MG', nome: 'Minas Gerais' },
+        { uf: 'PA', nome: 'Pará' },
+        { uf: 'PB', nome: 'Paraíba' },
+        { uf: 'PR', nome: 'Paraná' },
+        { uf: 'PE', nome: 'Pernambuco' },
+        { uf: 'PI', nome: 'Piauí' },
+        { uf: 'RJ', nome: 'Rio de Janeiro' },
+        { uf: 'RN', nome: 'Rio Grande do Norte' },
+        { uf: 'RS', nome: 'Rio Grande do Sul' },
+        { uf: 'RO', nome: 'Rondônia' },
+        { uf: 'RR', nome: 'Roraima' },
+        { uf: 'SC', nome: 'Santa Catarina' },
+        { uf: 'SP', nome: 'São Paulo' },
+        { uf: 'SE', nome: 'Sergipe' },
+        { uf: 'TO', nome: 'Tocantins' }
+      ],
+      municipios: [],
     }
   },
   async created() {
@@ -445,6 +477,19 @@ export default {
       setTimeout(() => {
         this.toast.show = false
       }, 3000)
+    },
+    async buscarMunicipios(uf) {
+      try {
+        const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
+        const data = await response.json();
+        this.municipios = data.map(municipio => ({
+          id: municipio.id,
+          nome: municipio.nome
+        }));
+      } catch (error) {
+        console.error('Erro ao buscar municípios:', error);
+        this.showToast('Erro ao carregar municípios', 'error');
+      }
     }
   },
   setup() {
@@ -1094,6 +1139,7 @@ export default {
   }
 }
 
+/* Modal Styling */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1105,6 +1151,7 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: fadeIn 0.3s ease;
 }
 
 .modal-content {
@@ -1116,6 +1163,7 @@ export default {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
 }
 
 .modal-content h2 {
@@ -1124,6 +1172,7 @@ export default {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #e0e4e8;
+  font-weight: 600;
 }
 
 .edit-form .form-grid {
@@ -1139,12 +1188,87 @@ export default {
   gap: 0.5rem;
 }
 
+.form-group label {
+  color: #193155;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.75rem;
+  border: 1px solid #e0e4e8;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #193155;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #193155;
+  box-shadow: 0 0 0 3px rgba(25, 49, 85, 0.1);
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
   padding-top: 1.5rem;
   border-top: 1px solid #e0e4e8;
+}
+
+.btn-cancelar,
+.btn-salvar {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-cancelar {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-salvar {
+  background-color: #193155;
+  color: white;
+}
+
+.btn-cancelar:hover,
+.btn-salvar:hover {
+  transform: translateY(-2px);
+}
+
+.btn-cancelar:hover {
+  background-color: #5a6268;
+}
+
+.btn-salvar:hover {
+  background-color: #254677;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1158,11 +1282,14 @@ export default {
   }
 
   .modal-actions {
-    flex-direction: column;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
   }
 
-  .modal-actions button {
+  .btn-cancelar,
+  .btn-salvar {
     width: 100%;
+    justify-content: center;
   }
 }
 </style>

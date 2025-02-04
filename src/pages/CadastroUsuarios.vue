@@ -61,20 +61,9 @@
               type="text" 
               v-model="formData.documento"
               :class="{ error: errors.documento }"
-              placeholder="000.000.000-00"
+              placeholder ="000.000.000-00"
             />
             <span class="error-message" v-if="errors.documento">{{ errors.documento }}</span>
-          </div>
-
-          <div class="form-group">
-            <label>Cidade</label>
-            <input 
-              type="text" 
-              v-model="formData.cidade"
-              :class="{ error: errors.cidade }"
-              placeholder="Digite a cidade"
-            />
-            <span class="error-message" v-if="errors.cidade">{{ errors.cidade }}</span>
           </div>
 
           <div class="form-group">
@@ -82,6 +71,7 @@
             <select 
               v-model="formData.estado"
               :class="{ error: errors.estado }"
+              @change="buscarMunicipios(formData.estado)"
             >
               <option value="">Selecione um estado</option>
               <option v-for="estado in estados" :key="estado.uf" :value="estado.uf">
@@ -89,6 +79,21 @@
               </option>
             </select>
             <span class="error-message" v-if="errors.estado">{{ errors.estado }}</span>
+          </div>
+
+          <div class="form-group">
+            <label>Cidade</label>
+            <select 
+              v-model="formData.cidade"
+              :class="{ error: errors.cidade }"
+              :disabled="!formData.estado"
+            >
+              <option value="">Selecione uma cidade</option>
+              <option v-for="municipio in municipios" :key="municipio.id" :value="municipio.nome">
+                {{ municipio.nome }}
+              </option>
+            </select>
+            <span class="error-message" v-if="errors.cidade">{{ errors.cidade }}</span>
           </div>
 
           <div class="form-group">
@@ -148,7 +153,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { supabase } from '../config/supabase'
 import { setorService } from '../services/api'
@@ -177,6 +182,9 @@ const toast = ref({
   message: '',
   type: 'success'
 })
+
+// No data/ref
+const municipios = ref([])
 
 onMounted(async () => {
   await loadSetores()
@@ -258,6 +266,40 @@ const cadastrarNovoSetor = async () => {
     showToast('Erro ao cadastrar novo setor', 'error')
   }
 }
+
+// Adicione o método para buscar municípios
+const buscarMunicipios = async (uf) => {
+  try {
+    if (!uf) {
+      municipios.value = []
+      formData.value.cidade = ''
+      return
+    }
+    
+    const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`)
+    const data = await response.json()
+    municipios.value = data.map(municipio => ({
+      id: municipio.id,
+      nome: municipio.nome
+    }))
+
+    // Limpa a cidade selecionada quando trocar o estado
+    formData.value.cidade = ''
+  } catch (error) {
+    console.error('Erro ao buscar municípios:', error)
+    showToast('Erro ao carregar municípios', 'error')
+  }
+}
+
+// Adicione um watch para o estado
+watch(() => formData.value.estado, (novoEstado) => {
+  if (novoEstado) {
+    buscarMunicipios(novoEstado)
+  } else {
+    municipios.value = []
+    formData.value.cidade = ''
+  }
+})
 
 // Função para validar formulário
 const validateForm = () => {
