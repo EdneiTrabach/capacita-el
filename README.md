@@ -31,3 +31,92 @@ npm run dev
 ```sh
 npm run build
 ```
+
+# Documentação do Projeto
+
+## Visão Geral
+Sistema desenvolvido utilizando Vue.js com TypeScript, hospedado na Vercel e utilizando Supabase como banco de dados.
+
+## Tecnologias Utilizadas
+
+### Frontend
+- Vue.js 3
+- TypeScript
+- Vite
+- Vue Router
+- Pinia (Gerenciamento de Estado)
+- Axios
+
+### Backend/Banco de Dados
+- Supabase (PostgreSQL)
+- Supabase Auth
+- Supabase Real-time
+
+### Hospedagem
+- Vercel (Frontend)
+- Supabase Cloud (Banco de Dados)
+
+## Implementações de Segurança
+
+### 1. Autenticação
+- Sistema de login seguro via Supabase Auth
+- Proteção de rotas
+- Middleware de autenticação
+- Sessões seguras
+
+### 2. Autorização
+- Controle de acesso baseado em funções (RBAC)
+- Políticas de segurança no banco de dados
+- Proteção de componentes por nível de acesso
+
+### 3. Segurança de Dados
+- Sanitização de entradas
+- Validação de formulários
+- Criptografia de dados sensíveis
+- Proteção contra XSS
+
+### 4. API e Banco de Dados
+- Row Level Security (RLS) no Supabase
+- Endpoints protegidos
+- Conexões SSL/TLS
+- Backup automático
+
+## Configuração do Ambiente
+
+### Variáveis de Ambiente
+```env
+VITE_SUPABASE_URL=sua_url_supabase
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima
+```
+
+## Execução do Projeto
+
+### Requisitos
+- Node.js 16+
+- NPM ou Yarn
+
+### Comandos
+```bash
+# Instalação
+npm install
+
+# Desenvolvimento
+npm run dev
+
+# Build
+npm run build
+```
+
+## Medidas de Segurança Adicionais
+- Atualizações regulares de dependências
+- Monitoramento de logs
+- Backups periódicos
+- Análise de vulnerabilidades
+- Proteção contra DDoS via Vercel
+- HTTPS forçado
+
+## Manutenção
+- Atualização regular de dependências
+- Monitoramento de alertas de segurança
+- Backup de dados
+- Revisão de logs de acesso

@@ -1,7 +1,7 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
+  "exclude": ["src/**/__tests__/*", "dist"],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
@@ -9,9 +9,7 @@
       "@/*": ["./src/*"]
     },
     "moduleResolution": "bundler",
-    "allowJs": true,
     "noEmit": true,
-    "skipLibCheck": true,
     "verbatimModuleSyntax": true
   }
 }
