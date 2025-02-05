@@ -151,4 +151,10 @@ router.beforeEach(async (to, from, next) => {
   next()
 })
 
+// Adicione no final do arquivo, após a definição das rotas
+router.onError((error) => {
+  console.error('Router error:', error)
+  router.push('/') // Redireciona para home em caso de erro
+})
+
 export default router
