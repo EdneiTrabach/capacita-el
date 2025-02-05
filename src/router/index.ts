@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { supabase } from '@/config/supabase'
+import { supabase } from '@/lib/supabaseClient'
 import type { RouteRecordRaw } from 'vue-router'
 import Home from '../pages/Home.vue'
 import AdminPanel from '../pages/AdminPanel.vue'
