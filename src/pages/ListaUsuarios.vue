@@ -1,6 +1,5 @@
 <template>
   <div class="usuarios-container">
-    <!-- Add toast notification -->
     <div v-if="toast.show" :class="['toast', toast.type]">
       {{ toast.message }}
     </div>
@@ -54,11 +53,11 @@
         </div>
 
         <div class="usuario-body">
-          <h3>{{ usuario.nome }}</h3>
+          <h3>{{ sanitizeHTML(usuario.nome) }}</h3>
           <div class="info-grid">
             <div class="info-item">
               <span class="label">Email:</span>
-              <span>{{ usuario.email }}</span>
+              <span>{{ sanitizeHTML(usuario.email) }}</span>
             </div>
             <div class="info-item">
               <span class="label">Telefone:</span>
@@ -205,390 +204,182 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { supabase } from '../config/supabase'
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { sanitizeHTML } from '@/utils/sanitize'
+
+const router = useRouter()
+const usuarios = ref([])
+const setores = ref([])
+const searchTerm = ref('')
+const setorFilter = ref('')
+const loading = ref(false)
+const error = ref(null)
+const statusFilter = ref('')
+const sortBy = ref('recent')
+const showEditModal = ref(false)
+const municipios = ref([])
+
+const toast = ref({
+  show: false,
+  message: '',
+  type: 'success'
+})
+
+const editingUser = ref({
+  id: null,
+  nome: '',
+  email: '',
+  data_nascimento: '',
+  telefone: '',
+  cidade: '',
+  estado: '',
+  setor: ''
+})
+
+// Computed properties
+const setoresUnicos = computed(() => {
+  return [...new Set(usuarios.value.map(u => u.setor))].filter(Boolean)
+})
+
+const usuariosFiltrados = computed(() => {
+  let filtered = usuarios.value.filter(usuario => {
+    const matchSearch = !searchTerm.value ||
+      usuario.nome?.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      usuario.email?.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      usuario.setor?.toLowerCase().includes(searchTerm.value.toLowerCase())
+
+    const matchSetor = !setorFilter.value || usuario.setor === setorFilter.value
+    const matchStatus = !statusFilter.value || usuario.status === statusFilter.value
+
+    return matchSearch && matchSetor && matchStatus
+  })
+
+  // Apply sorting
+  switch (sortBy.value) {
+    case 'recent':
+      return filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    case 'oldest':
+      return filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    case 'alpha':
+      return filtered.sort((a, b) => a.nome.localeCompare(b.nome))
+    default:
+      return filtered
+  }
+})
+
+// Methods
+const loadUsuarios = async () => {
+  try {
+    loading.value = true
+    const { data: users, error: err } = await supabase
+      .from('usuarios')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (err) throw err
+    usuarios.value = users.map(user => ({
+      ...user,
+      status: user.status || 'ativo'
+    }))
+  } catch (err) {
+    console.error('Erro ao carregar usuários:', err)
+    error.value = 'Erro ao carregar usuários'
+  } finally {
+    loading.value = false
+  }
+}
+
+const loadSetores = async () => {
+  try {
+    const { data: setoresList, error } = await supabase
+      .from('setores')
+      .select('*')
+      .order('nome')
+
+    if (error) throw error
+    setores.value = setoresList
+  } catch (error) {
+    console.error('Erro ao carregar setores:', error)
+    showToast('Erro ao carregar setores', 'error')
+  }
+}
+
+const showToast = (message, type = 'success') => {
+  toast.value = {
+    show: true,
+    message,
+    type
+  }
+  setTimeout(() => {
+    toast.value.show = false
+  }, 3000)
+}
 
 const formatDate = (date) => {
   if (!date) return '--'
   try {
-    return date.split('T')[0].split('-').reverse().join('/')
+    const [year, month, day] = date.split('-')
+    return new Date(year, month - 1, day).toLocaleDateString('pt-BR')
   } catch (error) {
     console.error('Erro ao formatar data:', error)
     return '--'
   }
 }
 
-export default {
-  name: 'ListaUsuarios',
-  data() {
-    return {
-      usuarios: [],
-      setores: [],
-      searchTerm: '',
-      setorFilter: '',
-      loading: false,
-      error: null,
-      statusFilter: '',
-      sortBy: 'recent',
-      toast: {
-        show: false,
-        message: '',
-        type: 'success'
-      },
-      showEditModal: false,
-      editingUser: {
-        id: null,
-        nome: '',
-        email: '',
-        data_nascimento: '',
-        telefone: '',
-        cidade: '',
-        estado: '',
-        setor: ''
-      },
-      estados: [
-        { uf: 'AC', nome: 'Acre' },
-        { uf: 'AL', nome: 'Alagoas' },
-        { uf: 'AP', nome: 'Amapá' },
-        { uf: 'AM', nome: 'Amazonas' },
-        { uf: 'BA', nome: 'Bahia' },
-        { uf: 'CE', nome: 'Ceará' },
-        { uf: 'DF', nome: 'Distrito Federal' },
-        { uf: 'ES', nome: 'Espírito Santo' },
-        { uf: 'GO', nome: 'Goiás' },
-        { uf: 'MA', nome: 'Maranhão' },
-        { uf: 'MT', nome: 'Mato Grosso' },
-        { uf: 'MS', nome: 'Mato Grosso do Sul' },
-        { uf: 'MG', nome: 'Minas Gerais' },
-        { uf: 'PA', nome: 'Pará' },
-        { uf: 'PB', nome: 'Paraíba' },
-        { uf: 'PR', nome: 'Paraná' },
-        { uf: 'PE', nome: 'Pernambuco' },
-        { uf: 'PI', nome: 'Piauí' },
-        { uf: 'RJ', nome: 'Rio de Janeiro' },
-        { uf: 'RN', nome: 'Rio Grande do Norte' },
-        { uf: 'RS', nome: 'Rio Grande do Sul' },
-        { uf: 'RO', nome: 'Rondônia' },
-        { uf: 'RR', nome: 'Roraima' },
-        { uf: 'SC', nome: 'Santa Catarina' },
-        { uf: 'SP', nome: 'São Paulo' },
-        { uf: 'SE', nome: 'Sergipe' },
-        { uf: 'TO', nome: 'Tocantins' }
-      ],
-      municipios: [],
-    }
-  },
-  async created() {
+const getInitials = (name) => {
+  return name
+    ?.split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2) || '??'
+}
+
+const toggleStatus = async (usuario, status) => {
+  if (usuario.status !== status) {
     try {
-      await Promise.all([
-        this.loadUsuarios(),
-        this.loadSetores()
-      ])
+      const { error } = await supabase
+        .from('usuarios')
+        .update({ status })
+        .eq('id', usuario.id)
+
+      if (error) throw error
+
+      // Update local state
+      const index = usuarios.value.findIndex(u => u.id === usuario.id)
+      if (index !== -1) {
+        usuarios.value[index] = { ...usuarios.value[index], status }
+      }
     } catch (error) {
-      console.error('Erro ao carregar dados:', error)
-      this.showToast('Erro ao carregar dados', 'error')
-    }
-  },
-  computed: {
-    setoresUnicos() {
-      return [...new Set(this.usuarios.map(u => u.setor))].filter(Boolean)
-    },
-    usuariosFiltrados() {
-      let filtered = this.usuarios.filter(usuario => {
-        const matchSearch = !this.searchTerm ||
-          usuario.nome?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          usuario.email?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          usuario.setor?.toLowerCase().includes(this.searchTerm.toLowerCase())
-
-        const matchSetor = !this.setorFilter || usuario.setor === this.setorFilter
-        const matchStatus = !this.statusFilter || usuario.status === this.statusFilter
-
-        return matchSearch && matchSetor && matchStatus
-      })
-
-      // Apply sorting
-      switch (this.sortBy) {
-        case 'recent':
-          return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        case 'oldest':
-          return filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-        case 'alpha':
-          return filtered.sort((a, b) => a.nome.localeCompare(b.nome))
-        default:
-          return filtered
-      }
-    }
-  },
-  methods: {
-    getInitials(name) {
-      return name
-        ?.split(' ')
-        .map(n => n[0])
-        .join('')
-        .toUpperCase()
-        .substring(0, 2) || '??'
-    },
-    async loadUsuarios() {
-      this.loading = true
-      this.error = null
-      try {
-        // Try using Supabase directly
-        const { data: users, error } = await supabase
-          .from('usuarios')
-          .select('*')
-          .order('created_at', { ascending: false })
-
-        if (error) throw error
-        
-        this.usuarios = users.map(user => ({
-          ...user,
-          status: user.status || 'ativo' // Ensure status has a default value
-        }))
-      } catch (error) {
-        console.error('Erro ao carregar alunos:', error)
-        this.error = 'Erro ao carregar alunos. Por favor, tente novamente.'
-      } finally {
-        this.loading = false
-      }
-    },
-    async loadSetores() {
-      try {
-        const { data: setores, error } = await supabase
-          .from('setores')
-          .select('*')
-          .order('nome')
-
-        if (error) throw error
-        this.setores = setores
-      } catch (error) {
-        console.error('Erro ao carregar setores:', error)
-        this.showToast('Erro ao carregar setores', 'error')
-      }
-    },
-    async deletarUsuario(id) {
-      if (confirm('ATENÇÃO: Esta ação excluirá permanentemente o usuário do sistema. Esta ação não pode ser desfeita. Você tem certeza que deseja continuar?')) {
-        try {
-          // Usando supabase diretamente ao invés de api
-          const { error } = await supabase
-            .from('usuarios')
-            .delete()
-            .eq('id', id)
-
-          if (error) throw error
-
-          await this.loadUsuarios() // Recarrega a lista
-          this.showToast('Usuário excluído com sucesso', 'success')
-        } catch (error) {
-          console.error('Erro ao deletar usuário:', error)
-          this.showToast('Erro ao excluir usuário', 'error')
-        }
-      }
-    },
-    editarUsuario(usuario) {
-      this.editingUser = { ...usuario }
-      if (this.editingUser.data_nascimento) {
-        this.editingUser.data_nascimento = this.editingUser.data_nascimento.split('T')[0]
-      }
-      this.showEditModal = true
-    },
-    closeEditModal() {
-      this.showEditModal = false
-      this.editingUser = {
-        id: null,
-        nome: '',
-        email: '',
-        data_nascimento: '',
-        telefone: '',
-        cidade: '',
-        estado: '',
-        setor: ''
-      }
-    },
-    async handleEditSubmit() {
-      try {
-        this.loading = true
-        const { error } = await supabase
-          .from('usuarios')
-          .update({
-            nome: this.editingUser.nome,
-            email: this.editingUser.email,
-            data_nascimento: this.editingUser.data_nascimento,
-            telefone: this.editingUser.telefone,
-            cidade: this.editingUser.cidade,
-            estado: this.editingUser.estado,
-            setor: this.editingUser.setor,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', this.editingUser.id)
-
-        if (error) throw error
-
-        this.showToast('Usuário atualizado com sucesso!', 'success')
-        await this.loadUsuarios() // Recarrega a lista
-        this.closeEditModal()
-      } catch (error) {
-        console.error('Erro ao atualizar usuário:', error)
-        this.showToast('Erro ao atualizar usuário', 'error')
-      } finally {
-        this.loading = false
-      }
-    },
-    async alterarStatus(usuario) {
-      const novoStatus = prompt('Digite o novo status (ativo/cursando/inativo):', usuario.status);
-      if (novoStatus && ['ativo', 'cursando', 'inativo'].includes(novoStatus)) {
-        try {
-          await axios.put(`http://localhost:3000/usuarios/${usuario.id}`, {
-            ...usuario,
-            status: novoStatus
-          });
-          await this.loadUsuarios();
-          alert('Status atualizado com sucesso!');
-        } catch (error) {
-          console.error('Erro ao atualizar status:', error);
-          alert('Erro ao atualizar status');
-        }
-      }
-    },
-    async toggleStatus(usuario, status) {
-      if (usuario.status !== status) {
-        try {
-          const { error } = await supabase
-            .from('usuarios')
-            .update({ status })
-            .eq('id', usuario.id)
-
-          if (error) throw error
-
-          // Update local state
-          const index = this.usuarios.findIndex(u => u.id === usuario.id)
-          if (index !== -1) {
-            this.usuarios[index] = { ...this.usuarios[index], status }
-          }
-        } catch (error) {
-          console.error('Erro ao atualizar status:', error)
-          alert('Erro ao atualizar status do usuário')
-        }
-      }
-    },
-    formatDate(date) {
-      if (!date) return '--'
-      // Força a data para o timezone local
-      const [year, month, day] = date.split('-')
-      return new Date(year, month - 1, day).toLocaleDateString('pt-BR')
-    },
-    showToast(message, type = 'success') {
-      this.toast = {
-        show: true,
-        message,
-        type
-      }
-      setTimeout(() => {
-        this.toast.show = false
-      }, 3000)
-    },
-    async buscarMunicipios(uf) {
-      try {
-        const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
-        const data = await response.json();
-        this.municipios = data.map(municipio => ({
-          id: municipio.id,
-          nome: municipio.nome
-        }));
-      } catch (error) {
-        console.error('Erro ao buscar municípios:', error);
-        this.showToast('Erro ao carregar municípios', 'error');
-      }
-    }
-  },
-  setup() {
-    const route = useRoute()
-    const isEditing = ref(false)
-
-    const loadUsuario = async (id) => {
-      try {
-        const { data: usuario, error } = await supabase
-          .from('usuarios')
-          .select('*')
-          .eq('id', id)
-          .single()
-
-        if (error) throw error
-
-        formData.value = {
-          nome: usuario.nome,
-          email: usuario.email || '',
-          dataNascimento: usuario.data_nascimento || '',
-          telefone: usuario.telefone || '',
-          documento: usuario.documento || '',
-          cidade: usuario.cidade || '',
-          estado: usuario.estado || '',  
-          setor: usuario.setor || ''
-        }
-      } catch (error) {
-        console.error('Erro ao carregar usuário:', error)
-        showToast('Erro ao carregar dados do usuário', 'error')
-      }
-    }
-
-    onMounted(async () => {
-      await loadSetores()
-      isEditing.value = route.query.edit === 'true'
-      if (isEditing.value && route.params.id) {
-        await loadUsuario(route.params.id)
-      }
-    })
-
-    const handleSubmit = async () => {
-      if (validateForm()) {
-        try {
-          const userData = {
-            nome: formData.value.nome,
-            email: formData.value.email || null,
-            data_nascimento: formData.value.dataNascimento || null,
-            telefone: formData.value.telefone || null,
-            documento: formData.value.documento || null,
-            cidade: formData.value.cidade || null,
-            estado: formData.value.estado || null,
-            setor: formData.value.setor,
-            updated_at: new Date().toISOString()
-          }
-
-          if (isEditing.value) {
-            const { error } = await supabase
-              .from('usuarios')
-              .update(userData)
-              .eq('id', route.params.id)
-
-            if (error) throw error
-            showToast('Usuário atualizado com sucesso!', 'success')
-          } else {
-            const { error } = await supabase
-              .from('usuarios')
-              .insert([{ ...userData, status: 'ativo' }])
-
-            if (error) throw error
-            showToast('Usuário cadastrado com sucesso!', 'success')
-          }
-
-          setTimeout(() => {
-            router.push('/lista-usuarios')
-          }, 2000)
-        } catch (err) {
-          console.error('Erro ao salvar usuário:', err)
-          showToast(err.message || 'Erro ao salvar usuário', 'error')
-        }
-      }
-    }
-
-    return {
-      route,
-      isEditing,
-      loadUsuario,
-      handleSubmit
+      console.error('Erro ao atualizar status:', error)
+      showToast('Erro ao atualizar status do usuário', 'error')
     }
   }
+}
+
+// Lifecycle hooks
+onMounted(async () => {
+  try {
+    await Promise.all([
+      loadUsuarios(),
+      loadSetores()
+    ])
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error)
+    showToast('Erro ao carregar dados', 'error')
+  }
+})
+
+// Expose necessary functions and variables to template
+const utils = {
+  formatDate,
+  getInitials,
+  sanitizeHTML,
+  toggleStatus,
+  showToast
 }
 </script>
 
@@ -692,7 +483,7 @@ export default {
 
 .usuarios-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(2, minmax(350px, 1fr));
   gap: 1.5rem;
 }
 
@@ -996,7 +787,7 @@ export default {
 
 .certificados-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(2, minmax(350px, 1fr));
   gap: 1.5rem;
 }
 

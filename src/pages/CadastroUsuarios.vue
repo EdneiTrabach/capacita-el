@@ -1,6 +1,6 @@
 <template>
   <div class="cadastro-container">
-    <!-- Add toast notification -->
+    <!-- AddE toast notification -->
     <div v-if="toast.show" :class="['toast', toast.type]">
       {{ toast.message }}
     </div>
@@ -55,6 +55,9 @@
               v-model="formData.telefone"
               :class="{ error: errors.telefone }"
               placeholder="(00) 00000-0000"
+              maxlength="15"
+              @input="formatarTelefone"
+              @blur="validateField('telefone', formData.telefone)"
             />
             <span class="error-message" v-if="errors.telefone">{{ errors.telefone }}</span>
           </div>
@@ -93,9 +96,9 @@
             <select 
               v-model="formData.cidade"
               :class="{ error: errors.cidade }"
-              :disabled="!formData.estado"
+              :disabled="!formData.estado || loading"
             >
-              <option value="">Selecione uma cidade</option>
+              <option value="">{{ loading ? 'Carregando...' : 'Selecione uma cidade' }}</option>
               <option v-for="municipio in municipios" :key="municipio.id" :value="municipio.nome">
                 {{ municipio.nome }}
               </option>
@@ -159,15 +162,28 @@
           </div>
         </div>
       </div>
+
+      <div class="preview-data">
+        <h3>{{ sanitizeHTML(formData.nome) }}</h3>
+        <p>{{ sanitizeHTML(formData.email) }}</p>
+        <p>{{ sanitizeHTML(formData.setor) }}</p>
+      </div>
     </div>
+  </div>
+
+  <!-- Adicione um indicador de loading -->
+  <div v-if="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { supabase } from '../config/supabase'
-import { setorService } from '../services/api'
+import { supabase } from '@/config/supabase'
+import { setorService } from '@/services/api'
+import { ibgeService } from '@/services/ibgeService'
+import { sanitizeHTML } from '@/utils/sanitize'
 
 const router = useRouter()
 const route = useRoute()
@@ -196,6 +212,7 @@ const toast = ref({
 
 // No data/ref
 const municipios = ref([])
+const loading = ref(false)
 
 const maxDate = ref(new Date().toISOString().split('T')[0])
 
@@ -301,25 +318,25 @@ const buscarMunicipios = async (uf) => {
       return
     }
     
-    const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`)
-    const data = await response.json()
-    municipios.value = data.map(municipio => ({
-      id: municipio.id,
-      nome: municipio.nome
-    }))
-
-    // Limpa a cidade selecionada quando trocar o estado
+    municipios.value = await ibgeService.getMunicipios(uf)
     formData.value.cidade = ''
   } catch (error) {
     console.error('Erro ao buscar municípios:', error)
     showToast('Erro ao carregar municípios', 'error')
+    municipios.value = []
+    formData.value.cidade = ''
   }
 }
 
-// Adicione um watch para o estado
-watch(() => formData.value.estado, (novoEstado) => {
+// Adicione tratamento de erro melhorado
+watch(() => formData.value.estado, async (novoEstado) => {
   if (novoEstado) {
-    buscarMunicipios(novoEstado)
+    loading.value = true // Adicione um estado de loading
+    try {
+      await buscarMunicipios(novoEstado)
+    } finally {
+      loading.value = false
+    }
   } else {
     municipios.value = []
     formData.value.cidade = ''
@@ -410,6 +427,12 @@ const validateField = (field, value) => {
         if (year < 1900 || year > new Date().getFullYear()) {
           errors.dataNascimento = 'Data inválida. O ano deve estar entre 1900 e o ano atual.'
         }
+      }
+      break
+
+    case 'telefone':
+      if (value && !validateTelefone(value)) {
+        errors.telefone = 'Telefone inválido. Digite um número válido com DDD'
       }
       break
       
@@ -569,7 +592,7 @@ const validateCPF = (cpf) => {
   }
   
   remainder = (sum * 10) % 11
-  if (remainder === 10 || remainder === 11) remainder = 0
+  if (remainder === 10 || 11) remainder = 0
   if (remainder !== parseInt(strCPF.substring(9, 10))) return false
   
   // Segundo dígito verificador
@@ -579,7 +602,7 @@ const validateCPF = (cpf) => {
   }
   
   remainder = (sum * 10) % 11
-  if (remainder === 10 || remainder === 11) remainder = 0
+  if (remainder === 10 || 11) remainder = 0
   if (remainder !== parseInt(strCPF.substring(10, 11))) return false
   
   return true
@@ -624,6 +647,48 @@ const validateDate = () => {
       errors.value = restErrors
     }
   }
+}
+
+// Função para formatar o telefone
+const formatarTelefone = (event) => {
+  // Remove tudo que não é número
+  let valor = event.target.value.replace(/\D/g, '')
+  
+  // Limita a 11 dígitos
+  if (valor.length > 11) {
+    valor = valor.slice(0, 11)
+  }
+  
+  // Aplica a máscara progressivamente
+  if (valor.length > 0) {
+    // Primeiro parêntese
+    valor = '(' + valor
+    
+    if (valor.length > 3) {
+      // Fecha parêntese após DDD
+      valor = valor.slice(0, 3) + ') ' + valor.slice(3)
+    }
+    
+    if (valor.length > 9) {
+      // Hífen antes dos últimos 4 dígitos
+      if (valor.length > 13) {
+        // Para números de celular (11 dígitos)
+        valor = valor.slice(0, 10) + '-' + valor.slice(10)
+      } else {
+        // Para números fixos (10 dígitos)
+        valor = valor.slice(0, 9) + '-' + valor.slice(9)
+      }
+    }
+  }
+  
+  // Atualiza o valor no v-model
+  formData.value.telefone = valor
+}
+
+// Adicione também uma validação específica para telefone
+const validateTelefone = (telefone) => {
+  const numeros = telefone.replace(/\D/g, '')
+  return numeros.length >= 10 && numeros.length <= 11
 }
 
 onMounted(loadSetores)
@@ -677,7 +742,7 @@ onMounted(loadSetores)
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -957,6 +1022,34 @@ button {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* Adicione estilos para o loading */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #193155;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* ... rest of your styles */

@@ -160,11 +160,17 @@
       </div>
     </div>
   </div>
+  <div class="report-data">
+    <h3>{{ sanitizeHTML(certificado.aluno_nome) }}</h3>
+    <p>{{ sanitizeHTML(certificado.curso_nome) }}</p>
+    <p>{{ sanitizeHTML(certificado.observacoes) }}</p>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
 import API_URL from '../config/api';
+import { sanitizeHTML } from '@/utils/sanitize'
 
 export default {
   name: 'Relatorios',
@@ -239,7 +245,8 @@ export default {
     },
     async exportarAlunosExcel() {
       // Implementar exportação Excel
-    }
+    },
+    sanitizeHTML
   },
   created() {
     this.loadData();
@@ -289,7 +296,7 @@ export default {
 
 .relatorios-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -419,7 +426,7 @@ export default {
 
 .filters-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }

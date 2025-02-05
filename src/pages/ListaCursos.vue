@@ -9,19 +9,23 @@
     </header>
 
     <div class="search-bar">
-      <input type="text" v-model="searchTerm" placeholder="Buscar por nome ou descrição...">
+      <input 
+        type="text" 
+        v-model="searchTerm" 
+        placeholder="Buscar por nome ou descrição..."
+      >
       <select v-model="statusFilter">
         <option value="">Todos os status</option>
-        <option value="ativo">Ativo</option>
-        <option value="concluido">Concluído</option>
-        <option value="cancelado">Cancelado</option>
+        <option value="Em andamento">Em andamento</option>
+        <option value="Finalizado">Finalizado</option>
+        <option value="Cancelado">Cancelado</option>
       </select>
     </div>
 
     <div class="cursos-grid">
       <div v-for="curso in cursosFiltrados" :key="curso.id" class="curso-card">
         <div class="curso-header">
-          <h3>{{ curso.nome }}</h3>
+          <h3>{{ sanitizeHTML(curso.nome) }}</h3>
           <div class="actions">
             <button @click="editarCurso(curso)" class="btn-edit">
               <img src="/public/icons/edicao.svg" alt="Editar" class="icon" />
@@ -35,7 +39,18 @@
         </div>
 
         <div class="curso-body">
+          <p>{{ sanitizeHTML(curso.descricao) }}</p>
           <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Status:</span>
+              <span :class="'status-' + curso.status.replace(' ', '_')">
+                {{ curso.status }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="label">Professor:</span>
+              <span>{{ curso.professor_responsavel }}</span>
+            </div>
             <div class="info-item">
               <span class="label">Carga Horária:</span>
               <span>{{ curso.duracao_horas }}h</span>
@@ -44,38 +59,29 @@
               <span class="label">Início:</span>
               <span>{{ formatDate(curso.data_inicio) }}</span>
             </div>
-            <div class="info-item">
-              <span class="label">Status:</span>
-              <span :class="'status-' + curso.status.replace(' ', '_')">{{ curso.status }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">Professor:</span>
-              <span>{{ curso.professor_responsavel }}</span>
-            </div>
           </div>
-          <div class="modulos-section">
-            <h4>Módulos</h4>
-            <ul>
-              <li v-for="(modulo, index) in curso.modulos" :key="index">
-                {{ modulo.nome }} ({{ modulo.carga_horaria }}h)
-              </li>
-            </ul>
-          </div>
+
           <div class="card-actions">
             <div class="status-toggle">
-              <button @click="toggleStatus(curso, 'Em andamento')"
-                :class="['status-btn', { active: curso.status === 'Em andamento' }]">
-                <img src="/public/icons/cursando.svg" alt="Cursando" class="icon-black" />
+              <button 
+                @click="toggleStatus(curso, 'Em andamento')" 
+                :class="['status-btn', { active: curso.status === 'Em andamento' }]"
+              >
+                <img src="/public/icons/cursando.svg" alt="Em Andamento" class="icon-black" />
                 Em Andamento
               </button>
-              <button @click="toggleStatus(curso, 'Finalizado')"
-                :class="['status-btn', { active: curso.status === 'Finalizado' }]">
+              <button 
+                @click="toggleStatus(curso, 'Finalizado')" 
+                :class="['status-btn', { active: curso.status === 'Finalizado' }]"
+              >
                 <img src="/public/icons/check.svg" alt="Finalizado" class="icon-black" />
                 Finalizado
               </button>
-              <button @click="toggleStatus(curso, 'Cancelado')"
-                :class="['status-btn', { active: curso.status === 'Cancelado' }]">
-                <img src="/public/icons/fechar.svg" alt="Finalizado" class="icon-black" />
+              <button 
+                @click="toggleStatus(curso, 'Cancelado')" 
+                :class="['status-btn', { active: curso.status === 'Cancelado' }]"
+              >
+                <img src="/public/icons/fechar.svg" alt="Cancelado" class="icon-black" />
                 Cancelado
               </button>
             </div>
@@ -90,6 +96,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../config/supabase'
 import { useRouter } from 'vue-router'
+import { sanitizeHTML } from '@/utils/sanitize'
 
 export default {
   name: 'ListaCursos',
@@ -219,7 +226,8 @@ export default {
       toggleStatus,
       deletarCurso,
       editarCurso,
-      formatDate
+      formatDate,
+      sanitizeHTML
     }
   }
 }
@@ -751,7 +759,7 @@ export default {
 
 .cursos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(2, minmax(350px, 1fr));
   gap: 1.5rem;
 }
 

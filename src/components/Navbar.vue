@@ -53,6 +53,12 @@
             <span v-if="isExpanded" class="link-text">Cursos</span>
           </router-link>
         </li>
+        <li v-if="isAdmin">
+          <router-link to="/admin">
+            <img src="/public/icons/config-usuario.svg" alt="Admin" class="icon" />
+            <span v-if="isExpanded" class="link-text">Painel Admin</span>
+          </router-link>
+        </li>
       </ul>
 
       <!-- Novo botão de logout -->
@@ -66,47 +72,52 @@
   </div>
 </template>
 
-<script>
-import { supabase } from '../config/supabase'
+<script setup>
+import { ref, onMounted } from 'vue'
+import { supabase } from '@/config/supabase'
 import { useRouter } from 'vue-router'
 
-export default {
-  name: 'Navbar',
-  setup() {
-    const router = useRouter()
-    return { router }
-  },
-  data() {
-    return {
-      isExpanded: true
-    }
-  },
-  methods: {
-    toggleSidebar() {
-      this.isExpanded = !this.isExpanded
-      this.$emit('sidebar-toggle', !this.isExpanded)
-    },
-    async handleLogout() {
-      try {
-        const { error } = await supabase.auth.signOut()
-        if (error) throw error
+const router = useRouter()
+const isAdmin = ref(false)
+const isExpanded = ref(true)
 
-        // Clear any necessary storage
-        localStorage.clear()
-        
-        // Navigate to login page
-        await this.$router.push('/login')
-        
-        // Remove the reload - this was causing the flash
-        // window.location.reload() <- Remove this line
-        
-      } catch (error) {
-        console.error('Erro ao fazer logout:', error)
-        alert('Erro ao sair do sistema. Tente novamente.')
-      }
-    }
+const checkAdminStatus = async () => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+    
+    isAdmin.value = profile?.role === 'admin'
   }
 }
+
+const toggleSidebar = () => {
+  isExpanded.value = !isExpanded.value
+}
+
+const handleLogout = async () => {
+  try {
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+
+    // Clear any necessary storage
+    localStorage.clear()
+    
+    // Navigate to login page
+    await router.push('/login')
+    
+  } catch (error) {
+    console.error('Erro ao fazer logout:', error)
+    alert('Erro ao sair do sistema. Tente novamente.')
+  }
+}
+
+onMounted(() => {
+  checkAdminStatus()
+})
 </script>
 
 <style scoped>

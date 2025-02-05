@@ -1,8 +1,35 @@
 import { createClient } from '@supabase/supabase-js'
 import { supabase } from '../config/supabase'
+import axios from 'axios'
+import router from '../router'
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL
+})
+
+api.interceptors.request.use(async (config) => {
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  if (session?.access_token) {
+    config.headers.Authorization = `Bearer ${session.access_token}`
+  }
+  
+  return config
+})
+
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      supabase.auth.signOut()
+      router.push('/login')
+    }
+    return Promise.reject(error)
+  }
+)
 
 // Create api object with Supabase methods
-const api = {
+const supabaseApi = {
   // Generic CRUD operations
   get: async (table: string) => {
     const { data, error } = await supabase
@@ -54,11 +81,11 @@ const api = {
 
   // Specific endpoints
   certificados: {
-    getAll: () => api.get('certificados'),
-    getById: (id: string) => api.getById('certificados', id),
-    create: (data: any) => api.post('certificados', data),
-    update: (id: string, data: any) => api.put('certificados', id, data),
-    delete: (id: string) => api.delete('certificados', id),
+    getAll: () => supabaseApi.get('certificados'),
+    getById: (id: string) => supabaseApi.getById('certificados', id),
+    create: (data: any) => supabaseApi.post('certificados', data),
+    update: (id: string, data: any) => supabaseApi.put('certificados', id, data),
+    delete: (id: string) => supabaseApi.delete('certificados', id),
     emitir: async (id: string) => {
       const { data, error } = await supabase
         .from('certificados')

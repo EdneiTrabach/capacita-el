@@ -251,6 +251,11 @@
       <h2 class="chart-title">Matrículas por Curso</h2>
       <DashboardChart :matriculasPorCurso="matriculasPorCurso" />
     </div>
+
+    <div v-if="userData" class="user-info">
+      <h3>{{ userData.nome ? sanitizeHTML(userData.nome) : 'Usuário' }}</h3>
+      <p>{{ userData.email ? sanitizeHTML(userData.email) : 'Email não disponível' }}</p>
+    </div>
   </div>
 </template>
 
@@ -268,6 +273,7 @@ import {
 } from 'chart.js'
 import DashboardChart from '../components/DashboardChart.vue'
 import { supabase } from '../config/supabase'
+import { sanitizeHTML } from '@/utils/sanitize'
 
 ChartJS.register(
   CategoryScale,
@@ -458,6 +464,7 @@ const formatDate = (date: string): string => {
 onMounted(() => {
   carregarEstatisticas()
   carregarCursos()
+  loadUserData()
 })
 
 const exportarPDF = () => {
@@ -611,6 +618,30 @@ function atualizarEstatisticas() {
     m.usuario?.status === 'cursando'
   ).length
 }
+
+const userData = ref({
+  nome: '',
+  email: ''
+})
+
+// Função para carregar dados do usuário
+const loadUserData = async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (error) throw error
+      userData.value = profile
+    }
+  } catch (error) {
+    console.error('Erro ao carregar dados do usuário:', error)
+  }
+}
 </script>
 
 <style scoped>
@@ -672,7 +703,7 @@ function atualizarEstatisticas() {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -971,7 +1002,7 @@ function atualizarEstatisticas() {
 
 .filters-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, minmax(200px, 1fr));
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -1102,7 +1133,7 @@ function atualizarEstatisticas() {
 
 .cursos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
   gap: 1.5rem;
 }
 
@@ -1258,7 +1289,7 @@ function atualizarEstatisticas() {
 
 .filters-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: repeat(2 minmax(360px, 1fr));
   gap: 1.5rem;
 }
 

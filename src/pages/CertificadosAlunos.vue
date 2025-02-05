@@ -63,11 +63,11 @@
         </div>
 
         <div class="certificado-body">
-          <h3>{{ certificado?.usuario?.nome || 'Aluno não encontrado' }}</h3>
+          <h3>{{ sanitizeHTML(certificado.usuario?.nome) }}</h3>
           <div class="info-grid">
             <div class="info-item">
               <span class="label">Curso:</span>
-              <span>{{ certificado?.curso?.nome || 'Curso não encontrado' }}</span>
+              <span>{{ sanitizeHTML(certificado.curso?.nome) }}</span>
             </div>
             <div class="info-item">
               <span class="label">Carga Horária:</span>
@@ -88,6 +88,10 @@
             <div class="info-item">
               <span class="label">Email do Aluno:</span>
               <span>{{ certificado?.usuario?.email || '--' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Observações:</span>
+              <span>{{ sanitizeHTML(certificado.observacoes) }}</span>
             </div>
           </div>
         </div>
@@ -148,6 +152,7 @@
 
 <script>
 import { supabase } from '../config/supabase'
+import { sanitizeHTML } from '@/utils/sanitize'
 
 export default {
   name: 'CertificadosAlunos',
@@ -465,7 +470,8 @@ export default {
         console.error('Erro ao emitir certificado:', error)
         this.showToast('Erro ao emitir certificado', 'error')
       }
-    }
+    },
+    sanitizeHTML
   },
   created() {
     console.log('Componente montado');
@@ -565,7 +571,7 @@ export default {
 /* Grid Layout */
 .certificados-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(2, minmax(350px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }

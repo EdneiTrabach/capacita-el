@@ -113,12 +113,18 @@
       </form>
     </div>
   </div>
+  <div class="curso-info">
+    <h3>{{ sanitizeHTML(formData.nome) }}</h3>
+    <p>{{ sanitizeHTML(formData.descricao) }}</p>
+    <p>Professor: {{ sanitizeHTML(formData.professor_responsavel) }}</p>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { supabase } from '../config/supabase'
 import { useRouter, useRoute } from 'vue-router'
+import { sanitizeHTML } from '@/utils/sanitize'
 
 interface Modulo {
   id?: string
