@@ -199,30 +199,26 @@ const handleForgotClick = (e: Event) => {
 }
 
 // Função de recuperação de senha atualizada
+interface AuthError {
+  message: string;
+  status?: number;
+}
+
 const handleResetPassword = async () => {
-  console.log('Iniciando recuperação de senha...')
   try {
     loading.value = true
-    console.log('Email para recuperação:', resetEmail.value)
-
-    // Enviar solicitação de recuperação
+    
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.value, {
-      redirectTo: `${window.location.origin}/reset-password`
+      redirectTo: `${import.meta.env.VITE_SUPABASE_REDIRECT_URL}`
     })
 
-    if (error) {
-      console.error('Erro na recuperação:', error)
-      showToast('Erro ao enviar email de recuperação: ' + error.message, 'error')
-      return
-    }
+    if (error) throw error
 
-    console.log('Recuperação solicitada com sucesso')
     showForgotModal.value = false
-    showToast('Email de recuperação enviado com sucesso! Verifique sua caixa de entrada.', 'success')
-
-  } catch (e: any) {
-    console.error('Erro inesperado:', e)
-    showToast('Erro ao processar a recuperação de senha', 'error')
+    showToast('Email de recuperação enviado com sucesso!', 'success')
+  } catch (err) {
+    const error = err as AuthError
+    showToast('Erro ao enviar email: ' + error.message, 'error')
   } finally {
     loading.value = false
   }

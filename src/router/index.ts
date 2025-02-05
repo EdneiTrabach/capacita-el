@@ -68,11 +68,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/reset-password',
     name: 'ResetPassword',
-    component: () => import('../pages/ResetPassword.vue'),
-    meta: { 
-      requiresAuth: false,
-      isAuthRoute: true,
-      allowResetPassword: true // Nova flag para identificar a rota de reset
+    component: () => import('@/pages/ResetPassword.vue'),
+    meta: {
+      allowResetPassword: true,
+      isAuthRoute: true
     }
   },
   {
