@@ -209,11 +209,11 @@ const handleResetPassword = async () => {
     loading.value = true
     
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.value, {
-      redirectTo: `${import.meta.env.VITE_SUPABASE_REDIRECT_URL}`
+      // Altere para a URL completa do seu aplicativo
+      redirectTo: `${window.location.origin}/reset-password`
     })
 
     if (error) throw error
-
     showForgotModal.value = false
     showToast('Email de recuperação enviado com sucesso!', 'success')
   } catch (err) {
