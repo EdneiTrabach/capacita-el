@@ -17,6 +17,16 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    // Enable declaration file generation
+    rollupOptions: {
+      output: {
+        preserveModules: true
+      }
+    }
+  },
   server: {
     headers: {
       'X-Frame-Options': 'DENY',
