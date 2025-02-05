@@ -45,11 +45,9 @@ const shouldShowNavbar = computed(() => {
 <template>
   <div id="app" class="app-container">
     <Navbar v-if="shouldShowNavbar" @sidebar-toggle="handleSidebarToggle" />
-    <Suspense>
-      <main class="main-content" :class="{ 'with-sidebar': shouldShowNavbar, 'sidebar-collapsed': isSidebarCollapsed }">
-        <router-view />
-      </main>
-    </Suspense>
+    <main class="main-content" :class="{ 'with-sidebar': shouldShowNavbar, 'sidebar-collapsed': isSidebarCollapsed }">
+      <router-view />
+    </main>
   </div>
 </template>
 
