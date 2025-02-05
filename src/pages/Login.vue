@@ -134,30 +134,20 @@ const generateRandomChars = () => {
 
 const handleLogin = async () => {
   try {
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+    const { error: authError } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     })
-    
+
     if (authError) throw authError
 
-    // Check if user has access
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', authData.user.id)
-      .single()
-
-    if (profileError || !profileData) {
-      await supabase.auth.signOut()
-      throw new Error('Usuário não autorizado')
-    }
-
-    // Redirect to home page
-    router.push('/')
+    // Redireciona para a URL original ou home
+    const intendedUrl = sessionStorage.getItem('intendedUrl')
+    router.push(intendedUrl || '/')
+    sessionStorage.removeItem('intendedUrl')
   } catch (e) {
     console.error('Login error:', e)
-    error.value = 'Erro ao fazer login. Verifique suas credenciais ou contate o administrador.'
+    error.value = 'Erro ao fazer login. Verifique suas credenciais.'
   }
 }
 

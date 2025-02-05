@@ -82,6 +82,12 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: true,
       requiresAdmin: true
     }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../pages/NotFound.vue'),
+    meta: { requiresAuth: false }
   }
 ]
 
@@ -90,7 +96,7 @@ const router = createRouter({
   routes
 })
 
-// Navigation guard
+// Middleware de autenticação
 router.beforeEach(async (to, from, next) => {
   const { data: { session } } = await supabase.auth.getSession()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth !== false)
@@ -118,6 +124,8 @@ router.beforeEach(async (to, from, next) => {
   // Verifica se a rota requer autenticação
   if (requiresAuth) {
     if (!session) {
+      // Salva a URL tentada para redirect após login
+      sessionStorage.setItem('intendedUrl', to.fullPath)
       next('/login')
     } else {
       next()
