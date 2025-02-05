@@ -92,7 +92,10 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    return { top: 0 } // Sempre volta ao topo ao mudar de rota
+  }
 })
 
 // Middleware de autenticação
@@ -151,10 +154,28 @@ router.beforeEach(async (to, from, next) => {
   next()
 })
 
-// Adicione no final do arquivo, após a definição das rotas
+// Adicione um guard global de erro
+router.beforeEach((to, from, next) => {
+  // Se a rota não existe, redireciona para NotFound
+  if (!to.matched.length) {
+    next({ name: 'NotFound' })
+    return
+  }
+  next()
+})
+
+// Melhore o tratamento de erros
 router.onError((error) => {
   console.error('Router error:', error)
-  router.push('/') // Redireciona para home em caso de erro
+  if (error.message.includes('Failed to fetch dynamically imported module')) {
+    // Tenta recarregar a página apenas uma vez
+    if (!window.location.search.includes('reload')) {
+      window.location.search = '?reload=true'
+    } else {
+      // Se já tentou recarregar, redireciona para NotFound
+      router.push({ name: 'NotFound' })
+    }
+  }
 })
 
 export default router
