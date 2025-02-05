@@ -1,5 +1,9 @@
 <template>
   <div class="cursos-container">
+    <!-- Add toast component -->
+    <div v-if="toast.show" :class="['toast', toast.type]">
+      {{ toast.message }}
+    </div>
     <header class="cursos-header">
       <h1>Cursos Cadastrados</h1>
       <button @click="$router.push('/cursos')" class="btn-novo">
@@ -39,7 +43,7 @@
         </div>
 
         <div class="curso-body">
-          <p>{{ sanitizeHTML(curso.descricao) }}</p>
+          <p class="descriçao-card">{{ sanitizeHTML(curso.descricao) }}</p>
           <div class="info-grid">
             <div class="info-item">
               <span class="label">Status:</span>
@@ -108,6 +112,23 @@ export default {
     const statusFilter = ref('')
     const router = useRouter()
 
+    const toast = ref({
+      show: false,
+      message: '',
+      type: 'success'
+    })
+
+    const showToast = (message, type = 'success') => {
+      toast.value = {
+        show: true,
+        message,
+        type
+      }
+      setTimeout(() => {
+        toast.value.show = false
+      }, 3000)
+    }
+
     // Load courses from Supabase
     const loadCursos = async () => {
       try {
@@ -141,19 +162,17 @@ export default {
     // Toggle course status
     const toggleStatus = async (curso, newStatus) => {
       try {
-        // Only send the status field for update
         const { error: updateError } = await supabase
           .from('cursos')
           .update({ status: newStatus })
           .eq('id', curso.id)
 
         if (updateError) throw updateError
-
-        // Reload courses after successful update
         await loadCursos()
+        showToast(`Status do curso atualizado para ${newStatus}`, 'success')
       } catch (err) {
         console.error('Error updating course status:', err)
-        alert('Erro ao atualizar status do curso')
+        showToast('Erro ao atualizar status do curso', 'error')
       }
     }
 
@@ -169,10 +188,10 @@ export default {
           if (deleteError) throw deleteError
 
           await loadCursos()
-          alert('Curso excluído com sucesso')
+          showToast('Curso excluído com sucesso', 'success')
         } catch (err) {
           console.error('Error deleting course:', err)
-          alert('Erro ao excluir curso')
+          showToast('Erro ao excluir curso', 'error')
         }
       }
     }
@@ -227,7 +246,9 @@ export default {
       deletarCurso,
       editarCurso,
       formatDate,
-      sanitizeHTML
+      sanitizeHTML,
+      toast,
+      showToast
     }
   }
 }
@@ -780,5 +801,41 @@ export default {
   color: #193155;
   font-weight: 500;
   font-size: 0.95rem;
+}
+
+p.descriçao-card {
+    color: black;
+}
+
+/* Toast Notifications */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 9999;
+  animation: slideIn 0.3s ease-out;
+}
+
+.toast.success {
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+}
+
+.toast.error {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 </style>
