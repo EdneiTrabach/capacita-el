@@ -1,8 +1,8 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "routes": [
-    { "src": "/reset-password", "dest": "/index.html", "status": 200 }
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
   ]
 }
