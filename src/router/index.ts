@@ -102,7 +102,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    return { top: 0 } // Sempre volta ao topo ao mudar de rota
+    return { top: 0 }
   }
 })
 
