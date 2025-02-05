@@ -1,37 +1,42 @@
-import { supabase } from '@/config/supabase';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { supabase } from '@/config/supabase'
+import html2canvas from 'html2canvas/dist/html2canvas.js'
+import { jsPDF } from 'jspdf'
+
 export const certificateService = {
-    async generateCertificatePDF(certificado) {
-        // Clone o template e preencha com os dados
-        const template = document.createElement('div');
-        template.innerHTML = await this.getCertificateTemplate(certificado);
-        template.style.display = 'none';
-        document.body.appendChild(template);
-        try {
-            const canvas = await html2canvas(template, {
-                scale: 2,
-                useCORS: true,
-                logging: false
-            });
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'mm',
-                format: 'a4'
-            });
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-            return pdf;
-        }
-        finally {
-            document.body.removeChild(template);
-        }
-    },
-    async getCertificateTemplate(certificado) {
-        return `
+  async generateCertificatePDF(certificado) {
+    // Clone o template e preencha com os dados
+    const template = document.createElement('div')
+    template.innerHTML = await this.getCertificateTemplate(certificado)
+    template.style.display = 'none'
+    document.body.appendChild(template)
+    
+    try {
+      const canvas = await html2canvas(template, {
+        scale: 2,
+        useCORS: true,
+        logging: false
+      })
+      
+      const imgData = canvas.toDataURL('image/jpeg', 1.0)
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      })
+
+      const imgProps = pdf.getImageProperties(imgData)
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
+      
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight)
+      return pdf
+    } finally {
+      document.body.removeChild(template)
+    }
+  },
+
+  async getCertificateTemplate(certificado) {
+    return `
       <div class="certificate-container" style="
         width: 1123px;
         height: 794px;
@@ -131,5 +136,5 @@ export const certificateService = {
         </div>
       </div>
     `;
-    }
-};
+  }
+}

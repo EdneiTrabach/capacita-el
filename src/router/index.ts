@@ -114,11 +114,10 @@ router.beforeEach(async (to, from, next) => {
 
   // Verifica se é uma rota de autenticação (login, reset-password)
   if (isAuthRoute) {
-    // Se tiver uma sessão ativa, redireciona para home
     if (session) {
       next('/')
     } else {
-      next() // Permite acesso à rota de autenticação
+      next()
     }
     return
   }
@@ -130,27 +129,12 @@ router.beforeEach(async (to, from, next) => {
       sessionStorage.setItem('intendedUrl', to.fullPath)
       next('/login')
     } else {
+      // Se já está autenticado, permite o acesso
       next()
     }
     return
   }
 
-  // Verifica se a rota requer privilégios de administrador
-  if (isAdmin) {
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user?.id)
-      .single()
-
-    if (profile?.role !== 'admin') {
-      next('/')
-      return
-    }
-  }
-
-  // Para outras rotas
   next()
 })
 
@@ -168,13 +152,7 @@ router.beforeEach((to, from, next) => {
 router.onError((error) => {
   console.error('Router error:', error)
   if (error.message.includes('Failed to fetch dynamically imported module')) {
-    // Tenta recarregar a página apenas uma vez
-    if (!window.location.search.includes('reload')) {
-      window.location.search = '?reload=true'
-    } else {
-      // Se já tentou recarregar, redireciona para NotFound
-      router.push({ name: 'NotFound' })
-    }
+    window.location.reload()
   }
 })
 
