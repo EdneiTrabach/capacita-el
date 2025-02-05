@@ -53,12 +53,12 @@
             <span v-if="isExpanded" class="link-text">Cursos</span>
           </router-link>
         </li>
-        <li v-if="isAdmin">
+        <!-- <li v-if="isAdmin">
           <router-link to="/admin">
             <img src="/public/icons/config-usuario.svg" alt="Admin" class="icon" />
             <span v-if="isExpanded" class="link-text">Painel Admin</span>
           </router-link>
-        </li>
+        </li> -->
       </ul>
 
       <!-- Novo botão de logout -->
