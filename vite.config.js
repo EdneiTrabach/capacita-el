@@ -13,36 +13,33 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
-        },
+        }
     },
     build: {
         outDir: 'dist',
         sourcemap: true,
-        // Enable declaration file generation
         rollupOptions: {
             output: {
-                preserveModules: true
+                manualChunks: (id) => {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('vue') || id.includes('@vue')) {
+                            return 'vue-vendor';
+                        }
+                        if (id.includes('chart.js')) {
+                            return 'chart';
+                        }
+                        if (id.includes('@supabase')) {
+                            return 'supabase';
+                        }
+                        return 'vendor';
+                    }
+                }
             }
         }
     },
     server: {
         headers: {
-            'X-Frame-Options': 'DENY',
-            'X-Content-Type-Options': 'nosniff',
-            'X-XSS-Protection': '1; mode=block',
-            'Content-Security-Policy': `
-        default-src 'self';
-        connect-src 'self' https://*.supabase.co wss://*.supabase.co https://servicodados.ibge.gov.br;
-        script-src 'self' 'unsafe-inline' 'unsafe-eval';
-        style-src 'self' 'unsafe-inline';
-        img-src 'self' data: blob: https://*.supabase.co;
-        font-src 'self' data:;
-        frame-src 'self' https://www.google.com/;
-        base-uri 'self';
-      `.replace(/\s+/g, ' ').trim(),
-            'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-            'Referrer-Policy': 'strict-origin-when-cross-origin',
-            'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+            'X-Frame-Options': 'DENY'
         }
     }
 });
