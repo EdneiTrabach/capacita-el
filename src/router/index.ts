@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase } from '@/config/supabase'
 import type { RouteRecordRaw } from 'vue-router'
 import Home from '../pages/Home.vue'
 import AdminPanel from '../pages/AdminPanel.vue'
@@ -93,8 +93,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../pages/NotFound.vue'),
-    meta: { requiresAuth: false }
+    component: () => import('@/pages/NotFound.vue')
   }
 ]
 
