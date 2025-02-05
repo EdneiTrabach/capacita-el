@@ -7,11 +7,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueJsx(),
-    vueDevTools(),
-  ],
+  plugins: [vue(), vueJsx(), vueDevTools()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -19,31 +15,20 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
-    assetsDir: 'assets',
     rollupOptions: {
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
-            if (id.includes('vue') || id.includes('@vue')) {
-              return 'vue-vendor'
-            }
-            if (id.includes('chart.js')) {
-              return 'chart'
-            }
-            if (id.includes('@supabase')) {
-              return 'supabase'
-            }
+            if (id.includes('vue')) return 'vue-vendor'
+            if (id.includes('@supabase')) return 'supabase'
             return 'vendor'
           }
         }
       }
     }
   },
-  base: '/',
+  base: '',
   server: {
-    headers: {
-      'X-Frame-Options': 'DENY'
-    }
+    host: true
   }
 })
