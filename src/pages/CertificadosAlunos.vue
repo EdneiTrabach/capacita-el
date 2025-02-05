@@ -147,12 +147,22 @@
         </form>
       </div>
     </div>
+
+    <!-- Modal de Preview -->
+    <div v-if="showPreviewModal" class="modal-overlay" @click="closePreviewModal">
+      <div class="modal-content preview-modal" @click.stop>
+        <button class="close-btn" @click="closePreviewModal">×</button>
+        <iframe :src="previewUrl" class="preview-frame"></iframe>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { supabase } from '../config/supabase'
+import { ref } from 'vue'
+import { supabase } from '@/config/supabase'
 import { sanitizeHTML } from '@/utils/sanitize'
+import { certificateService } from '@/services/certificateService'
 
 export default {
   name: 'CertificadosAlunos',
@@ -177,7 +187,9 @@ export default {
         show: false,
         message: '',
         type: 'success'
-      }
+      },
+      showPreviewModal: false,
+      previewUrl: ''
     }
   },
   computed: {
@@ -232,14 +244,8 @@ export default {
 
     async downloadCertificado(certificado) {
       try {
-        const response = await api.certificados.download(certificado.id)
-        const blob = new Blob([response.data], { type: 'application/pdf' })
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `certificado-${certificado.codigo}.pdf`
-        link.click()
-        window.URL.revokeObjectURL(url)
+        const pdf = await certificateService.generateCertificatePDF(certificado)
+        pdf.save(`certificado-${certificado.codigo}.pdf`)
       } catch (error) {
         console.error('Erro ao baixar certificado:', error)
         this.showToast('Erro ao baixar certificado', 'error')
@@ -248,18 +254,16 @@ export default {
 
     async visualizarCertificado(certificado) {
       try {
-        const response = await axios.get(
-          `${API_URL}/certificados/${certificado.id}/pdf`,
-          { responseType: 'blob' }
-        );
-
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        window.URL.revokeObjectURL(url);
+        const pdf = await certificateService.generateCertificatePDF(certificado)
+        const blob = pdf.output('blob')
+        const url = URL.createObjectURL(blob)
+        
+        // Abrir modal com preview
+        this.previewUrl = url
+        this.showPreviewModal = true
       } catch (error) {
-        console.error('Erro ao visualizar certificado:', error);
-        alert('Erro ao visualizar certificado');
+        console.error('Erro ao visualizar certificado:', error)
+        this.showToast('Erro ao visualizar certificado', 'error')
       }
     },
 
@@ -470,6 +474,10 @@ export default {
         console.error('Erro ao emitir certificado:', error)
         this.showToast('Erro ao emitir certificado', 'error')
       }
+    },
+    closePreviewModal() {
+      this.showPreviewModal = false
+      this.previewUrl = ''
     },
     sanitizeHTML
   },
@@ -906,5 +914,41 @@ export default {
   .certificados-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.preview-modal {
+  width: 95%;
+  height: 95%;
+  max-width: none;
+  padding: 1rem;
+}
+
+.preview-frame {
+  width: 100%;
+  height: calc(100% - 40px);
+  border: none;
+}
+
+.close-btn {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  background: #193155;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: #254677;
+  transform: scale(1.1);
 }
 </style>

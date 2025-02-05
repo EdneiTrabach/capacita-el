@@ -360,6 +360,106 @@ const toggleStatus = async (usuario, status) => {
   }
 }
 
+// Função de atualização de status
+const atualizarStatusUsuario = async (id, status) => {
+  try {
+    const { error } = await supabase
+      .from('usuarios')
+      .update({ status })
+      .eq('id', id)
+
+    if (error) throw error
+
+    const index = usuarios.value.findIndex(u => u.id === id)
+    if (index !== -1) {
+      usuarios.value[index] = { ...usuarios.value[index], status }
+      showToast(`Status do usuário atualizado para ${status}`, 'success')
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar status:', error)
+    showToast('Não foi possível atualizar o status do usuário. Tente novamente.', 'error')
+  }
+}
+
+// Função de exclusão
+const deletarUsuario = async (id) => {
+  const usuario = usuarios.value.find(u => u.id === id)
+  if (!usuario) return
+
+  if (confirm(`Deseja realmente excluir o usuário ${usuario.nome}?\nEsta ação não poderá ser desfeita.`)) {
+    try {
+      const { error } = await supabase
+        .from('usuarios')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+
+      usuarios.value = usuarios.value.filter(u => u.id !== id)
+      showToast('Usuário excluído com sucesso!', 'success')
+    } catch (error) {
+      console.error('Erro ao excluir usuário:', error)
+      showToast('Não foi possível excluir o usuário. Tente novamente.', 'error')
+    }
+  }
+}
+
+const editarUsuario = async (usuario) => {
+  try {
+    editingUser.value = { ...usuario }
+    showEditModal.value = true
+  } catch (error) {
+    console.error('Erro ao preparar edição:', error)
+    showToast('Erro ao abrir formulário de edição', 'error')
+  }
+}
+
+const handleEditSubmit = async () => {
+  try {
+    const { error } = await supabase
+      .from('usuarios')
+      .update({
+        nome: editingUser.value.nome,
+        email: editingUser.value.email,
+        data_nascimento: editingUser.value.data_nascimento,
+        telefone: editingUser.value.telefone,
+        cidade: editingUser.value.cidade,
+        estado: editingUser.value.estado,
+        setor: editingUser.value.setor,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', editingUser.value.id)
+
+    if (error) throw error
+
+    // Atualiza o usuário na lista local
+    const index = usuarios.value.findIndex(u => u.id === editingUser.value.id)
+    if (index !== -1) {
+      usuarios.value[index] = { ...usuarios.value[index], ...editingUser.value }
+    }
+
+    showEditModal.value = false
+    showToast('Usuário atualizado com sucesso', 'success')
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error)
+    showToast('Erro ao atualizar usuário', 'error')
+  }
+}
+
+const closeEditModal = () => {
+  showEditModal.value = false
+  editingUser.value = {
+    id: null,
+    nome: '',
+    email: '',
+    data_nascimento: '',
+    telefone: '',
+    cidade: '',
+    estado: '',
+    setor: ''
+  }
+}
+
 // Lifecycle hooks
 onMounted(async () => {
   try {
@@ -381,6 +481,13 @@ const utils = {
   toggleStatus,
   showToast
 }
+
+defineExpose({
+  deletarUsuario,
+  editarUsuario,
+  handleEditSubmit,
+  closeEditModal
+})
 </script>
 
 <style scoped>
