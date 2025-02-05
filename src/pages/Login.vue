@@ -7,7 +7,7 @@
 
     <!-- Matrix Effect -->
     <div class="matrix-effect" v-if="showMatrix">
-      <div v-for="i in 50" :key="i" class="matrix-column" :style="{ 
+      <div v-for="i in 50" :key="i" class="matrix-column" :style="{
         left: `${Math.random() * 100}%`,
         animationDuration: `${2 + Math.random() * 3}s`,
         animationDelay: `${Math.random() * 2}s`
@@ -15,7 +15,7 @@
         {{ generateRandomChars() }}
       </div>
     </div>
-    
+
     <!-- Existing Login Card -->
     <div class="login-card">
       <div class="logo-container">
@@ -27,26 +27,16 @@
         <div class="form-group">
           <div class="input-container">
             <span class="input-icon">👤</span>
-            <input 
-              type="text" 
-              v-model="email"
-              placeholder=" "
-              :class="{ error: error }"
-            />
+            <input type="text" v-model="email" placeholder=" " :class="{ error: error }" />
             <label>Email</label>
           </div>
           <span class="error-message" v-if="error">{{ error }}</span>
         </div>
-        
+
         <div class="form-group">
           <div class="input-container">
             <span class="input-icon">🔒</span>
-            <input 
-              type="password" 
-              v-model="password"
-              placeholder=" "
-              :class="{ error: error }"
-            />
+            <input type="password" v-model="password" placeholder=" " :class="{ error: error }" />
             <label>Senha</label>
           </div>
           <span class="error-message" v-if="error">{{ error }}</span>
@@ -59,7 +49,7 @@
         <button type="submit" class="login-button">Entrar</button>
       </form>
     </div>
-    
+
     <!-- Modal de Recuperação de Senha -->
     <div v-if="showForgotModal" class="modal-overlay">
       <div class="modal-content">
@@ -68,32 +58,18 @@
           <div class="form-group">
             <div class="input-container">
               <span class="input-icon">📧</span>
-              <input 
-                type="email" 
-                v-model="resetEmail"
-                placeholder=" "
-                required
-              />
+              <input type="email" v-model="resetEmail" placeholder=" " required />
               <label>Email</label>
             </div>
           </div>
 
           <div class="modal-actions">
             <button type="button" @click="showForgotModal = false" class="btn-cancelar">
-              <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon-black"/>
+              <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon-black" />
               Cancelar
             </button>
-            <button 
-              type="submit" 
-              class="btn-enviar" 
-              :disabled="loading"
-            >
-              <img 
-                v-if="!loading" 
-                src="/public/icons/save-fill.svg" 
-                alt="Enviar" 
-                class="icon-black"
-              />
+            <button type="submit" class="btn-enviar" :disabled="loading">
+              <img v-if="!loading" src="/public/icons/save-fill.svg" alt="Enviar" class="icon-black" />
               <span v-else>...</span>
               {{ loading ? 'Enviando...' : 'Enviar' }}
             </button>
@@ -158,13 +134,13 @@ const handleRegister = async () => {
       email: email.value,
       password: password.value,
     })
-    
+
     if (authError) throw authError
 
     // Profile will be created automatically by the database trigger
     // Show success message
     alert('Registro realizado com sucesso! Verifique seu email para confirmar a conta.')
-    
+
   } catch (e) {
     console.error('Registration error:', e)
     error.value = 'Erro ao registrar usuário. Tente novamente.'
@@ -207,10 +183,10 @@ interface AuthError {
 const handleResetPassword = async () => {
   try {
     loading.value = true
-    
+
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.value, {
-      // Altere para a URL completa do seu aplicativo
-      redirectTo: `${window.location.origin}/reset-password`
+      redirectTo: import.meta.env.VITE_SUPABASE_REDIRECT_URL ||
+        'https://cursos-itilh.vercel.app/reset-password'
     })
 
     if (error) throw error
@@ -226,7 +202,6 @@ const handleResetPassword = async () => {
 </script>
 
 <style scoped>
-
 .icon-black {
   font-size: 1.2rem;
   width: 24px;
@@ -250,13 +225,15 @@ const handleResetPassword = async () => {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: 
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
   animation: gridMove 20s linear infinite;
-  pointer-events: none; /* Permite clicar através da camada */
-  z-index: 1; /* Garante que fique abaixo do card */
+  pointer-events: none;
+  /* Permite clicar através da camada */
+  z-index: 1;
+  /* Garante que fique abaixo do card */
 }
 
 /* Efeito de pulso tecnológico */
@@ -265,53 +242,55 @@ const handleResetPassword = async () => {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, 
-    rgba(255,255,255,0.1) 0%,
-    transparent 60%
-  );
+  background: radial-gradient(circle at center,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 60%);
   animation: techPulse 4s ease-in-out infinite;
-  pointer-events: none; /* Permite clicar através da camada */
-  z-index: 1; /* Garante que fique abaixo do card */
+  pointer-events: none;
+  /* Permite clicar através da camada */
+  z-index: 1;
+  /* Garante que fique abaixo do card */
 }
 
 @keyframes gridMove {
   0% {
     transform: translateY(0) scale(1);
   }
+
   50% {
     transform: translateY(-25px) scale(1.1);
   }
+
   100% {
     transform: translateY(0) scale(1);
   }
 }
 
 @keyframes techPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.5;
     transform: scale(1.2);
   }
 }
 
-@keyframes backgroundPulse {
-}
+@keyframes backgroundPulse {}
 
-@keyframes digitalMove {
+@keyframes digitalMove {}
 
-}
-
-@keyframes glowPulse {
-
-}
+@keyframes glowPulse {}
 
 /* Card de login com efeito de vidro */
 .login-card {
   position: relative;
-  z-index: 2; /* Garante que o card fique acima dos efeitos */
+  z-index: 2;
+  /* Garante que o card fique acima dos efeitos */
   background: rgba(255, 255, 255, 0.95);
   padding: 2.5rem;
   border-radius: 20px;
@@ -413,8 +392,8 @@ input {
 }
 
 /* Efeito de flutuação da label */
-input:focus + label,
-input:not(:placeholder-shown) + label {
+input:focus+label,
+input:not(:placeholder-shown)+label {
   top: -2rem;
   transform: translateX(-55px);
   font-size: 0.8rem;
@@ -458,6 +437,7 @@ input.error {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -501,6 +481,7 @@ input.error {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -510,6 +491,7 @@ input.error {
   0% {
     transform: translateY(-100%);
   }
+
   100% {
     transform: translateY(100%);
   }
@@ -543,6 +525,7 @@ input.error {
     transform: translateY(-100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(100vh);
     opacity: 0;
@@ -638,6 +621,7 @@ input.error {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -645,8 +629,15 @@ input.error {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Modal Overlay */
@@ -769,8 +760,13 @@ input:focus {
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideIn {
@@ -778,6 +774,7 @@ input:focus {
     transform: translateY(-20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;

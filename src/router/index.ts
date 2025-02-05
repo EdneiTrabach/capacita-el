@@ -72,6 +72,14 @@ const routes: RouteRecordRaw[] = [
     meta: {
       allowResetPassword: true,
       isAuthRoute: true
+    },
+    beforeEnter: (to, from, next) => {
+      // Verifica se tem hash com token
+      if (window.location.hash) {
+        next()
+      } else {
+        next('/login')
+      }
     }
   },
   {
