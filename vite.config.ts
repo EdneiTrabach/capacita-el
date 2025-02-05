@@ -20,6 +20,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
         manualChunks: (id) => {
@@ -39,6 +40,7 @@ export default defineConfig({
       }
     }
   },
+  base: '/',
   server: {
     headers: {
       'X-Frame-Options': 'DENY'

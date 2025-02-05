@@ -13,7 +13,7 @@
   ],
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html", "status": 200 }
+    { "src": "/.*", "dest": "/index.html" }
   ],
   "headers": [
     {
@@ -25,5 +25,6 @@
         }
       ]
     }
-  ]
+  ],
+  "version": 2
 }
