@@ -1,42 +1,75 @@
 <template>
   <div class="chart-wrapper">
-    <Bar v-if="chartData" :data="chartData" :options="chartOptions" />
+    <component 
+      :is="chartType" 
+      v-if="chartData" 
+      :data="chartData" 
+      :options="chartOptions" 
+    />
   </div>
 </template>
 
 <script>
-import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+import { Bar, Line, Pie, Doughnut, Bubble } from 'vue-chartjs'
+import { 
+  Chart as ChartJS, 
+  CategoryScale, 
+  LinearScale, 
+  BarElement, 
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title, 
+  Tooltip, 
+  Legend 
+} from 'chart.js'
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+ChartJS.register(
+  CategoryScale, 
+  LinearScale, 
+  BarElement, 
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title, 
+  Tooltip, 
+  Legend
+)
 
 export default {
   name: 'DashboardChart',
-  components: { Bar },
+  components: { Bar, Line, Pie, Doughnut, Bubble },
   props: {
-    matriculasPorCurso: {
+    type: {
+      type: String,
+      default: 'Bar',
+      validator: value => ['Bar', 'Line', 'Pie', 'Doughnut', 'Bubble'].includes(value)
+    },
+    data: {
       type: Object,
       required: true
+    },
+    options: {
+      type: Object,
+      default: () => ({})
     }
   },
   computed: {
+    chartType() {
+      return this.type
+    },
     chartData() {
-      return {
-        labels: Object.keys(this.matriculasPorCurso),
-        datasets: [{
-          label: 'Matrículas por Curso',
-          data: Object.values(this.matriculasPorCurso),
-          backgroundColor: '#3498db'
-        }]
-      }
+      return this.data
     },
     chartOptions() {
       return {
         responsive: true,
         maintainAspectRatio: false,
+        ...this.options,
         plugins: {
           legend: { position: 'top' },
-          title: { display: false }
+          title: { display: true },
+          ...this.options.plugins
         }
       }
     }

@@ -41,12 +41,22 @@
         <div class="usuario-header">
           <span class="usuario-avatar">{{ getInitials(usuario.nome) }}</span>
           <div class="actions">
-            <button @click="editarUsuario(usuario)" class="btn-edit">
-              <img src="/public/icons/edicao.svg" alt="Editar" class="icon"/>
+            <button 
+              @click="editarUsuario(usuario)" 
+              class="btn-edit"
+              :disabled="usuario.tem_certificado"
+              :title="usuario.tem_certificado ? 'Não é possível editar um usuário que possui certificados emitidos' : ''"
+            >
+              <img src="/public/icons/edicao.svg" alt="Editar" class="icon" />
               Editar
             </button>
-            <button @click="deletarUsuario(usuario.id)" class="btn-delete">
-              <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon"/>
+            <button 
+              @click="deletarUsuario(usuario.id)" 
+              class="btn-delete"
+              :disabled="usuario.tem_certificado"
+              :title="usuario.tem_certificado ? 'Não é possível excluir um aluno que possui certificados emitidos' : ''"
+            >
+              <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon" />
               Excluir
             </button>
           </div>
@@ -381,13 +391,41 @@ const atualizarStatusUsuario = async (id, status) => {
   }
 }
 
+// Adicione esta função para verificar certificados emitidos
+const verificarCertificadosEmitidos = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from('certificados')
+      .select('status')
+      .eq('usuario_id', userId)
+      .eq('status', 'emitido')
+      .single()
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 é "no rows returned"
+      throw error
+    }
+
+    return !!data // retorna true se houver certificado emitido
+  } catch (err) {
+    console.error('Error checking certificates:', err)
+    return false
+  }
+}
+
 // Função de exclusão
 const deletarUsuario = async (id) => {
   const usuario = usuarios.value.find(u => u.id === id)
   if (!usuario) return
 
-  if (confirm(`Deseja realmente excluir o usuário ${usuario.nome}?\nEsta ação não poderá ser desfeita.`)) {
-    try {
+  try {
+    // Primeiro verifica se o usuário tem certificados emitidos
+    const temCertificado = await verificarCertificadosEmitidos(id)
+    if (temCertificado) {
+      showToast('Não é possível excluir um aluno que possui certificados emitidos', 'error')
+      return
+    }
+
+    if (confirm(`Deseja realmente excluir o usuário ${usuario.nome}?\nEsta ação não poderá ser desfeita.`)) {
       const { error } = await supabase
         .from('usuarios')
         .delete()
@@ -397,10 +435,10 @@ const deletarUsuario = async (id) => {
 
       usuarios.value = usuarios.value.filter(u => u.id !== id)
       showToast('Usuário excluído com sucesso!', 'success')
-    } catch (error) {
-      console.error('Erro ao excluir usuário:', error)
-      showToast('Não foi possível excluir o usuário. Tente novamente.', 'error')
     }
+  } catch (error) {
+    console.error('Erro ao excluir usuário:', error)
+    showToast('Não é possível excluir o usuário. Tente novamente.', 'error')
   }
 }
 
@@ -491,6 +529,16 @@ defineExpose({
 </script>
 
 <style scoped>
+
+
+.btn-edit:disabled,
+.btn-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+
 .icon {
   font-size: 1.2rem;
   width: 24px;

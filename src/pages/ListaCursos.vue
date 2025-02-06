@@ -70,6 +70,7 @@
               <button 
                 @click="toggleStatus(curso, 'Em andamento')" 
                 :class="['status-btn', { active: curso.status === 'Em andamento' }]"
+                :disabled="curso.status === 'Finalizado' && hasCertificado"
               >
                 <img src="/public/icons/cursando.svg" alt="Em Andamento" class="icon-black" />
                 Em Andamento
@@ -77,6 +78,7 @@
               <button 
                 @click="toggleStatus(curso, 'Finalizado')" 
                 :class="['status-btn', { active: curso.status === 'Finalizado' }]"
+                :disabled="curso.status === 'Finalizado' && hasCertificado"
               >
                 <img src="/public/icons/check.svg" alt="Finalizado" class="icon-black" />
                 Finalizado
@@ -84,6 +86,7 @@
               <button 
                 @click="toggleStatus(curso, 'Cancelado')" 
                 :class="['status-btn', { active: curso.status === 'Cancelado' }]"
+                :disabled="curso.status === 'Finalizado' && hasCertificado"
               >
                 <img src="/public/icons/fechar.svg" alt="Cancelado" class="icon-black" />
                 Cancelado
@@ -127,6 +130,28 @@ export default {
       setTimeout(() => {
         toast.value.show = false
       }, 3000)
+      
+    }
+
+    // Add this function to check for issued certificates
+    const verificarCertificadosEmitidos = async (cursoId) => {
+      try {
+        const { data, error } = await supabase
+          .from('certificados')
+          .select('status')
+          .eq('curso_id', cursoId)
+          .eq('status', 'emitido')
+          .single()
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+          throw error
+        }
+
+        return !!data // returns true if there's an issued certificate
+      } catch (err) {
+        console.error('Error checking certificates:', err)
+        return false
+      }
     }
 
     // Load courses from Supabase
@@ -159,15 +184,26 @@ export default {
       }
     }
 
-    // Toggle course status
+    // Modify the toggleStatus function
     const toggleStatus = async (curso, newStatus) => {
       try {
+        // First check if course has issued certificates
+        if (curso.status === 'Finalizado' || newStatus === 'Finalizado') {
+          const temCertificado = await verificarCertificadosEmitidos(curso.id)
+          if (temCertificado) {
+            showToast('Não é possível alterar o status de um curso que possui certificados emitidos', 'error')
+            return
+          }
+        }
+    
+        // If we get here, we can proceed with status update
         const { error: updateError } = await supabase
           .from('cursos')
           .update({ status: newStatus })
           .eq('id', curso.id)
-
+    
         if (updateError) throw updateError
+        
         await loadCursos()
         showToast(`Status do curso atualizado para ${newStatus}`, 'success')
       } catch (err) {
@@ -176,30 +212,48 @@ export default {
       }
     }
 
-    // Delete course
-    const deletarCurso = async (id) => {
-      if (confirm('ATENÇÃO: Esta ação excluirá permanentemente o curso. Esta ação não pode ser desfeita. Você tem certeza que deseja continuar?')) {
-        try {
+    // Modify the deletarCurso function
+    const deletarCurso = async (curso) => {
+      try {
+        // First check if course is finished and has certificates
+        if (curso.status === 'Finalizado') {
+          const temCertificado = await verificarCertificadosEmitidos(curso.id)
+          if (temCertificado) {
+            showToast('Não é possível excluir um curso finalizado que possui certificados emitidos', 'error')
+            return
+          }
+        }
+    
+        // If we get here, we can proceed with deletion
+        if (confirm('ATENÇÃO: Esta ação excluirá permanentemente o curso. Esta ação não pode ser desfeita. Você tem certeza que deseja continuar?')) {
           const { error: deleteError } = await supabase
             .from('cursos')
             .delete()
-            .eq('id', id)
-
+            .eq('id', curso.id)
+    
           if (deleteError) throw deleteError
-
+          
           await loadCursos()
           showToast('Curso excluído com sucesso', 'success')
-        } catch (err) {
-          console.error('Error deleting course:', err)
-          showToast('Erro ao excluir curso', 'error')
         }
+      } catch (err) {
+        console.error('Error deleting course:', err)
+        showToast('Não é possível excluir um curso finalizado que possui certificados emitidos', 'error')
       }
     }
 
-    // Edit course
-    const editarCurso = (curso) => {
+    // Modify the editarCurso function
+    const editarCurso = async (curso) => {
+      if (curso.status === 'Finalizado') {
+        const temCertificado = await verificarCertificadosEmitidos(curso.id)
+        if (temCertificado) {
+          showToast('Não é possível editar um curso finalizado que possui certificados emitidos', 'error')
+          return
+        }
+      }
+
       router.push({
-        name: 'CadastroCursos', // Use o name em vez do path
+        name: 'CadastroCursos',
         params: { id: curso.id },
         query: { edit: 'true' }
       })
@@ -837,5 +891,16 @@ p.descriçao-card {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+.status-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #e9ecef;
+}
+
+.status-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
 }
 </style>
