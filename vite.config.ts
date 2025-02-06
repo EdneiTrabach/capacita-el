@@ -4,31 +4,27 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue(), vueJsx(), vueDevTools()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': path.resolve(__dirname, './src'),
     }
   },
   build: {
     outDir: 'dist',
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('vue')) return 'vue-vendor'
-            if (id.includes('@supabase')) return 'supabase'
-            return 'vendor'
-          }
-        }
+        manualChunks: undefined
       }
     }
   },
   base: '',
   server: {
-    host: true
+    host: true,
+    port: 3000
   }
 })
