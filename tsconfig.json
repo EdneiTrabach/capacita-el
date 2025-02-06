@@ -19,14 +19,14 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vite/client"]  // Add this line
+    "types": ["vite/client"]
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts", 
     "src/**/*.tsx", 
     "src/**/*.vue",
-    "env.d.ts"  // Add this line
+    "env.d.ts"
   ],
   "references": [
     {
