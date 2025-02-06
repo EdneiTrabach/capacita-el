@@ -3,196 +3,107 @@ import { supabase } from '@/config/supabase'
 import type { RouteRecordRaw } from 'vue-router'
 import Home from '../pages/Home.vue'
 import AdminPanel from '../pages/AdminPanel.vue'
+import Login from '@/pages/Login.vue'
+import Dashboard from '../pages/Dashboard.vue'
+import CadastroUsuarios from '../pages/CadastroUsuarios.vue'
+import ListaUsuarios from '../pages/ListaUsuarios.vue'
+import CadastroCursos from '../pages/CadastroCursos.vue'
+import ListaCursos from '../pages/ListaCursos.vue'
+import CertificadosAlunos from '../pages/CertificadosAlunos.vue'
+import Relatorios from '../pages/Relatorios.vue'
+import ResetPassword from '@/pages/ResetPassword.vue'
+import NotFound from '@/pages/NotFound.vue'
 
-// const routes: RouteRecordRaw[] = [
-//   {
-//     path: '/',
-//     name: 'home',
-//     component: Home,
-//     meta: { requiresAuth: true }
-//   },
-//   {
-//     path: '/login',
-//     name: 'Login',
-//     component: () => import('@/pages/Login.vue'),
-//     meta: { requiresAuth: false }
-//   },
-//   {
-//     path: '/dashboard',
-//     name: 'dashboard',
-//     component: () => import('../pages/Dashboard.vue'),
-//     meta: { requiresAuth: true }
-//   },
-//   {
-//     path: '/usuarios/:id?',  // Adicione parâmetro opcional
-//     name: 'CadastroUsuarios',
-//     component: () => import('../pages/CadastroUsuarios.vue'),
-//     meta: { requiresAuth: true }
-//   },
-//   {
-//     path: '/lista-usuarios',
-//     name: 'listaUsuarios',
-//     component: () => import('../pages/ListaUsuarios.vue'),
-//     meta: { requiresAuth: true }
-//   },
-//   {
-//     path: '/cursos/:id?',
-//     name: 'CadastroCursos',
-//     component: () => import('../pages/CadastroCursos.vue'),
-//     meta: { requiresAuth: true }
-//   },
-//   {
-//     path: '/cursos',
-//     name: 'cadastroCursos',
-//     component: () => import('../pages/CadastroCursos.vue'),
-//     meta: { requiresAuth: true }
-//   },
-//   {
-//     path: '/lista-cursos',
-//     name: 'ListaCursos',  // Make sure name matches exactly
-//     component: () => import('../pages/ListaCursos.vue'),
-//     meta: { requiresAuth: true }
-//   },
-//   {
-//     path: '/certificados',
-//     name: 'certificados',
-//     component: () => import('../pages/CertificadosAlunos.vue'),
-//     meta: { requiresAuth: true }
-//   },
-//   {
-//     path: '/relatorios',
-//     name: 'relatorios',
-//     component: () => import('../pages/Relatorios.vue'),
-//     meta: { requiresAuth: true }
-//   },
-//   {
-//     path: '/reset-password',
-//     name: 'ResetPassword',
-//     component: () => import('@/pages/ResetPassword.vue'),
-//     meta: {
-//       allowResetPassword: true,
-//       isAuthRoute: true
-//     },
-//     beforeEnter: (to, from, next) => {
-//       // Verifica se tem hash com token
-//       if (window.location.hash) {
-//         next()
-//       } else {
-//         next('/login')
-//       }
-//     }
-//   },
-//   {
-//     path: '/admin',
-//     component: AdminPanel,
-//     meta: { 
-//       requiresAuth: true,
-//       requiresAdmin: true
-//     }
-//   },
-//   {
-//     path: '/:pathMatch(.*)*',
-//     name: 'NotFound',
-//     component: () => import('@/pages/NotFound.vue'),
-//     meta: { requiresAuth: false }
-//   }
-// ]
+
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    name: 'home',
+    component: Home,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/pages/Login.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('../pages/Dashboard.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/usuarios/:id?',  // Adicione parâmetro opcional
+    name: 'CadastroUsuarios',
+    component: () => import('../pages/CadastroUsuarios.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/lista-usuarios',
+    name: 'listaUsuarios',
+    component: () => import('../pages/ListaUsuarios.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/cursos/:id?',
+    name: 'CadastroCursos',
+    component: () => import('../pages/CadastroCursos.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/cursos',
+    name: 'cadastroCursos',
+    component: () => import('../pages/CadastroCursos.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/lista-cursos',
+    name: 'ListaCursos',  // Make sure name matches exactly
+    component: () => import('../pages/ListaCursos.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/certificados',
+    name: 'certificados',
+    component: () => import('../pages/CertificadosAlunos.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/relatorios',
+    name: 'relatorios',
+    component: () => import('../pages/Relatorios.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: () => import('@/pages/ResetPassword.vue'),
+    meta: {
+      allowResetPassword: true,
+      isAuthRoute: true
+    }
+  },
+  {
+    path: '/admin',
+    component: AdminPanel,
+    meta: { 
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/pages/NotFound.vue'),
+    meta: { requiresAuth: false }
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes:[
-    {
-      path: '/',
-      name: 'home',
-      component: Home,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: () => import('@/pages/Login.vue'),
-      meta: { requiresAuth: false }
-    },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: () => import('../pages/Dashboard.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/usuarios/:id?',  // Adicione parâmetro opcional
-      name: 'CadastroUsuarios',
-      component: () => import('../pages/CadastroUsuarios.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/lista-usuarios',
-      name: 'listaUsuarios',
-      component: () => import('../pages/ListaUsuarios.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/cursos/:id?',
-      name: 'CadastroCursos',
-      component: () => import('../pages/CadastroCursos.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/cursos',
-      name: 'cadastroCursos',
-      component: () => import('../pages/CadastroCursos.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/lista-cursos',
-      name: 'ListaCursos',  // Make sure name matches exactly
-      component: () => import('../pages/ListaCursos.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/certificados',
-      name: 'certificados',
-      component: () => import('../pages/CertificadosAlunos.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/relatorios',
-      name: 'relatorios',
-      component: () => import('../pages/Relatorios.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/reset-password',
-      name: 'ResetPassword',
-      component: () => import('@/pages/ResetPassword.vue'),
-      meta: {
-        allowResetPassword: true,
-        isAuthRoute: true
-      },
-      beforeEnter: (to, from, next) => {
-        // Verifica se tem hash com token
-        if (window.location.hash) {
-          next()
-        } else {
-          next('/login')
-        }
-      }
-    },
-    {
-      path: '/admin',
-      component: AdminPanel,
-      meta: { 
-        requiresAuth: true,
-        requiresAdmin: true
-      }
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      name: 'NotFound',
-      component: () => import('@/pages/NotFound.vue'),
-      meta: { requiresAuth: false }
-    }
-  ],
+  routes,
   scrollBehavior(to, from, savedPosition) {
     return { top: 0 }
   }
