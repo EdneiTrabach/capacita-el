@@ -22,7 +22,7 @@ export default defineConfig({
       }
     }
   },
-  base: '',
+  base: '/',
   server: {
     host: true,
     port: 3000
