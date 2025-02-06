@@ -163,4 +163,5 @@ router.onError((error) => {
   }
 })
 
+// Certifique-se de que esta seja a única exportação default
 export default router
