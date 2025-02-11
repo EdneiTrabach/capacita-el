@@ -19,8 +19,8 @@
     <!-- Existing Login Card -->
     <div class="login-card">
       <div class="logo-container">
-        <img src="/public/icons/logo-itilh.svg" alt="Logo Itilh" class="logo" />
-        <h1>Capacita.EL</h1>
+        <img src="/public/icons/logo.png" alt="Logo Itilh" class="logo" />
+        <!-- <h1>Capacita.EL</h1> -->
       </div>
 
       <form @submit.prevent="handleLogin" class="login-form">
@@ -327,7 +327,7 @@ const handleResetPassword = async () => {
 }
 
 .logo {
-  width: 120px;
+  width: 200px;
   height: auto;
   margin-bottom: 1rem;
   animation: fadeIn 1s ease;

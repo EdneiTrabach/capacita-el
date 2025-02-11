@@ -6,7 +6,7 @@
       </button>
       
       <div class="logo-section">
-        <img src="../../public/icons/logo-itilh.svg" alt="Logo" class="logo" />
+        <img src="../../public/icons/logo-fill.jpeg" alt="Logo" class="logo" />
         <span v-if="isExpanded">Treinamentos</span>
       </div>
 
