@@ -58,7 +58,7 @@ export default (await import('vue')).defineComponent({
             }
             catch (err) {
                 console.error('Error updating course status:', err);
-                alert('Erro ao atualizar status do curso');
+                alert('Erro ao atualizar status do treinamento');
             }
         };
         // Delete course

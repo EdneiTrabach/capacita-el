@@ -44,7 +44,7 @@
         </div>
 
         <div class="filter-group">
-          <label>Status do Curso</label>
+          <label>Status do Treinamento</label>
           <div class="select-wrapper">
             <select v-model="filtros.statusCurso">
               <option value="">Todos</option>
@@ -57,7 +57,7 @@
         </div>
 
         <div class="filter-group">
-          <label>Status do Aluno</label>
+          <label>Status da Pessoa</label>
           <div class="select-wrapper">
             <select v-model="filtros.statusAluno">
               <option value="">Todos</option>

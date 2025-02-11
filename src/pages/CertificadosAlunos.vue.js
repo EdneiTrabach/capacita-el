@@ -346,7 +346,7 @@ function __VLS_template() {
     __VLS_elementAsFunction(__VLS_intrinsicElements.input, __VLS_intrinsicElements.input)({
         type: ("text"),
         value: ((__VLS_ctx.searchTerm)),
-        placeholder: ("Buscar por aluno ou curso..."),
+        placeholder: ("Buscar por pessoa ou curso..."),
     });
     __VLS_elementAsFunction(__VLS_intrinsicElements.select, __VLS_intrinsicElements.select)({
         value: ((__VLS_ctx.statusFilter)),

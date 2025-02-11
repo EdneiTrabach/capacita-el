@@ -95,7 +95,7 @@
         </div>
 
         <div class="filter-group">
-          <label>Status do Aluno</label>
+          <label>Status da Pessoa</label>
           <select v-model="alunosFilters.status">
             <option value="">Todos os status</option>
             <option value="ativo">Ativo</option>

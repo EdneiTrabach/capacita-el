@@ -13,7 +13,7 @@
     </header>
 
     <div class="search-bar">
-      <input type="text" v-model="searchTerm" placeholder="Buscar por aluno ou curso...">
+      <input type="text" v-model="searchTerm" placeholder="Buscar por pessoa ou curso...">
       <select v-model="statusFilter">
         <option value="">Todos os status</option>
         <option value="emitido">Emitido</option>

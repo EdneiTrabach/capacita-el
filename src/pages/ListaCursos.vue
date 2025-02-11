@@ -205,10 +205,10 @@ export default {
         if (updateError) throw updateError
         
         await loadCursos()
-        showToast(`Status do curso atualizado para ${newStatus}`, 'success')
+        showToast(`Status do Treinamento atualizado para ${newStatus}`, 'success')
       } catch (err) {
         console.error('Error updating course status:', err)
-        showToast('Erro ao atualizar status do curso', 'error')
+        showToast('Erro ao atualizar status do Treinamento', 'error')
       }
     }
 
