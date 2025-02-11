@@ -20,7 +20,7 @@
     <div class="login-card">
       <div class="logo-container">
         <img src="/public/icons/logo-itilh.svg" alt="Logo Itilh" class="logo" />
-        <h1>Cenecte-se</h1>
+        <h1>Capacita.EL</h1>
       </div>
 
       <form @submit.prevent="handleLogin" class="login-form">
