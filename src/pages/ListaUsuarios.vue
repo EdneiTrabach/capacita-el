@@ -7,7 +7,7 @@
       <h1>Pessoas Cadastradas</h1>
       <button @click="$router.push('/usuarios')" class="btn-novo">
         <img src="/public/icons/adicao.svg" alt="Novo" class="icon-black" />
-        Novo Aluno
+        Nova Pessoa
       </button>
     </header>
 
