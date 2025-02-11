@@ -74,8 +74,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { supabase } from '@/config/supabase'
 import { useRouter } from 'vue-router'
+import { supabase } from '@/config/supabase'
+
+const emit = defineEmits(['sidebarToggle']) // Adicione esta linha
 
 const router = useRouter()
 const isAdmin = ref(false)
@@ -96,6 +98,7 @@ const checkAdminStatus = async () => {
 
 const toggleSidebar = () => {
   isExpanded.value = !isExpanded.value
+  emit('sidebarToggle', !isExpanded.value) // Emite o evento para o App.vue
 }
 
 const handleLogout = async () => {
@@ -126,29 +129,32 @@ onMounted(() => {
 }
 
 .sidebar {
-  background-color: #193155;
+  background: linear-gradient(180deg, #193155 0%, #0f1f35 100%);
   color: white;
   height: 100vh;
-  width: 300px;
+  width: 280px;
   position: fixed;
   left: 0;
   top: 0;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   display: flex;
   flex-direction: column;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem 1rem;
 }
 
 .sidebar.collapsed {
-  width: 60px;
+  width: 80px;
+  padding: 1.5rem 0.5rem;
 }
 
 .toggle-btn {
-  position: absolute; /* Changed from fixed */
-  right: 10px; /* Changed positioning */
-  top: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  position: absolute;
+  right: -15px;
+  top: 25px;
+  background: #ffffff;
+  color: #193155;
   border: none;
   width: 30px;
   height: 30px;
@@ -157,8 +163,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 14px;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .toggle-btn:hover {

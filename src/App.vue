@@ -45,7 +45,13 @@ const shouldShowNavbar = computed(() => {
 <template>
   <div id="app" class="app-container">
     <Navbar v-if="shouldShowNavbar" @sidebar-toggle="handleSidebarToggle" />
-    <main class="main-content" :class="{ 'with-sidebar': shouldShowNavbar, 'sidebar-collapsed': isSidebarCollapsed }">
+    <main 
+      class="main-content" 
+      :class="{ 
+        'with-sidebar': shouldShowNavbar, 
+        'sidebar-collapsed': isSidebarCollapsed 
+      }"
+    >
       <router-view />
     </main>
   </div>
@@ -191,8 +197,8 @@ body {
 }
 
 .main-content.with-sidebar {
-  margin-left: 300px; /* Largura do sidebar expandido */
-  width: calc(100% - 300px);
+  margin-left: 280px; /* Largura do sidebar expandido */
+  width: calc(100% - 250px);
   transition: all 0.3s ease;
 }
 
@@ -200,6 +206,19 @@ body {
   margin-left: 60px; /* Largura do sidebar recolhido */
   width: calc(100% - 60px);
   transition: all 0.3s ease;
+}
+
+/* Ajuste para dispositivos móveis */
+@media (max-width: 768px) {
+  .main-content.with-sidebar {
+    margin-left: 60px;
+    width: calc(100% - 60px);
+  }
+
+  .main-content.with-sidebar.sidebar-collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 
 /* Para telas de autenticação (login e reset) */
