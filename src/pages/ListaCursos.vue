@@ -5,10 +5,10 @@
       {{ toast.message }}
     </div>
     <header class="cursos-header">
-      <h1>Cursos Cadastrados</h1>
+      <h1>Treinamentos Cadastrados</h1>
       <button @click="$router.push('/cursos')" class="btn-novo">
         <img src="/public/icons/adicao.svg" alt="Novo" class="icon-black" />
-        Novo Curso
+        Novo Treinamento
       </button>
     </header>
 

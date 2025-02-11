@@ -480,7 +480,7 @@ function __VLS_template() {
         ...{ class: ("cadastro-header") },
     });
     __VLS_elementAsFunction(__VLS_intrinsicElements.h1, __VLS_intrinsicElements.h1)({});
-    (__VLS_ctx.isEditing ? 'Editar Aluno' : 'Cadastro de Aluno');
+    (__VLS_ctx.isEditing ? 'Editar Aluno' : 'Cadastro de pessoas');
     __VLS_elementAsFunction(__VLS_intrinsicElements.form, __VLS_intrinsicElements.form)({
         ...{ onSubmit: (__VLS_ctx.handleSubmit) },
         ...{ class: ("cadastro-form") },

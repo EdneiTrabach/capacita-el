@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <header class="home-header">
-      <h1>Bem-vindo ao Sistema de Controle de Alunos e Cursos - ITILH</h1>
+      <h1>Bem-vindo ao Sistema de Gestão de Treinamentos do Grupo EL</h1>
       <!-- <div class="signature">
         Desenvolvido por Ednei Trabach
       </div> -->
@@ -22,8 +22,8 @@
         <div class="card-icon">
           <img src="/public/icons/add-usuario.svg" alt="Cadastro de Alunos" class="icon-home" />
         </div>
-        <h2>Cadastro de Alunos</h2>
-        <p>Gerenciar cadastros e edições de alunos</p>
+        <h2>Cadastro de pessoas</h2>
+        <p>Gerenciar cadastros e edições de pessoas</p>
         <div class="card-action">Acessar →</div>
       </div>
 

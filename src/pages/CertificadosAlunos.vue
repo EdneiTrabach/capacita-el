@@ -66,7 +66,7 @@
           <h3>{{ sanitizeHTML(certificado.usuario?.nome) }}</h3>
           <div class="info-grid">
             <div class="info-item">
-              <span class="label">Curso:</span>
+              <span class="label">Treinamento:</span>
               <span>{{ sanitizeHTML(certificado.curso?.nome) }}</span>
             </div>
             <div class="info-item">
@@ -114,7 +114,7 @@
           </div>
 
           <div class="form-group">
-            <label>Curso*</label>
+            <label>Treinamento*</label>
             <select v-model="novoCertificado.cursoId" required>
               <option value="">Selecione um curso finalizado</option>
               <option v-for="curso in cursos" :key="curso.id" :value="curso.id"

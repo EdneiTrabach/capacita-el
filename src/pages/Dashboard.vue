@@ -93,7 +93,7 @@
       <div class="stat-card">
         <div class="stat-icon">👥</div>
         <div class="stat-info">
-          <h3>Total de Alunos</h3>
+          <h3>Total de Pessoas</h3>
           <p class="stat-number">{{ totalUsuarios }}</p>
           <small class="stat-trend" :class="{ positive: usuariosTendencia > 0 }">
             {{ usuariosTendencia }}% este mês
@@ -122,7 +122,7 @@
       <div class="stat-card">
         <div class="stat-icon">📝</div>
         <div class="stat-info">
-          <h3>Alunos Ativos</h3>
+          <h3>Pessoas Ativas</h3>
           <p class="stat-number">{{ alunosAtivos }}</p>
           <small>Cursando: {{ alunosCursando }}</small>
         </div>
@@ -132,7 +132,7 @@
         <div class="stat-header">
           <div class="stat-icon">📚</div>
           <div class="stat-info">
-            <h3>Cursos</h3>
+            <h3>Treinamentos</h3>
             <p class="stat-number">{{ totalCursos }}</p>
             <div class="stat-details">
               <span class="status-badge em-andamento">
@@ -248,7 +248,7 @@
     </div> -->
 
     <div class="chart-container">
-      <h2 class="chart-title">Matrículas por Curso</h2>
+      <h2 class="chart-title">Matrículas por Treinamento</h2>
       <DashboardChart :matriculasPorCurso="matriculasPorCurso" />
     </div>
 

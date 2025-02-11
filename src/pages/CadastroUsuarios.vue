@@ -7,7 +7,7 @@
 
     <div class="cadastro-card">
       <header class="cadastro-header">
-        <h1>{{ isEditing ? 'Editar Aluno' : 'Cadastro de Aluno' }}</h1>
+        <h1>{{ isEditing ? 'Editar Aluno' : 'Cadastro de pessoas' }}</h1>
       </header>
 
       <form @submit.prevent="handleSubmit" class="cadastro-form">
@@ -25,7 +25,7 @@
           </div>
 
           <div class="form-group">
-            <label>Email</label>
+            <label>Email*</label>
             <input 
               type="email" 
               v-model="formData.email"
@@ -370,7 +370,7 @@ const isCPFValid = (cpf) => {
     sum = sum + parseInt(strCPF.substring(i - 1, i)) * (11 - i)
   }
   remainder = (sum * 10) % 11
-  if (remainder === 10 || remainder === 11) remainder = 0
+  if (remainder === 10 || 11) remainder = 0
   if (remainder !== parseInt(strCPF.substring(9, 10))) return false
   
   // Segundo dígito verificador
@@ -379,7 +379,7 @@ const isCPFValid = (cpf) => {
     sum = sum + parseInt(strCPF.substring(i - 1, i)) * (12 - i)
   }
   remainder = (sum * 10) % 11
-  if (remainder === 10 || remainder === 11) remainder = 0
+  if (remainder === 10 || 11) remainder = 0
   if (remainder !== parseInt(strCPF.substring(10, 11))) return false
   
   return true
@@ -411,14 +411,23 @@ const validateField = (field, value) => {
       if (!value) errors.nome = 'Nome é obrigatório'
       break
       
-    case 'documento':
-      if (value && !isCPFValid(value)) {
-        errors.documento = 'CPF inválido'
+    case 'email':
+      if (!value) {
+        errors.email = 'Email é obrigatório'
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        errors.email = 'Email inválido'
       }
       break
       
     case 'setor':
       if (!value) errors.setor = 'Origem é obrigatória'
+      break
+
+    // Os outros campos não são mais obrigatórios
+    case 'documento':
+      if (value && !isCPFValid(value)) {
+        errors.documento = 'CPF inválido'
+      }
       break
 
     case 'dataNascimento':
@@ -435,8 +444,6 @@ const validateField = (field, value) => {
         errors.telefone = 'Telefone inválido. Digite um número válido com DDD'
       }
       break
-      
-    // Adicione mais casos conforme necessário
   }
   
   return errors
@@ -469,10 +476,10 @@ watch(() => formData.value.dataNascimento, (newValue) => {
 const validateForm = () => {
   errors.value = {}
   
-  // Valida todos os campos obrigatórios
+  // Validar apenas os campos obrigatórios
   const allErrors = {
     ...validateField('nome', formData.value.nome),
-    ...validateField('documento', formData.value.documento),
+    ...validateField('email', formData.value.email),
     ...validateField('setor', formData.value.setor),
   }
   
@@ -486,13 +493,14 @@ const handleSubmit = async () => {
     try {
       const userData = {
         nome: formData.value.nome,
-        email: formData.value.email || null,
+        email: formData.value.email,
+        setor: formData.value.setor,
+        // Campos opcionais
         data_nascimento: formData.value.dataNascimento || null,
         telefone: formData.value.telefone || null,
         documento: formData.value.documento || null,
         cidade: formData.value.cidade || null,
         estado: formData.value.estado || null,
-        setor: formData.value.setor,
         updated_at: new Date().toISOString()
       }
 

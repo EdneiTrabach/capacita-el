@@ -128,6 +128,8 @@ body {
   display: flex;
   min-height: 100vh;
   width: 100%;
+  position: relative;
+  overflow-x: hidden;
 }
 
 main {
@@ -182,15 +184,22 @@ body {
 
 .main-content {
   flex: 1;
-  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  transition: all 0.3s ease;
+  width: 100%;
+  position: relative;
 }
 
 .main-content.with-sidebar {
-  margin-left: 250px; /* Largura do sidebar expandido */
+  margin-left: 300px; /* Largura do sidebar expandido */
+  width: calc(100% - 300px);
+  transition: all 0.3s ease;
 }
 
 .main-content.with-sidebar.sidebar-collapsed {
   margin-left: 60px; /* Largura do sidebar recolhido */
+  width: calc(100% - 60px);
+  transition: all 0.3s ease;
 }
 
 /* Para telas de autenticação (login e reset) */

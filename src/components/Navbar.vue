@@ -7,7 +7,7 @@
       
       <div class="logo-section">
         <img src="../../public/icons/logo-fill.jpeg" alt="Logo" class="logo" />
-        <span v-if="isExpanded">Treinamentos</span>
+        <span v-if="isExpanded">Capacita.EL</span>
       </div>
 
       <ul class="nav-links">
@@ -26,13 +26,13 @@
         <li>
           <router-link to="/usuarios">
             <img src="../../public/icons/add-usuario.svg" alt="Cadastro de Usuário" class="icon" />
-            <span v-if="isExpanded" class="link-text">Cadastro de Alunos</span>
+            <span v-if="isExpanded" class="link-text">Cadastro de pessoas</span>
           </router-link>
         </li>
         <li>
           <router-link to="/lista-usuarios">
             <img src="../../public/icons/config-usuario.svg" alt="Configuracoes de Usuário" class="icon" />
-            <span v-if="isExpanded" class="link-text">Gestão de Alunos</span>
+            <span v-if="isExpanded" class="link-text">Gestão de pessoas</span>
           </router-link>
         </li>
         <li>
@@ -50,7 +50,7 @@
         <li>
           <router-link to="/lista-cursos">
             <img src="../../public/icons/livros.svg" alt="Cursos" class="icon" />
-            <span v-if="isExpanded" class="link-text">Cursos</span>
+            <span v-if="isExpanded" class="link-text">Treinamentos</span>
           </router-link>
         </li>
         <!-- <li v-if="isAdmin">
@@ -129,7 +129,7 @@ onMounted(() => {
   background-color: #193155;
   color: white;
   height: 100vh;
-  width: 250px;
+  width: 300px;
   position: fixed;
   left: 0;
   top: 0;
