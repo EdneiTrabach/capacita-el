@@ -32,7 +32,7 @@
           <img src="/public/icons/config-usuario.svg" alt="Gestao de Alunos" class="icon-home" />
         </div>
         <h2>Gestão de Alunos</h2>
-        <p>Visualizar e gerenciar alunos cadastrados</p>
+        <p>Visualizar e gerenciar Pessoas cadastradas</p>
         <div class="card-action">Acessar →</div>
       </div>
 
