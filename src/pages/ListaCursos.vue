@@ -64,5 +64,5 @@ export default defineComponent({
 </script>
 
 <style>
-@import './ListaCursos.css';
+@import '../pages/ListaCursos.css';
 </style>
