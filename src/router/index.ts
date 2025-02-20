@@ -95,6 +95,24 @@ const router = createRouter({
       }
     },
     {
+      path: '/usuarios-sistema',
+      name: 'UsuariosSistema',
+      component: () => import('../pages/UsuariosSistema.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/permissoes',
+      name: 'Permissoes',
+      component: () => import('../pages/Permissoes.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/auditoria-acessos',
+      name: 'AuditoriaAcessos',
+      component: () => import('../pages/AuditoriaAcessos.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: () => import('@/pages/NotFound.vue'),
@@ -137,6 +155,20 @@ router.beforeEach(async (to, from, next) => {
       next()
     }
     return
+  }
+
+  if (to.meta.requiresAdmin) {
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user?.id)
+      .single()
+    
+    if (userData?.role !== 'admin') {
+      next('/')
+      return
+    }
   }
 
   next()

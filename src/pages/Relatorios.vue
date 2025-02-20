@@ -160,98 +160,143 @@
       </div>
     </div>
   </div>
-  <div class="report-data">
-    <h3>{{ sanitizeHTML(certificado.aluno_nome) }}</h3>
-    <p>{{ sanitizeHTML(certificado.curso_nome) }}</p>
-    <p>{{ sanitizeHTML(certificado.observacoes) }}</p>
+  <div v-if="selectedCertificado" class="report-data">
+    <h3>{{ sanitizeHTML(selectedCertificado.aluno_nome) }}</h3>
+    <p>{{ sanitizeHTML(selectedCertificado.curso_nome) }}</p>
+    <p>{{ sanitizeHTML(selectedCertificado.observacoes || '') }}</p>
   </div>
 </template>
 
-<script>
-import axios from 'axios';
-import API_URL from '../config/api';
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue'
+import { supabase } from '@/config/supabase'
 import { sanitizeHTML } from '@/utils/sanitize'
 
-export default {
-  name: 'Relatorios',
-  data() {
-    return {
-      showCertificadosReport: false,
-      showAlunosReport: false,
-      alunos: [],
-      cursos: [],
-      anos: [],
-      certificadosFilters: {
-        alunoId: '',
-        cursoId: '',
-        status: '',
-        dataInicio: '',
-        dataFim: '',
-        ano: ''
-      },
-      alunosFilters: {
-        cursoId: '',
-        status: '',
-        dataInicio: '',
-        dataFim: '',
-        conclusao: ''
-      }
-    }
-  },
-  methods: {
-    async loadData() {
-      try {
-        const [{ data: alunos }, { data: cursos }] = await Promise.all([
-          supabase.from('usuarios').select('*'),
-          supabase.from('cursos').select('*')
-        ])
+interface Certificado {
+  id: string
+  aluno_nome: string
+  curso_nome: string 
+  data_emissao: string
+  status: string
+  aluno_id: string
+  curso_id: string
+  observacoes?: string
+}
 
-        this.alunos = alunos || []
-        this.cursos = cursos || []
-        
-        // Generate years for filter (last 5 years)
-        const currentYear = new Date().getFullYear()
-        this.anos = Array.from({length: 5}, (_, i) => currentYear - i)
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error)
-      }
-    },
-    async gerarRelatorioCertificados() {
-      try {
-        const response = await axios.get(`${API_URL}/relatorios/certificados`, {
-          params: this.certificadosFilters
-        });
-        // Process the data for PDF generation
-        return response.data;
-      } catch (error) {
-        console.error('Erro ao gerar relatório:', error);
-        throw error;
-      }
-    },
-    async exportarCertificadosExcel() {
-      // Implementar exportação Excel
-    },
-    async gerarRelatorioAlunos() {
-      try {
-        const response = await axios.get(`${API_URL}/relatorios/alunos-por-curso`, {
-          params: this.alunosFilters
-        });
-        // Process the data for PDF generation
-        return response.data;
-      } catch (error) {
-        console.error('Erro ao gerar relatório:', error);
-        throw error;
-      }
-    },
-    async exportarAlunosExcel() {
-      // Implementar exportação Excel
-    },
-    sanitizeHTML
-  },
-  created() {
-    this.loadData();
+// Adicione o ref para certificado selecionado
+const selectedCertificado = ref<Certificado | null>(null)
+const certificados = ref<Certificado[]>([])
+const loading = ref(true)
+const error = ref('')
+const showCertificadosReport = ref(false)
+const showAlunosReport = ref(false)
+const alunos = ref([])
+const cursos = ref([])
+const anos = ref([])
+
+// Filtros
+const certificadosFilters = ref({
+  alunoId: '',
+  cursoId: '',
+  status: '',
+  dataInicio: '',
+  dataFim: '',
+  ano: ''
+})
+
+const alunosFilters = ref({
+  cursoId: '',
+  status: '',
+  dataInicio: '',
+  dataFim: '',
+  conclusao: ''
+})
+
+const loadData = async () => {
+  try {
+    loading.value = true
+    
+    // Carregar certificados
+    const { data, error: err } = await supabase
+      .from('certificados')
+      .select(`
+        *,
+        usuarios (nome),
+        cursos (nome)
+      `)
+      .order('created_at', { ascending: false })
+
+    if (err) throw err
+    
+    certificados.value = data?.map(cert => ({
+      id: cert.id,
+      aluno_nome: cert.usuarios?.nome || 'Nome não encontrado',
+      curso_nome: cert.cursos?.nome || 'Curso não encontrado',
+      data_emissao: cert.data_emissao,
+      status: cert.status
+    })) || []
+
+    // Carregar alunos e cursos para os filtros
+    const [{ data: alunosData }, { data: cursosData }] = await Promise.all([
+      supabase.from('usuarios').select('*'),
+      supabase.from('cursos').select('*')
+    ])
+
+    alunos.value = alunosData || []
+    cursos.value = cursosData || []
+
+    // Gerar anos para filtro
+    const currentYear = new Date().getFullYear()
+    anos.value = Array.from({ length: 5 }, (_, i) => currentYear - i)
+
+  } catch (err) {
+    console.error('Erro ao carregar dados:', err)
+    error.value = 'Erro ao carregar dados'
+  } finally {
+    loading.value = false
   }
 }
+
+const gerarRelatorioCertificados = async () => {
+  // Implemente a geração do relatório PDF
+  console.log('Gerando relatório de certificados...')
+}
+
+const exportarCertificadosExcel = async () => {
+  // Implemente a exportação para Excel
+  console.log('Exportando para Excel...')
+}
+
+const gerarRelatorioAlunos = async () => {
+  // Implemente a geração do relatório de alunos
+  console.log('Gerando relatório de alunos...')
+}
+
+const exportarAlunosExcel = async () => {
+  // Implemente a exportação para Excel
+  console.log('Exportando alunos para Excel...')
+}
+
+const filtrarCertificados = computed(() => {
+  return certificados.value.filter(cert => {
+    const matchAluno = !certificadosFilters.value.alunoId || 
+      cert.aluno_id === certificadosFilters.value.alunoId
+    
+    const matchCurso = !certificadosFilters.value.cursoId || 
+      cert.curso_id === certificadosFilters.value.cursoId
+    
+    const matchStatus = !certificadosFilters.value.status || 
+      cert.status === certificadosFilters.value.status
+    
+    // Adicione outros filtros conforme necessário
+    
+    return matchAluno && matchCurso && matchStatus
+  })
+})
+
+onMounted(() => {
+  loadData()
+})
 </script>
 
 <style scoped>
@@ -523,5 +568,35 @@ export default {
   .btn-export-excel {
     width: 100%;
   }
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error {
+  color: #dc3545;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+th, td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e4e8;
+}
+
+th {
+  background: #f8f9fa;
+  color: #193155;
+  font-weight: 600;
 }
 </style>

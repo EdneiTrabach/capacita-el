@@ -10,9 +10,17 @@
         <div class="admin-card">
           <h2>Gestão de Usuários</h2>
           <div class="admin-actions">
-            <button @click="$router.push('/lista-usuarios')">
-              <img src="../../public/icons/config-usuario.svg" alt="Usuários" class="icon"/>
-              Gerenciar Usuários
+            <button @click="$router.push('/usuarios-sistema')">
+              <img src="../../public/icons/users-list.svg" alt="Listar Usuários" class="icon"/>
+              Listar Usuários do Sistema
+            </button>
+            <button @click="$router.push('/permissoes')">
+              <img src="../../public/icons/user-roles.svg" alt="Permissões" class="icon"/>
+              Gerenciar Permissões
+            </button>
+            <button @click="$router.push('/auditoria-acessos')">
+              <img src="../../public/icons/audit.svg" alt="Auditoria" class="icon"/>
+              Auditoria de Acessos
             </button>
           </div>
         </div>
@@ -138,25 +146,29 @@ onMounted(() => {
 .admin-actions {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .admin-actions button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border: none;
+  border: 1px solid #193155;
   border-radius: 8px;
-  background: #193155;
-  color: white;
+  background: #ffffff;
+  color: #193155;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .admin-actions button:hover {
-  transform: translateY(-2px);
-  background: #254677;
+  background: #193155;
+  color: white;
+}
+
+.admin-actions button:hover .icon {
+  filter: brightness(0) invert(1);
 }
 
 .logs-container {
@@ -173,7 +185,6 @@ onMounted(() => {
 .icon {
   width: 20px;
   height: 20px;
-  filter: brightness(0) invert(1);
 }
 
 @media (max-width: 768px) {
