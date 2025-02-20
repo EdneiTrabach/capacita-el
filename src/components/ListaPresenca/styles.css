@@ -1,32 +1,63 @@
+/* Container principal com gradiente e padrão do projeto */
 .lista-presenca-container {
   padding: 2rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
 }
 
+/* Cabeçalho com o mesmo estilo dos outros componentes */
+.lista-presenca-container h1 {
+  color: #193155;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+/* Área de ações com melhor espaçamento */
 .actions {
   margin: 2rem 0;
+  display: flex;
+  justify-content: flex-end;
 }
 
+/* Botão de registro com hover effect */
 .btn-registrar {
-  background: #193155;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
   color: white;
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-family: 'JetBrains Mono', monospace;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(25, 49, 85, 0.2);
+}
+
+.btn-registrar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 49, 85, 0.3);
 }
 
 .btn-registrar:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
+/* Tabela com melhor visual */
 .presencas-table {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   overflow: hidden;
+  border: 1px solid #e0e4e8;
 }
 
 table {
@@ -35,7 +66,7 @@ table {
 }
 
 th, td {
-  padding: 1rem;
+  padding: 1.25rem;
   text-align: left;
   border-bottom: 1px solid #e0e4e8;
 }
@@ -44,30 +75,52 @@ th {
   background: #f8f9fa;
   color: #193155;
   font-weight: 600;
+  font-size: 0.95rem;
 }
 
-.error-message {
-  color: #dc3545;
-  margin-bottom: 1rem;
+td {
+  color: #2c3e50;
+  font-size: 0.95rem;
 }
 
-.success-message {
-  color: #28a745;
-  margin-bottom: 1rem;
-}
-
+/* Status badges com gradiente */
 .status-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-block;
 }
 
 .presente {
-  background: #e6f4ea;
-  color: #1e7e34;
+  background: linear-gradient(135deg, #198754 0%, #28a745 100%);
+  color: white;
 }
 
 .ausente {
-  background: #fbe9e7;
-  color: #d32f2f;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+}
+
+/* Mensagens de feedback */
+.error-message {
+  color: white;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.success-message {
+  color: white;
+  background: linear-gradient(135deg, #198754 0%, #28a745 100%);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+/* Hover effect nas linhas da tabela */
+tr:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease;
 }

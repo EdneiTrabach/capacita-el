@@ -11,11 +11,11 @@
           <h2>Gestão de Usuários</h2>
           <div class="admin-actions">
             <button @click="$router.push('/usuarios-sistema')">
-              <img src="../../public/icons/users-list.svg" alt="Listar Usuários" class="icon"/>
+              <img src="../../public/icons/list.svg" alt="Listar Usuários" class="icon"/>
               Listar Usuários do Sistema
             </button>
             <button @click="$router.push('/permissoes')">
-              <img src="../../public/icons/user-roles.svg" alt="Permissões" class="icon"/>
+              <img src="../../public/icons/porta.svg" alt="Permissões" class="icon"/>
               Gerenciar Permissões
             </button>
             <button @click="$router.push('/auditoria-acessos')">
