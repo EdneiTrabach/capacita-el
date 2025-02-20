@@ -39,6 +39,13 @@
               <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon" />
               Excluir
             </button>
+            <button 
+              @click="$router.push(`/curso/${curso.id}/presenca`)"
+              class="btn-presenca"
+            >
+              <img src="../../public/icons/check.svg" alt="Presença" class="icon"/>
+              Lista de Presença
+            </button>
           </div>
         </div>
 
