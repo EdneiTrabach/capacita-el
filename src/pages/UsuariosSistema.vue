@@ -80,6 +80,11 @@ const formatDate = (date: string) => {
   return new Date(date).toLocaleString('pt-BR')
 }
 
+const editarPermissoes = (usuario: Usuario) => {
+  // Implement your permission editing logic here
+  console.log('Editar permissões para:', usuario.email)
+}
+
 onMounted(() => {
   carregarUsuarios()
 })
