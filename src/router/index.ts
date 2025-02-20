@@ -115,7 +115,7 @@ const router = createRouter({
     {
       path: '/curso/:id/presenca',
       name: 'ListaPresenca',
-      component: () => import('../components/ListaPresenca.vue'),
+      component: () => import('../components/ListaPresenca/ListaPresenca.vue'),
       meta: { requiresAuth: true }
     },
     {
