@@ -2,6 +2,16 @@
 import { useListaPresenca } from './useListaPresenca'
 import './styles.css'
 
+interface Presenca {
+  id: string
+  aluno_id: string 
+  aluno_nome?: string
+  curso_id: string
+  data_aula: string
+  horario_registro: string
+  status: string
+}
+
 const {
   presencas,
   loading,
@@ -48,9 +58,9 @@ const {
         </thead>
         <tbody>
           <tr v-for="presenca in presencas" :key="presenca.id">
-            <td>{{ presenca.alunos?.nome }}</td>
+            <td>{{ presenca.aluno_nome }}</td>
             <td>{{ formatDate(presenca.data_aula) }}</td>
-            <td>{{ new Date(presenca.horario_registro).toLocaleTimeString('pt-BR') }}</td>
+            <td>{{ presenca.horario_registro }}</td>
             <td>
               <span :class="['status-badge', presenca.status]">
                 {{ presenca.status }}

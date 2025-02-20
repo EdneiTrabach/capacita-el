@@ -183,17 +183,29 @@ interface Certificado {
   observacoes?: string
 }
 
+// Adicione as interfaces
+interface Aluno {
+  id: string
+  nome: string
+}
+
+interface Curso {
+  id: string
+  nome: string
+}
+
 // Adicione o ref para certificado selecionado
 const selectedCertificado = ref<Certificado | null>(null)
+
+// Defina os tipos dos refs
+const alunos = ref<Aluno[]>([])
+const cursos = ref<Curso[]>([])
 const certificados = ref<Certificado[]>([])
 const loading = ref(true)
 const error = ref('')
 const showCertificadosReport = ref(false)
 const showAlunosReport = ref(false)
-const alunos = ref([])
-const cursos = ref([])
-const anos = ref([])
-
+const anos = ref<number[]>([])
 // Filtros
 const certificadosFilters = ref({
   alunoId: '',
@@ -228,12 +240,16 @@ const loadData = async () => {
 
     if (err) throw err
     
+    // Corrija o mapeamento dos certificados
     certificados.value = data?.map(cert => ({
       id: cert.id,
+      aluno_id: cert.usuario_id,
+      curso_id: cert.curso_id,
       aluno_nome: cert.usuarios?.nome || 'Nome não encontrado',
-      curso_nome: cert.cursos?.nome || 'Curso não encontrado',
+      curso_nome: cert.cursos?.nome || 'Curso não encontrado', 
       data_emissao: cert.data_emissao,
-      status: cert.status
+      status: cert.status,
+      observacoes: cert.observacoes
     })) || []
 
     // Carregar alunos e cursos para os filtros
