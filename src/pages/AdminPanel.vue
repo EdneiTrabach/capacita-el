@@ -180,6 +180,7 @@ onMounted(() => {
   padding: 0.5rem;
   border-bottom: 1px solid #e0e4e8;
   font-size: 0.9rem;
+  color: black;
 }
 
 .icon {
