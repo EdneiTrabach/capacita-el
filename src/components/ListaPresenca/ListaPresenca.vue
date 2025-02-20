@@ -7,6 +7,7 @@ const {
   loading,
   error,
   success,
+  cursoStatus,
   registrarPresenca,
   formatDate
 } = useListaPresenca()
@@ -19,7 +20,13 @@ const {
     <div v-if="error" class="error-message">{{ error }}</div>
     <div v-if="success" class="success-message">{{ success }}</div>
 
-    <div class="actions">
+    <!-- Mostra status do curso -->
+    <div class="curso-status">
+      Status do curso: {{ cursoStatus }}
+    </div>
+
+    <!-- Mostra o botão apenas se o curso estiver em andamento -->
+    <div v-if="cursoStatus === 'Em andamento'" class="actions">
       <button 
         @click="registrarPresenca" 
         :disabled="loading"

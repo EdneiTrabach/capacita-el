@@ -177,6 +177,21 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
+  // Adicione uma verificação específica para a rota de lista de presença
+  if (to.name === 'ListaPresenca') {
+    const cursoId = to.params.id
+    const { data, error } = await supabase
+      .from('cursos')
+      .select('status')
+      .eq('id', cursoId)
+      .single()
+
+    if (error || data?.status !== 'Em andamento') {
+      next('/')
+      return
+    }
+  }
+
   next()
 })
 

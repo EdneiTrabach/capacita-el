@@ -12,6 +12,7 @@ export function useListaPresenca() {
   const error = ref('')
   const success = ref('')
   const dataAula = ref(new Date().toISOString().split('T')[0])
+  const cursoStatus = ref('')
 
   const loadPresencas = async () => {
     try {
@@ -35,9 +36,38 @@ export function useListaPresenca() {
     }
   }
 
+  const verificarStatusCurso = async () => {
+    try {
+      const { data, error: statusError } = await supabase
+        .from('cursos')
+        .select('status')
+        .eq('id', cursoId)
+        .single()
+
+      if (statusError) throw statusError
+
+      if (data?.status !== 'Em andamento') {
+        error.value = 'Lista de presença disponível apenas para cursos em andamento'
+        return false
+      }
+
+      return true
+    } catch (err) {
+      console.error('Erro ao verificar status do curso:', err)
+      error.value = 'Erro ao verificar status do curso'
+      return false
+    }
+  }
+
   const registrarPresenca = async () => {
     try {
       loading.value = true
+      
+      const cursoAtivo = await verificarStatusCurso()
+      if (!cursoAtivo) {
+        return
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) throw new Error('Usuário não autenticado')
@@ -85,8 +115,27 @@ export function useListaPresenca() {
     return new Date(date).toLocaleDateString('pt-BR')
   }
 
-  onMounted(() => {
-    loadPresencas()
+  // Modificar a função buscarStatusCurso para carregar o status do curso
+  const buscarStatusCurso = async () => {
+    try {
+      const { data, error: statusError } = await supabase
+        .from('cursos')
+        .select('status')
+        .eq('id', cursoId)
+        .single()
+
+      if (statusError) throw statusError
+      cursoStatus.value = data?.status || ''
+    } catch (err) {
+      console.error('Erro ao buscar status do curso:', err)
+      error.value = 'Erro ao verificar status do curso'
+    }
+  }
+
+  // Chame buscarStatusCurso no onMounted
+  onMounted(async () => {
+    await buscarStatusCurso() // Carrega o status primeiro
+    await loadPresencas() // Depois carrega as presenças
   })
 
   return {
@@ -94,6 +143,7 @@ export function useListaPresenca() {
     loading,
     error,
     success,
+    cursoStatus,
     registrarPresenca,
     formatDate
   }
