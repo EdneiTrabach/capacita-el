@@ -30,9 +30,7 @@ export default {
       error,
       toast,
       loadUsuarios,
-      loadSetores,
-      deletarUsuario,
-      toggleStatus
+      loadSetores
     } = useUsuarios()
 
     const {
@@ -45,6 +43,36 @@ export default {
     } = useFilters(usuarios)
 
     // Métodos
+    const deletarUsuario = async (id) => {
+      const usuario = usuarios.value.find(u => u.id === id)
+      if (!usuario) return
+
+      if (confirm(`Deseja realmente excluir o usuário ${usuario.nome}?\nEsta ação não poderá ser desfeita.`)) {
+        try {
+          const { error: err } = await supabase
+            .from('usuarios')
+            .delete()
+            .eq('id', id)
+
+          if (err) throw err
+
+          await loadUsuarios()
+          toast.value = {
+            show: true,
+            message: 'Usuário excluído com sucesso!',
+            type: 'success'
+          }
+        } catch (error) {
+          console.error('Erro ao excluir usuário:', error)
+          toast.value = {
+            show: true,
+            message: 'Não foi possível excluir o usuário. Tente novamente.',
+            type: 'error'
+          }
+        }
+      }
+    }
+
     const editarUsuario = (usuario) => {
       editingUser.value = { ...usuario }
       showEditModal.value = true
@@ -146,7 +174,6 @@ export default {
       loadUsuarios,
       loadSetores,
       deletarUsuario,
-      toggleStatus,
       formatDate,
       getInitials,
       sanitizeHTML
