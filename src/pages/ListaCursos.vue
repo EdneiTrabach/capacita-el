@@ -17,9 +17,9 @@
       v-model:status="statusFilter"
     />
 
-    <CursosList
-      :cursos="cursosFiltrados"
-      :has-certificado="hasCertificado"
+    <CursosList 
+      :cursos="cursos"
+      :hasCertificado="false"
       @edit="editarCurso"
       @delete="deletarCurso"
       @status-change="toggleStatus"
@@ -40,14 +40,29 @@ export default defineComponent({
     CursosList
   },
   setup() {
-    const logic = useListaCursosLogic()
+    const { 
+      cursos,
+      searchTerm,
+      statusFilter,
+      editarCurso,
+      deletarCurso,
+      toggleStatus,
+      toast
+    } = useListaCursosLogic()
+
     return {
-      ...logic
+      cursos,
+      searchTerm,
+      statusFilter,
+      editarCurso,
+      deletarCurso,
+      toggleStatus,
+      toast
     }
   }
 })
 </script>
 
-<style scoped>
+<style>
 @import './ListaCursos.css';
 </style>

@@ -22,12 +22,22 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script lang="ts">
+import { defineComponent, PropType } from 'vue' // Adicionar PropType
 import CursoActions from './CursoActions.vue'
 import CursoInfo from './CursoInfo.vue'
 import StatusToggle from './StatusToggle.vue'
 import { sanitizeHTML } from '@/utils/sanitize'
+
+interface Curso {
+  id: number;
+  nome: string;
+  descricao: string;
+  status: string;
+  professor_responsavel: string;
+  data_inicio: string;
+  carga_horaria: number;
+}
 
 export default defineComponent({
   name: 'CursosList',
@@ -38,7 +48,7 @@ export default defineComponent({
   },
   props: {
     cursos: {
-      type: Array,
+      type: Array as PropType<Curso[]>,
       required: true
     },
     hasCertificado: {
@@ -53,3 +63,8 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+@import '../assets/ListaCursos.css';
+</style>
+

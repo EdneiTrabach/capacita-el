@@ -98,14 +98,40 @@ export function useListaCursosLogic() {
       if (updateError) throw updateError
       
       await loadCursos()
-      showToast(`Status do Treinamento atualizado para ${newStatus}`, 'success')
+      showToast(`Status atualizado para ${newStatus}`)
     } catch (err) {
-      console.error('Error updating course status:', err)
-      showToast('Erro ao atualizar status do Treinamento', 'error')
+      console.error('Erro ao atualizar status:', err)
+      showToast('Erro ao atualizar status', 'error')
     }
   }
 
-  // ... (outras funções como deletarCurso, editarCurso, etc)
+  // Adicionar função deletarCurso
+  const deletarCurso = async (id) => {
+    try {
+      const { error: deleteError } = await supabase
+        .from('cursos')
+        .delete()
+        .eq('id', id)
+
+      if (deleteError) throw deleteError
+      
+      // Recarregar lista após deletar
+      await loadCursos()
+      showToast('Curso excluído com sucesso')
+    } catch (err) {
+      console.error('Erro ao excluir curso:', err)
+      showToast('Erro ao excluir curso', 'error')
+    }
+  }
+
+  // Adicionar função editarCurso
+  const editarCurso = (curso) => {
+    router.push({
+      name: 'CadastroCursos',
+      params: { id: curso.id },
+      query: { edit: 'true' }
+    })
+  }
 
   const formatDate = (date) => {
     if (!date) return '--'
@@ -143,7 +169,7 @@ export function useListaCursosLogic() {
     loadCursos,
     toggleStatus,
     deletarCurso,
-    editarCurso,
+    editarCurso, // Função adicionada
     formatDate,
     sanitizeHTML,
     toast,

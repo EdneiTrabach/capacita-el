@@ -593,3 +593,7 @@ p.descriçao-card {
   transform: none;
   box-shadow: none;
 }
+
+.curso-info {
+  color: #676767;
+}
