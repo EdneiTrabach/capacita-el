@@ -20,7 +20,7 @@
 
       <div class="nav-card" @click="$router.push('/usuarios')">
         <div class="card-icon">
-          <img src="/public/icons/add-usuario.svg" alt="Cadastro de Alunos" class="icon-home" />
+          <img src="/public/icons/add-usuario.svg" alt="Cadastro de pessoas" class="icon-home" />
         </div>
         <h2>Cadastro de pessoas</h2>
         <p>Gerenciar cadastros e edições de pessoas</p>
@@ -29,9 +29,9 @@
 
       <div class="nav-card" @click="$router.push('/lista-usuarios')">
         <div class="card-icon">
-          <img src="/public/icons/config-usuario.svg" alt="Gestao de Alunos" class="icon-home" />
+          <img src="/public/icons/config-usuario.svg" alt="Gestao de pessoas" class="icon-home" />
         </div>
-        <h2>Gestão de Alunos</h2>
+        <h2>Gestão de pessoas</h2>
         <p>Visualizar e gerenciar Pessoas cadastradas</p>
         <div class="card-action">Acessar →</div>
       </div>
@@ -45,14 +45,14 @@
         <div class="card-action">Acessar →</div>
       </div>
 
-      <!-- <div class="nav-card" @click="$router.push('/relatorios')">
+      <div class="nav-card" @click="$router.push('/relatorios')">
         <div class="card-icon">
           <img src="/public/icons/relatorio.svg" alt="Relatorios" class="icon-home" />
         </div>
         <h2>Relatórios</h2>
         <p>Visualizar relatórios e estatísticas detalhadas</p>
         <div class="card-action">Acessar →</div>
-      </div> -->
+      </div>
 
       <div class="nav-card" @click="$router.push('/lista-cursos')">
         <div class="card-icon">

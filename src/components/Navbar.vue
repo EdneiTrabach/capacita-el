@@ -41,24 +41,24 @@
             <span v-if="isExpanded" class="link-text">Certificados</span>
           </router-link>
         </li>
-        <!-- <li>
+        <li>
           <router-link to="/relatorios">
             <img src="../../public/icons/relatorio.svg" alt="Relatórios" class="icon" />
             <span v-if="isExpanded" class="link-text">Relatórios</span>
           </router-link>
-        </li> -->
+        </li>
         <li>
           <router-link to="/lista-cursos">
             <img src="../../public/icons/livros.svg" alt="Cursos" class="icon" />
             <span v-if="isExpanded" class="link-text">Treinamentos</span>
           </router-link>
         </li>
-        <!-- <li v-if="isAdmin">
+        <li v-if="isAdmin">
           <router-link to="/admin">
             <img src="/public/icons/config-usuario.svg" alt="Admin" class="icon" />
             <span v-if="isExpanded" class="link-text">Painel Admin</span>
           </router-link>
-        </li> -->
+        </li>
       </ul>
 
       <!-- Novo botão de logout -->
