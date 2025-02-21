@@ -1,5 +1,6 @@
-// Novo arquivo: src/services/presencaService.ts
+// src/services/presencaService.ts
 import QRCode from 'qrcode'
+import { v4 as uuidv4 } from 'uuid'
 import { supabase } from '@/config/supabase'
 
 export const presencaService = {
@@ -19,25 +20,28 @@ export const presencaService = {
         return await QRCode.toDataURL(urlPresenca)
       }
 
-      // Gera novo código único usando UUID v4
-      const codigoAula = crypto.randomUUID()
+      // Gera novo código
+      const agora = new Date()
+      const validade = new Date(agora.getTime() + 15 * 60000)
+      const codigoAula = uuidv4()
 
-      // Salva o código no banco com horário de geração
-      const { error } = await supabase.from('codigos_aula').insert({
-        codigo: codigoAula,
-        curso_id: cursoId,
-        data_aula: dataAula,
-        horario_geracao: new Date().toISOString(),
-        validade: new Date(Date.now() + 1000 * 60 * 15) // 15 minutos
-      })
+      // Insere o novo código
+      const { error } = await supabase
+        .from('codigos_aula')
+        .insert({
+          codigo: codigoAula,
+          curso_id: cursoId,
+          data_aula: dataAula,
+          validade: validade.toISOString()
+        })
 
       if (error) throw error
 
       const urlPresenca = `https://registro-presenca.vercel.app?codigo=${codigoAula}`
       return await QRCode.toDataURL(urlPresenca)
 
-    } catch (err) {
-      console.error('Erro ao gerar código da aula:', err)
+    } catch (error) {
+      console.error('Erro ao gerar código da aula:', error)
       throw new Error('Não foi possível gerar o código da aula')
     }
   },
