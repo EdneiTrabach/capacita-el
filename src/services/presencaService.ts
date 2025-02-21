@@ -6,12 +6,22 @@ import { supabase } from '@/config/supabase'
 export const presencaService = {
   async gerarCodigoAula(cursoId: string, dataAula: string) {
     try {
-      // Verifica se já existe um código válido
+      const dataHoje = new Date().toISOString().split('T')[0]
+      const agora = new Date()
+      
+      // Adicione logs para debug
+      console.log('Gerando código para:', {
+        cursoId,
+        dataHoje,
+        agora: agora.toISOString()
+      })
+
+      // Verifica código existente
       const { data: codigoExistente } = await supabase
         .from('codigos_aula')
         .select('codigo')
         .eq('curso_id', cursoId)
-        .eq('data_aula', dataAula)
+        .eq('data_aula', dataHoje) // Usa a data de hoje
         .gt('validade', new Date().toISOString())
         .single()
 
@@ -21,23 +31,21 @@ export const presencaService = {
       }
 
       // Gera novo código
-      const agora = new Date()
-      const validade = new Date(agora.getTime() + 15 * 60000)
+      const validade = new Date(agora.getTime() + 15 * 60000) // 15 minutos
       const codigoAula = uuidv4()
 
-      // Insere o novo código
-      const { error } = await supabase
-        .from('codigos_aula')
-        .insert({
-          codigo: codigoAula,
-          curso_id: cursoId,
-          data_aula: dataAula,
-          validade: validade.toISOString()
-        })
+      const { error } = await supabase.from('codigos_aula').insert({
+        codigo: codigoAula,
+        curso_id: cursoId,
+        data_aula: dataHoje,
+        horario_geracao: agora.toISOString(),
+        validade: validade.toISOString()
+      })
 
       if (error) throw error
 
       const urlPresenca = `https://registro-presenca.vercel.app?codigo=${codigoAula}`
+      console.log('URL gerada:', urlPresenca)
       return await QRCode.toDataURL(urlPresenca)
 
     } catch (error) {
@@ -48,25 +56,38 @@ export const presencaService = {
 
   async validarCodigo(codigo: string) {
     try {
+      const agora = new Date().toISOString()
+      
       const { data, error } = await supabase
         .from('codigos_aula')
-        .select('*')
+        .select(`
+          *,
+          curso:cursos(id, nome)
+        `)
         .eq('codigo', codigo)
-        .gt('validade', new Date().toISOString())
+        .gt('validade', agora)
         .single()
 
+      console.log('Validação completa:', {
+        codigo,
+        agora,
+        resultado: data,
+        erro: error
+      })
+
       if (error) throw error
-      
       return data
     } catch (err) {
-      console.error('Erro ao validar código:', err)
+      console.error('Erro na validação:', err)
       throw new Error('Código inválido ou expirado')
     }
   },
 
   async validarPresenca(codigo: string, email: string) {
     try {
-      // 1. Valida o código da aula
+      console.log('Iniciando validação de presença:', { codigo, email })
+      
+      // Valida o código da aula
       const { data: dadosAula, error: erroCodigo } = await supabase
         .from('codigos_aula')
         .select(`
@@ -77,7 +98,10 @@ export const presencaService = {
         .gt('validade', new Date().toISOString())
         .single()
 
+      console.log('Dados da aula:', dadosAula)
+
       if (erroCodigo || !dadosAula) {
+        console.error('Erro na validação do código:', erroCodigo)
         throw new Error('Código inválido ou expirado')
       }
 
@@ -136,6 +160,7 @@ export const presencaService = {
       }
 
     } catch (err) {
+      console.error('Erro completo:', err)
       return {
         success: false,
         message: err instanceof Error ? err.message : 'Erro ao registrar presença'

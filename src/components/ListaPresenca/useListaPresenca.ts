@@ -65,7 +65,9 @@ export function useListaPresenca() {
   const registrarPresenca = async () => {
     try {
       loading.value = true
-      
+      error.value = ''
+      success.value = ''
+
       const cursoAtivo = await verificarStatusCurso()
       if (!cursoAtivo) {
         return
@@ -107,8 +109,7 @@ export function useListaPresenca() {
       success.value = 'Presença registrada com sucesso!'
       await loadPresencas()
     } catch (err) {
-      console.error('Erro ao registrar presença:', err)
-      error.value = 'Erro ao registrar presença'
+      error.value = err instanceof Error ? err.message : 'Erro ao registrar presença'
     } finally {
       loading.value = false
     }

@@ -151,19 +151,6 @@ const validarEmail = async () => {
     loading.value = false
   }
 }
-
-const registrarPresenca = async () => {
-  try {
-    const result = await presencaService.validarPresenca(codigoAula.value, email.value)
-    if (result.success) {
-      success.value = result.message
-    } else {
-      error.value = result.message
-    }
-  } catch (err) {
-    error.value = 'Erro ao registrar presença'
-  }
-}
 </script>
 
 <style scoped>
