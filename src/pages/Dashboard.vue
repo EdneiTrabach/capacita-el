@@ -251,11 +251,6 @@
       <h2 class="chart-title">Matrículas por Treinamento</h2>
       <DashboardChart :matriculasPorCurso="matriculasPorCurso" />
     </div>
-
-    <div v-if="userData" class="user-info">
-      <h3>{{ userData.nome ? sanitizeHTML(userData.nome) : 'Usuário' }}</h3>
-      <p>{{ userData.email ? sanitizeHTML(userData.email) : 'Email não disponível' }}</p>
-    </div>
   </div>
 </template>
 
