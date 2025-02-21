@@ -98,6 +98,7 @@ input[type="text"]:focus {
   justify-content: space-between;
   align-items: center;
   transition: all 0.2s ease;
+  color: black;
 }
 
 .aluno-item:hover {
@@ -165,6 +166,23 @@ input[type="text"]:focus {
 .btn-remove:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+}
+
+/* Mensagens de erro e sucesso */
+.error-message {
+  background-color: #ffe6e6;
+  color: #dc3545;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.success-message {
+  background-color: #e6ffe6;
+  color: #28a745;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
 }
 
 /* Responsividade */

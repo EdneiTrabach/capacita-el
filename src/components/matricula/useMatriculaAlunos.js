@@ -12,6 +12,8 @@ export function useMatriculaAlunos() {
   const alunosSelecionados = ref([])
   const searchTerm = ref('')
   const loading = ref(false)
+  const error = ref('')
+  const success = ref('')
 
   const alunosFiltrados = computed(() => {
     if (!searchTerm.value) return alunosDisponiveis.value
@@ -94,23 +96,31 @@ export function useMatriculaAlunos() {
     
     try {
       loading.value = true
+      error.value = ''
+      
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('Usuário não autenticado')
+
       const matriculasData = alunosSelecionados.value.map(alunoId => ({
         curso_id: cursoSelecionado.value,
         aluno_id: alunoId,
         status: 'ativo',
-        data_matricula: new Date().toISOString()
+        data_matricula: new Date().toISOString(),
+        created_by: session.user.id // Adiciona o usuário que está criando a matrícula
       }))
 
-      const { error } = await supabase
+      const { error: insertError } = await supabase
         .from('matriculas')
         .insert(matriculasData)
 
-      if (error) throw error
+      if (insertError) throw insertError
 
+      success.value = 'Alunos matriculados com sucesso!'
       await buscarAlunosDisponiveis()
       alunosSelecionados.value = []
-    } catch (error) {
-      console.error('Erro ao matricular alunos:', error)
+    } catch (err) {
+      console.error('Erro ao matricular alunos:', err)
+      error.value = err.message || 'Erro ao matricular alunos'
     } finally {
       loading.value = false
     }
@@ -146,6 +156,8 @@ export function useMatriculaAlunos() {
     alunosSelecionados,
     searchTerm,
     loading,
+    error,
+    success,
     toggleAluno,
     matricularAlunos,
     removerMatricula

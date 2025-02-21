@@ -4,6 +4,10 @@
       <h1>Matrícula de Alunos</h1>
     </div>
 
+    <!-- Mensagens de erro/sucesso -->
+    <div v-if="error" class="error-message">{{ error }}</div>
+    <div v-if="success" class="success-message">{{ success }}</div>
+
     <div class="curso-info" v-if="cursos[0]">
       <h2>{{ cursos[0].nome }}</h2>
       <p>Status: {{ cursos[0].status }}</p>
@@ -75,6 +79,8 @@ const {
   alunosSelecionados,
   searchTerm,
   loading,
+  error,
+  success,
   toggleAluno,
   matricularAlunos,
   removerMatricula
