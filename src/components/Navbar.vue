@@ -36,6 +36,18 @@
           </router-link>
         </li>
         <li>
+          <router-link to="/cursos">
+            <img src="../../public/icons/novo-curso.svg" alt="Cadastro de Cursos" class="icon" />
+            <span v-if="isExpanded" class="link-text">Novo de treinamentos</span>
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/lista-cursos">
+            <img src="../../public/icons/livros.svg" alt="Cursos" class="icon" />
+            <span v-if="isExpanded" class="link-text">Treinamentos</span>
+          </router-link>
+        </li>
+        <li>
           <router-link to="/certificados">
             <img src="../../public/icons/certificado.svg" alt="Certificados" class="icon" />
             <span v-if="isExpanded" class="link-text">Certificados</span>
@@ -45,12 +57,6 @@
           <router-link to="/relatorios">
             <img src="../../public/icons/relatorio.svg" alt="Relatórios" class="icon" />
             <span v-if="isExpanded" class="link-text">Relatórios</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/lista-cursos">
-            <img src="../../public/icons/livros.svg" alt="Cursos" class="icon" />
-            <span v-if="isExpanded" class="link-text">Treinamentos</span>
           </router-link>
         </li>
         <li v-if="isAdmin">

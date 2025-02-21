@@ -2,7 +2,7 @@
   <div class="cadastro-container">
     <div class="cadastro-card">
       <header class="cadastro-header">
-        <h1>{{ isEditing ? 'Editar Curso' : 'Novo Curso' }}</h1>
+        <h1>{{ isEditing ? 'Editar Curso' : 'Novo Treinamento' }}</h1>
       </header>
 
       <form @submit.prevent="handleSubmit" class="cadastro-form">
@@ -13,7 +13,7 @@
               type="text" 
               v-model="formData.nome"
               :class="{ error: errors.nome }"
-              placeholder="Digite o nome do curso"
+              placeholder="Digite o nome do treinamento"
             />
             <span class="error-message" v-if="errors.nome">{{ errors.nome }}</span>
           </div>
