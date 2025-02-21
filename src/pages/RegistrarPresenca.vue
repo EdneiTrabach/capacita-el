@@ -83,13 +83,26 @@ const onDecode = async (decodedString: string) => {
         curso:cursos(id, nome)
       `)
       .eq('codigo', decodedString)
+      .gt('validade', new Date().toISOString()) // Adiciona verificação de validade
       .single()
 
     if (error || !data) {
       throw new Error('Código inválido ou expirado')
     }
 
-    dadosAula.value = data as DadosAula
+    // Formata os dados antes de atribuir
+    const dadosFormatados: DadosAula = {
+      codigo: data.codigo,
+      curso_id: data.curso_id,
+      curso: {
+        id: data.curso.id,
+        nome: data.curso.nome
+      },
+      data_aula: data.data_aula,
+      horario_geracao: data.horario_geracao
+    }
+
+    dadosAula.value = dadosFormatados
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Código inválido'
     codigoLido.value = false
