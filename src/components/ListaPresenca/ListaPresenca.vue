@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useListaPresenca } from './useListaPresenca'
-import './styles.css'
+import './listaPresenca.css'
 
 interface Presenca {
   id: string
@@ -18,34 +18,49 @@ const {
   error,
   success,
   cursoStatus,
+  cursoNome,  // Adicione esta linha
+  qrCode,
   registrarPresenca,
-  formatDate
+  formatDate,
+  gerarQRCode
 } = useListaPresenca()
 </script>
 
 <template>
   <div class="lista-presenca-container">
-    <h1>Lista de Presença</h1>
+    <div class="lista-presenca-header">
+      <h1>
+        Lista de Presença
+        <span class="curso-nome">{{ cursoNome }}</span>
+      </h1>
+    </div>
 
     <div v-if="error" class="error-message">{{ error }}</div>
     <div v-if="success" class="success-message">{{ success }}</div>
 
-    <!-- Mostra status do curso -->
+    <!-- Status do curso -->
     <div class="curso-status">
-      Status do curso: {{ cursoStatus }}
+      <span class="curso-status-label">Status do curso:</span>
+      <span :data-status="cursoStatus">{{ cursoStatus }}</span>
     </div>
 
-    <!-- Mostra o botão apenas se o curso estiver em andamento -->
-    <div v-if="cursoStatus === 'Em andamento'" class="actions">
+    <!-- Seção QR Code para o professor -->
+    <div v-if="cursoStatus === 'Em andamento'" class="qr-code-section">
+      <div v-if="qrCode" class="qr-code-display">
+        <img :src="qrCode" alt="QR Code para presença" />
+        <p>Validade: 15 minutos</p>
+      </div>
+      
       <button 
-        @click="registrarPresenca" 
+        @click="gerarQRCode" 
         :disabled="loading"
-        class="btn-registrar"
+        class="btn-gerar-qr"
       >
-        {{ loading ? 'Registrando...' : 'Registrar Presença' }}
+        {{ loading ? 'Gerando...' : 'Gerar QR Code' }}
       </button>
     </div>
 
+    <!-- Tabela de presenças -->
     <div class="presencas-table">
       <table>
         <thead>

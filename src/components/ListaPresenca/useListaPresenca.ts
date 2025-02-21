@@ -1,18 +1,20 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '@/config/supabase'
+import { presencaService } from '@/services/presencaService'
 import { logSystemAction } from '@/utils/logger'
 import type { Presenca } from './types'
 
 export function useListaPresenca() {
   const route = useRoute()
   const cursoId = route.params.id
+  const cursoNome = ref('')  // Adicione esta linha
   const presencas = ref<Presenca[]>([])
-  const loading = ref(true)
+  const loading = ref(false)
   const error = ref('')
   const success = ref('')
-  const dataAula = ref(new Date().toISOString().split('T')[0])
   const cursoStatus = ref('')
+  const qrCode = ref('')
 
   const loadPresencas = async () => {
     try {
@@ -111,6 +113,27 @@ export function useListaPresenca() {
     }
   }
 
+  const gerarQRCode = async () => {
+    try {
+      loading.value = true
+      error.value = ''
+      
+      const dataAula = new Date().toISOString().split('T')[0]
+      qrCode.value = await presencaService.gerarCodigoAula(cursoId, dataAula)
+      
+      // Atualiza QR Code a cada 15 minutos
+      setTimeout(() => {
+        qrCode.value = ''
+      }, 15 * 60 * 1000)
+
+    } catch (err) {
+      console.error('Erro ao gerar QR Code:', err)
+      error.value = 'Erro ao gerar QR Code'
+    } finally {
+      loading.value = false
+    }
+  }
+
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('pt-BR')
   }
@@ -132,9 +155,27 @@ export function useListaPresenca() {
     }
   }
 
+  const buscarCurso = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('cursos')
+        .select('nome, status')
+        .eq('id', cursoId)
+        .single()
+
+      if (error) throw error
+      
+      cursoNome.value = data.nome  // Adicione esta linha
+      cursoStatus.value = data.status
+    } catch (err) {
+      console.error('Erro ao buscar curso:', err)
+      error.value = 'Erro ao carregar informações do curso'
+    }
+  }
+
   // Chame buscarStatusCurso no onMounted
   onMounted(async () => {
-    await buscarStatusCurso() // Carrega o status primeiro
+    await buscarCurso()  // Modifique para chamar buscarCurso
     await loadPresencas() // Depois carrega as presenças
   })
 
@@ -144,7 +185,10 @@ export function useListaPresenca() {
     error,
     success,
     cursoStatus,
+    cursoNome,  // Adicione esta linha
+    qrCode,
     registrarPresenca,
+    gerarQRCode,
     formatDate
   }
 }
