@@ -8,7 +8,8 @@ import type { Presenca } from './types'
 export function useListaPresenca() {
   const route = useRoute()
   const cursoId = route.params.id
-  const cursoNome = ref('')  // Adicione esta linha
+  const cursoNome = ref('')
+  const dataAula = ref('') // Adicione esta linha
   const presencas = ref<Presenca[]>([])
   const loading = ref(false)
   const error = ref('')
@@ -118,14 +119,15 @@ export function useListaPresenca() {
       loading.value = true
       error.value = ''
       
-      const dataAula = new Date().toISOString().split('T')[0]
-      qrCode.value = await presencaService.gerarCodigoAula(cursoId, dataAula)
+      // Certifique-se que cursoId é uma string
+      const cursoIdString = Array.isArray(cursoId) ? cursoId[0] : cursoId
+      const dataAulaAtual = new Date().toISOString().split('T')[0]
       
-      // Atualiza QR Code a cada 15 minutos
+      qrCode.value = await presencaService.gerarCodigoAula(cursoIdString, dataAulaAtual)
+      
       setTimeout(() => {
         qrCode.value = ''
       }, 15 * 60 * 1000)
-
     } catch (err) {
       console.error('Erro ao gerar QR Code:', err)
       error.value = 'Erro ao gerar QR Code'

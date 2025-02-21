@@ -104,6 +104,10 @@ const validarEmail = async () => {
     }
 
     // Verifica se o aluno está matriculado no curso
+    if (!dadosAula.value?.curso_id) {
+      throw new Error('Dados do curso não encontrados')
+    }
+
     const { data: matricula, error: matriculaError } = await supabase
       .from('matriculas')
       .select('id')
