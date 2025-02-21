@@ -33,17 +33,17 @@ export default defineComponent({
       {
         value: 'Em andamento',
         label: 'Em Andamento',
-        icon: '../public/icons/cursando.svg'
+        icon: '/icons/cursando.svg'
       },
       {
         value: 'Finalizado',
         label: 'Finalizado',
-        icon: '../public/icons/check.svg'
+        icon: '/icons/check.svg'
       },
       {
         value: 'Cancelado',
         label: 'Cancelado',
-        icon: '../public/icons/fechar.svg'
+        icon: '/icons/fechar.svg'
       }
     ]
 
