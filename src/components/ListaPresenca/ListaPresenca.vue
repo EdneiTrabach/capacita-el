@@ -1,16 +1,7 @@
 <script setup lang="ts">
 import { useListaPresenca } from './useListaPresenca'
+import type { Presenca } from '@/types/presenca'
 import './listaPresenca.css'
-
-interface Presenca {
-  id: string
-  aluno_id: string 
-  aluno_nome?: string
-  curso_id: string
-  data_aula: string
-  horario_registro: string
-  status: string
-}
 
 const {
   presencas,

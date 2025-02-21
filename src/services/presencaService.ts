@@ -2,6 +2,7 @@
 import QRCode from 'qrcode'
 import { v4 as uuidv4 } from 'uuid'
 import { supabase } from '@/config/supabase'
+import type { DadosAula, PresencaResponse } from '@/types/presenca'
 
 export const presencaService = {
   async gerarCodigoAula(cursoId: string, dataAula: string) {
@@ -83,7 +84,12 @@ export const presencaService = {
     }
   },
 
-  async validarPresenca(codigo: string, email: string) {
+  async validarPresenca(
+    codigo: string, 
+    email: string, 
+    feedback?: string, 
+    comentarios?: string
+  ): Promise<PresencaResponse> {
     try {
       console.log('Iniciando validação de presença:', { codigo, email })
       
@@ -149,6 +155,8 @@ export const presencaService = {
           curso_id: dadosAula.curso_id,
           data_aula: dadosAula.data_aula,
           status: 'presente',
+          feedback,
+          comentarios,
           horario_registro: new Date().toISOString()
         })
 
