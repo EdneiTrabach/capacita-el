@@ -3,16 +3,9 @@
   <div class="matricula-container">
     <h1>Matrícula de Alunos</h1>
 
-    <div class="filters">
-      <div class="filter-group">
-        <label>Selecione o Curso</label>
-        <select v-model="cursoSelecionado" @change="buscarAlunosDisponiveis">
-          <option value="">Selecione um curso</option>
-          <option v-for="curso in cursos" :key="curso.id" :value="curso.id">
-            {{ curso.nome }} ({{ curso.status }})
-          </option>
-        </select>
-      </div>
+    <div class="curso-info" v-if="cursos[0]">
+      <h2>{{ cursos[0].nome }}</h2>
+      <p>Status: {{ cursos[0].status }}</p>
     </div>
 
     <div v-if="cursoSelecionado" class="matricula-grid">
@@ -70,10 +63,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { supabase } from '@/config/supabase'
 
-const cursoSelecionado = ref('')
+const route = useRoute()
+const cursoId = route.params.cursoId
+const cursoSelecionado = ref(cursoId)
 const cursos = ref([])
 const alunosDisponiveis = ref([])
 const matriculas = ref([])
@@ -91,18 +87,19 @@ const alunosFiltrados = computed(() => {
   )
 })
 
-// Carrega cursos disponíveis
-const loadCursos = async () => {
+// Carrega curso específico
+const loadCurso = async () => {
   try {
     const { data, error } = await supabase
       .from('cursos')
       .select('*')
-      .order('created_at', { ascending: false })
+      .eq('id', cursoId)
+      .single()
 
     if (error) throw error
-    cursos.value = data
+    cursos.value = [data] // Array com apenas o curso selecionado
   } catch (error) {
-    console.error('Erro ao carregar cursos:', error)
+    console.error('Erro ao carregar curso:', error)
   }
 }
 
@@ -212,7 +209,10 @@ const removerMatricula = async (matriculaId) => {
 }
 
 // Carrega dados iniciais
-loadCursos()
+onMounted(() => {
+  loadCurso()
+  buscarAlunosDisponiveis()
+})
 </script>
 
 <style scoped>

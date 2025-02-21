@@ -71,6 +71,12 @@ const router = createRouter({
       component: () => import('@/pages/MatriculaAlunos.vue')
     },
     {
+      path: '/matricula-alunos/:cursoId',
+      name: 'MatriculaAlunos',
+      component: () => import('@/pages/MatriculaAlunos.vue'),
+      props: true
+    },
+    {
       path: '/certificados',
       name: 'certificados',
       component: () => import('../pages/CertificadosAlunos.vue'),

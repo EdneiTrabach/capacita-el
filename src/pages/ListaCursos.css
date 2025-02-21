@@ -110,7 +110,12 @@
   background: #f8f9fa;
   border-bottom: 1px solid #e0e4e8;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: nowrap;
+  align-content: center;
+
 }
 
 .curso-header h3 {
@@ -547,7 +552,7 @@
 }
 
 p.descriçao-card {
-    color: black;
+  color: black;
 }
 
 /* Toast Notifications */
@@ -576,6 +581,7 @@ p.descriçao-card {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
