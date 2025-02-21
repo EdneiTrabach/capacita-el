@@ -18,9 +18,8 @@ const {
   error,
   success,
   cursoStatus,
-  cursoNome,  // Adicione esta linha
+  cursoNome,
   qrCode,
-  registrarPresenca,
   formatDate,
   gerarQRCode
 } = useListaPresenca()
