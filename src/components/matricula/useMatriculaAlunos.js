@@ -105,8 +105,7 @@ export function useMatriculaAlunos() {
         curso_id: cursoSelecionado.value,
         aluno_id: alunoId,
         status: 'ativo',
-        data_matricula: new Date().toISOString(),
-        created_by: session.user.id // Adiciona o usuário que está criando a matrícula
+        data_matricula: new Date().toISOString()
       }))
 
       const { error: insertError } = await supabase
