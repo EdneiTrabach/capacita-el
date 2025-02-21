@@ -1,0 +1,77 @@
+.matricula-container {
+  padding: 2rem;
+}
+
+.matricula-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.alunos-list, .matriculados-list {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.aluno-item, .matricula-item {
+  padding: 0.75rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aluno-item:hover {
+  background-color: #f8f9fa;
+}
+
+.aluno-item.selected {
+  background-color: #e3f2fd;
+}
+
+.email {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.btn-matricular {
+  padding: 1rem 2rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-remove {
+  padding: 0.25rem 0.5rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.filters {
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  margin-bottom: 1rem;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.filter-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
