@@ -27,12 +27,31 @@
         <div class="card-action">Acessar →</div>
       </div>
 
+      
       <div class="nav-card" @click="$router.push('/lista-usuarios')">
         <div class="card-icon">
           <img src="/public/icons/config-usuario.svg" alt="Gestao de pessoas" class="icon-home" />
         </div>
         <h2>Gestão de pessoas</h2>
         <p>Visualizar e gerenciar Pessoas cadastradas</p>
+        <div class="card-action">Acessar →</div>
+      </div>
+      
+      <div class="nav-card" @click="$router.push('/cursos')">
+        <div class="card-icon">
+          <img src="/public/icons/novo-curso.svg" alt="Cadastro de cursos" class="icon-home" />
+        </div>
+        <h2>Novo de Treinamento</h2>
+        <p>Gerenciar cadastros e edições de treinamentos</p>
+        <div class="card-action">Acessar →</div>
+      </div>
+
+      <div class="nav-card" @click="$router.push('/lista-cursos')">
+        <div class="card-icon">
+          <img src="/public/icons/livros.svg" alt="Cursos" class="icon-home" />
+        </div>
+        <h2>Treinamentos</h2>
+        <p>Explorar Treinamentos</p>
         <div class="card-action">Acessar →</div>
       </div>
 
@@ -54,12 +73,12 @@
         <div class="card-action">Acessar →</div>
       </div>
 
-      <div class="nav-card" @click="$router.push('/lista-cursos')">
+      <div class="nav-card" @click="$router.push('/admin')">
         <div class="card-icon">
-          <img src="/public/icons/livros.svg" alt="Cursos" class="icon-home" />
+          <img src="/public/icons/config-usuario.svg" alt="Admin" class="icon-home" />
         </div>
-        <h2>Cursos</h2>
-        <p>Explorar Cursos</p>
+        <h2>Painel Admin</h2>
+        <p>Gerenciar usuários e configurações do sistema</p>
         <div class="card-action">Acessar →</div>
       </div>
 

@@ -93,6 +93,14 @@ onMounted(() => {
 <style scoped>
 .usuarios-sistema {
   padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #193155;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .usuarios-table {
@@ -100,6 +108,7 @@ onMounted(() => {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
 table {
@@ -117,28 +126,44 @@ th {
   background: #f8f9fa;
   font-weight: 600;
   color: #193155;
+  text-transform: uppercase;
+  font-size: 0.875rem;
 }
 
 button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 8px;
   border: none;
   margin-right: 0.5rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .btn-danger {
-  background: #dc3545;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;
 }
 
 .btn-success {
-  background: #28a745;
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
   color: white;
 }
 
 .btn-edit {
-  background: #193155;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
   color: white;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
 }
 </style>

@@ -202,6 +202,7 @@ body {
   margin-left: 280px; /* Largura do sidebar expandido */
   width: calc(100% - 250px);
   transition: all 0.3s ease;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .main-content.with-sidebar.sidebar-collapsed {

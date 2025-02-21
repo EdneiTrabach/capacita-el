@@ -59,22 +59,29 @@ const showNavigation = computed(() => {
   return !excludedRoutes.includes(route.path)
 })
 
-// Modifique o isSpecialRoute para verificar se contém o caminho base e dinâmico
+// Modifique o isSpecialRoute para incluir as rotas administrativas
 const isSpecialRoute = computed(() => {
   const currentPath = route.path
   return (
     currentPath.includes('/lista-presenca') || 
     currentPath.includes('/registrar-presenca') || 
     currentPath.includes('/matricula-alunos') ||
-    currentPath.includes('/curso/')
+    currentPath.includes('/curso/') ||
+    // Rotas administrativas
+    ['/usuarios-sistema', '/permissoes', '/auditoria-acessos'].includes(currentPath)
   )
 })
 
-// Modifique a função para determinar a rota de retorno
+// Modifique a função getBackRoute para determinar a rota de retorno
 const getBackRoute = computed(() => {
   const currentPath = route.path
   
-  // Se estiver em uma rota de curso (presença ou matrícula)
+  // Se estiver em uma rota administrativa
+  if (['/usuarios-sistema', '/permissoes', '/auditoria-acessos'].includes(currentPath)) {
+    return '/admin'  // Volta para o painel admin
+  }
+  
+  // Se estiver em uma rota de curso
   if (currentPath.includes('/curso/') || currentPath.includes('/matricula-alunos/')) {
     return '/lista-cursos'
   }
@@ -88,11 +95,11 @@ const getBackRoute = computed(() => {
     <!-- Se for rota especial, mostra apenas o botão de voltar -->
     <template v-if="isSpecialRoute">
       <button 
-        @click="router.push('/lista-cursos')"
+        @click="router.push(getBackRoute)"
         class="nav-btn prev-btn"
       >
         <img src="/icons/left.svg" alt="Voltar" class="icon-white" />
-        Voltar para Lista
+        {{ getBackRoute === '/admin' ? 'Voltar para Admin' : 'Voltar para Lista' }}
       </button>
     </template>
     
@@ -125,6 +132,7 @@ const getBackRoute = computed(() => {
   gap: 1rem;
   padding: 1.5rem;
   margin-top: auto;
+  background: #f8f9fa;
 }
 
 .nav-btn {

@@ -106,10 +106,13 @@ onMounted(() => {
 <style scoped>
 .permissoes-container {
   padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 h1 {
   color: #193155;
+  font-size: 1.5rem;
   margin-bottom: 2rem;
 }
 
@@ -170,5 +173,53 @@ select {
   text-align: center;
   padding: 2rem;
   color: #666;
+}
+
+.permissoes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.permissao-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.permissao-card h2 {
+  color: #193155;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.permissao-toggle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.2s ease;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.btn-save:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-save:active {
+  transform: translateY(0);
 }
 </style>

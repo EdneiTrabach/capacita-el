@@ -156,19 +156,24 @@ onMounted(() => {
   padding: 0.75rem 1rem;
   border: 1px solid #193155;
   border-radius: 8px;
-  background: #ffffff;
-  color: #193155;
+  background: #193155;
+  color: white;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .admin-actions button:hover {
-  background: #193155;
-  color: white;
+  background: #ffffff;
+  color: #193155;
+  border: 1px solid #193155;
+}
+
+.admin-actions button .icon {
+  filter: brightness(0) invert(1);
 }
 
 .admin-actions button:hover .icon {
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 
 .logs-container {

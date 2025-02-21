@@ -172,41 +172,67 @@ onMounted(() => {
 <style scoped>
 .auditoria-container {
   padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 h1 {
-  color: #193155;
+  color: white;
+  font-size: 1.8rem;
   margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  border-radius: 12px;
+  font-family: 'JetBrains Mono', monospace;
 }
 
+/* Filtros */
 .filters {
   display: flex;
   gap: 2rem;
   margin-bottom: 2rem;
   background: white;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .filter-group {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
-.filter-group input,
-.filter-group select {
-  padding: 0.5rem;
+label {
+  color: #193155;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+input[type="date"],
+select {
+  padding: 0.75rem;
   border: 1px solid #e0e4e8;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #193155;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
 }
 
+input[type="date"]:focus,
+select:focus {
+  outline: none;
+  border-color: #193155;
+  box-shadow: 0 0 0 2px rgba(25, 49, 85, 0.1);
+}
+
+/* Tabela */
 .logs-table {
   background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
 table {
@@ -214,27 +240,52 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #e0e4e8;
-}
-
 th {
   background: #f8f9fa;
   color: #193155;
   font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  padding: 1rem;
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
 }
 
+td {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e4e8;
+  color: #495057;
+}
+
+tr:hover {
+  background: #f8f9fa;
+}
+
+/* Botões */
 .btn-details {
-  padding: 0.5rem 1rem;
-  background: #193155;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
   color: white;
+  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
+.btn-details:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 49, 85, 0.2);
+}
+
+.btn-details:active {
+  transform: translateY(0);
+}
+
+/* Modal */
 .modal {
   position: fixed;
   top: 0;
@@ -243,38 +294,58 @@ th {
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
   background: white;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
   max-width: 600px;
   width: 90%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-.modal-content pre {
-  background: #f8f9fa;
-  padding: 1rem;
-  border-radius: 4px;
-  overflow: auto;
-  margin: 1rem 0;
+.modal h3 {
+  color: #193155;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .btn-close {
-  padding: 0.5rem 1rem;
-  background: #dc3545;
+  margin-top: 1.5rem;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
   color: white;
+  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.btn-close:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 49, 85, 0.2);
 }
 
 .loading {
-  text-align: center;
   padding: 2rem;
-  color: #666;
+  text-align: center;
+  color: #193155;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+pre {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #193155;
+  overflow-x: auto;
 }
 </style>
