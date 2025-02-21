@@ -1,4 +1,3 @@
-<!-- src/pages/RegistrarPresenca.vue -->
 <template>
   <div class="registrar-presenca">
     <h1>Registrar Presença</h1>
@@ -147,6 +146,37 @@ const validarEmail = async () => {
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Erro ao validar email'
     emailValidado.value = false
+  } finally {
+    loading.value = false
+  }
+}
+
+// Adicione esta função ao script setup
+const registrarPresenca = async () => {
+  try {
+    loading.value = true
+    error.value = ''
+    
+    if (!dadosAula.value?.codigo || !email.value) {
+      throw new Error('Dados insuficientes para registrar presença')
+    }
+
+    const resultado = await presencaService.validarPresenca(
+      dadosAula.value.codigo,
+      email.value
+    )
+
+    if (resultado) {
+      success.value = 'Presença registrada com sucesso!'
+      // Resetar estado
+      codigoLido.value = false
+      emailValidado.value = false
+      email.value = ''
+      dadosAula.value = null
+    }
+
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Erro ao registrar presença'
   } finally {
     loading.value = false
   }
