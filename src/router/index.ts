@@ -73,7 +73,11 @@ const router = createRouter({
     {
       path: '/matricula-alunos/:cursoId',
       name: 'MatriculaAlunos',
-      component: () => import('@/pages/MatriculaAlunos.vue'),
+      component: () => import('@/components/matricula/MatriculaAlunos.vue'),
+      meta: {
+        requiresAuth: true,
+        layout: 'default' // Isso ativará o layout com sidebar
+      },
       props: true
     },
     {

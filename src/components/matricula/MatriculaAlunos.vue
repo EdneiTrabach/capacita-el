@@ -1,6 +1,8 @@
 <template>
   <div class="matricula-container">
-    <h1>Matrícula de Alunos</h1>
+    <div class="matricula-header">
+      <h1>Matrícula de Alunos</h1>
+    </div>
 
     <div class="curso-info" v-if="cursos[0]">
       <h2>{{ cursos[0].nome }}</h2>
@@ -12,7 +14,7 @@
         <h3>Alunos Disponíveis</h3>
         <input 
           v-model="searchTerm" 
-          placeholder="Buscar alunos..."
+          placeholder="Buscar alunos..."q
           type="text"
         />
         <div class="alunos-list">
