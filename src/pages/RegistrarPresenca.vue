@@ -51,6 +51,17 @@ import { QrcodeStream } from 'vue-qrcode-reader'
 import { supabase } from '@/config/supabase'
 import { presencaService } from '@/services/presencaService'
 
+interface DadosAula {
+  codigo: string
+  curso_id: string
+  curso: {
+    id: string
+    nome: string
+  }
+  data_aula: string
+  horario_geracao: string
+}
+
 const codigoAula = ref('')
 const email = ref('')
 const loading = ref(false)
@@ -58,14 +69,13 @@ const error = ref('')
 const success = ref('')
 const codigoLido = ref(false)
 const emailValidado = ref(false)
-const dadosAula = ref(null)
+const dadosAula = ref<DadosAula | null>(null)
 
 const onDecode = async (decodedString: string) => {
   codigoAula.value = decodedString
   codigoLido.value = true
   
   try {
-    // Decodifica e valida o código da aula
     const { data, error } = await supabase
       .from('codigos_aula')
       .select(`
@@ -79,7 +89,7 @@ const onDecode = async (decodedString: string) => {
       throw new Error('Código inválido ou expirado')
     }
 
-    dadosAula.value = data
+    dadosAula.value = data as DadosAula
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Código inválido'
     codigoLido.value = false
