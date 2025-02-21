@@ -15,6 +15,10 @@
       <img src="../../public/icons/check.svg" alt="Presença" class="icon"/>
       Lista de Presença
     </button>
+
+    <router-link to="/matricula-alunos" class="btn">
+      Gerenciar Matrículas
+    </router-link>
   </div>
 </template>
 

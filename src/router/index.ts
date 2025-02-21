@@ -66,6 +66,11 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/matricula-alunos',
+      name: 'MatriculaAlunos',
+      component: () => import('@/pages/MatriculaAlunos.vue')
+    },
+    {
       path: '/certificados',
       name: 'certificados',
       component: () => import('../pages/CertificadosAlunos.vue'),
