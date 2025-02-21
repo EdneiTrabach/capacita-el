@@ -15,24 +15,26 @@ export const presencaService = {
         .single()
 
       if (codigoExistente) {
-        return await QRCode.toDataURL(codigoExistente.codigo)
+        const urlPresenca = `https://registro-presenca.vercel.app?codigo=${codigoExistente.codigo}`
+        return await QRCode.toDataURL(urlPresenca)
       }
 
-      // Gera novo código único
-      const codigoAula = `${cursoId}-${dataAula}-${Date.now()}`
-      
-      // Salva o código no banco com validade de 15 minutos
+      // Gera novo código único usando UUID v4
+      const codigoAula = crypto.randomUUID()
+
+      // Salva o código no banco com horário de geração
       const { error } = await supabase.from('codigos_aula').insert({
         codigo: codigoAula,
         curso_id: cursoId,
         data_aula: dataAula,
-        validade: new Date(Date.now() + 1000 * 60 * 15)
+        horario_geracao: new Date().toISOString(),
+        validade: new Date(Date.now() + 1000 * 60 * 15) // 15 minutos
       })
 
       if (error) throw error
 
-      // Retorna QR Code
-      return await QRCode.toDataURL(codigoAula)
+      const urlPresenca = `https://registro-presenca.vercel.app?codigo=${codigoAula}`
+      return await QRCode.toDataURL(urlPresenca)
 
     } catch (err) {
       console.error('Erro ao gerar código da aula:', err)
