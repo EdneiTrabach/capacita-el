@@ -18,7 +18,7 @@ const {
   <div class="navigation-buttons" v-if="showNavigation">
     <template v-if="isSpecialRoute">
       <button 
-        @click="router.push(getBackRoute)"
+        @click="router.push({ path: getBackRoute })"
         class="nav-btn prev-btn"
       >
         <img src="/icons/left.svg" alt="Voltar" class="icon-white" />

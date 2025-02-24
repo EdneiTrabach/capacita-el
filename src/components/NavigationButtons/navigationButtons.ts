@@ -39,7 +39,7 @@ export function useNavigation() {
     return route.path.includes('/edit') || route.path.includes('/new')
   })
 
-  const getBackRoute = computed(() => {
+  const getBackRoute = computed((): string => {
     if (route.path.includes('/admin')) return '/admin'
     return '/lista-cursos'  // rota padrão de retorno
   })
