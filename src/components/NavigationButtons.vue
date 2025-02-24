@@ -89,7 +89,12 @@ const getBackRoute = computed(() => {
   return -1
 })
 
-// Remova as duas declarações anteriores e mantenha apenas esta
+// Change the navigation method to ensure a string route is passed
+const navigate = (route: string) => {
+  router.push(route)
+}
+
+// OR if you need to use numbers, convert them to string
 const navigate = (route: string | number) => {
   router.push(String(route))
 }
@@ -121,7 +126,6 @@ const navigate = (route: string | number) => {
       <button 
         @click="goToNext" 
         :disabled="!hasNext"
-        class="nav-btn next-btn"
       >
         Próximo
         <img src="/icons/right.svg" alt="Próximo" class="icon-white" />

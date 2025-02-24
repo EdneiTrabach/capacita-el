@@ -5,8 +5,7 @@ import { useRoute } from 'vue-router'
 import { supabase } from './config/supabase'
 import type { Component } from 'vue'
 import Navbar from './components/Navbar.vue'
-import NavigationButtons from './components/NavigationButtons.vue'
-
+import NavigationButtons from '@/components/NavigationButtons/NavigationButtons.vue'
 const route = useRoute()
 const isSidebarCollapsed = ref(false)
 

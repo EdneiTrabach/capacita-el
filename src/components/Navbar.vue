@@ -67,6 +67,29 @@
         </li>
       </ul>
 
+      <div class="utility-section">
+        <button class="utility-btn" @click="toggleNotifications">
+          <img src="../../public/icons/bell.svg" alt="Notificações" class="icon" />
+          <span v-if="isExpanded" class="link-text">
+            Notificações
+            <span v-if="notificationCount > 0" class="notification-badge">
+              {{ notificationCount }}
+            </span>
+          </span>
+        </button>
+
+        <button class="utility-btn" @click="toggleTheme">
+          <img 
+            :src="`../../public/icons/${isDarkMode ? 'sun' : 'moon'}.svg`" 
+            :alt="isDarkMode ? 'Modo Claro' : 'Modo Escuro'" 
+            class="icon" 
+          />
+          <span v-if="isExpanded" class="link-text">
+            {{ isDarkMode ? 'Modo Claro' : 'Modo Escuro' }}
+          </span>
+        </button>
+      </div>
+
       <!-- Novo botão de logout -->
       <div class="logout-section">
         <button @click="handleLogout" class="logout-btn"> <!-- Changed to button -->
@@ -124,6 +147,27 @@ const handleLogout = async () => {
   }
 }
 
+const isDarkMode = ref(localStorage.getItem('theme') === 'dark')
+
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value
+  localStorage.setItem('theme', isDarkMode.value ? 'dark' : 'light')
+  document.documentElement.classList.toggle('dark-mode')
+}
+
+onMounted(() => {
+  if (isDarkMode.value) {
+    document.documentElement.classList.add('dark-mode')
+  }
+})
+
+const notificationCount = ref(0)
+
+const toggleNotifications = () => {
+  // Implemente a lógica de notificações aqui
+  console.log('Toggling notifications')
+}
+
 onMounted(() => {
   checkAdminStatus()
 })
@@ -134,20 +178,21 @@ onMounted(() => {
   position: relative;
 }
 
+/* Ajuste na classe .sidebar */
 .sidebar {
   background: linear-gradient(180deg, #193155 0%, #0f1f35 100%);
   color: white;
-  height: 100vh;
   width: 280px;
   position: fixed;
   left: 0;
   top: 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   padding: 1.5rem 1rem;
+  height: 100vh; /* Altura total da viewport */
+  min-height: min-content; /* Garante que o conteúdo mínimo seja mostrado */
 }
 
 .sidebar.collapsed {
@@ -197,11 +242,40 @@ onMounted(() => {
   height: 30px;
 }
 
+/* Ajuste na classe .nav-links */
 .nav-links {
-  list-style: none;
-  padding: 1rem 0;
-  margin: 0;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+  padding-left: 0;
+  width: 100%;
+  margin: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar personalizada */
+.nav-links::-webkit-scrollbar {
+  width: 6px;  /* Largura da scrollbar */
+}
+
+.nav-links::-webkit-scrollbar-track {
+  background: rgba(181, 102, 111, 0.1);  /* Track em bordô sutil */
+  border-radius: 3px;
+}
+
+.nav-links::-webkit-scrollbar-thumb {
+  background: rgba(181, 102, 111, 0.3);  /* Thumb em bordô */
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* Hover na scrollbar */
+.nav-links::-webkit-scrollbar-thumb:hover {
+  background: rgba(181, 102, 111, 0.5);  /* Hover em bordô mais forte */
 }
 
 .nav-links li {
@@ -228,6 +302,7 @@ onMounted(() => {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1rem;
   margin-top: auto;
+  flex-shrink: 0; /* Impede que a seção encolha */
 }
 
 .logout-btn {
@@ -255,10 +330,13 @@ onMounted(() => {
   filter: brightness(0) invert(1); /* Add this line to make SVG white */
 }
 
+/* Adicione estas classes para garantir que os textos longos se ajustem */
 .link-text {
   white-space: nowrap;
   opacity: 1;
   transition: opacity 0.3s ease;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Adiciona "..." quando o texto é muito longo */
 }
 
 .collapsed .link-text {
@@ -270,6 +348,7 @@ onMounted(() => {
 @media (max-width: 768px) {
   .sidebar {
     width: 60px;
+    padding: 1.5rem 0.5rem;
   }
   
   .sidebar.collapsed {
@@ -284,5 +363,99 @@ onMounted(() => {
   .toggle-btn {
     top: 10px;
   }
+}
+
+.utility-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto; /* Empurra para baixo */
+  flex-shrink: 0; /* Impede que a seção encolha */
+}
+
+/* Ajuste para os botões de utilidade */
+.utility-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.utility-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+/* Estilos para o modo escuro */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #193155;
+}
+
+:root.dark-mode {
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+}
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+  .utility-section {
+    align-items: center;
+  }
+  
+  .utility-btn {
+    width: auto;
+    padding: 0.75rem;
+  }
+  
+  .notification-badge {
+    right: 0;
+  }
+}
+
+/* Adicione estilos para a barra de rolagem personalizada */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 </style>
