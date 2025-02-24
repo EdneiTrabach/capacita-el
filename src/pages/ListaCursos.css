@@ -19,6 +19,8 @@
   background-color: #f8f9fa;
   min-height: 100vh;
   font-family: 'JetBrains Mono', monospace;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 /* Header com gradiente e melhor contraste */
@@ -31,6 +33,7 @@
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--header-gradient);
 }
 
 .cursos-header h1 {
@@ -53,6 +56,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
 }
 
 .btn-novo:hover {
@@ -81,6 +86,9 @@
   color: #2c3e50;
   flex: 1;
   transition: all 0.3s ease;
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
 }
 
 .search-bar input:focus,
@@ -96,17 +104,17 @@
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: transform 0.3s ease;
-  border: 1px solid rgba(25, 49, 85, 0.1);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 300px;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e4e8;
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
 }
 
 .curso-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .curso-header {
@@ -193,12 +201,9 @@
   cursor: pointer;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 120px;
-  justify-content: center;
+  transition: all 0.2s ease;
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
 }
 
 .btn-edit {
@@ -236,14 +241,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  min-width: 0; /* Previne overflow */
-  word-wrap: break-word;
+  color: var(--text-secondary);
 }
 
 .label {
   font-size: 0.85rem;
   color: #495057;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 /* Melhorando o contraste dos valores */
@@ -322,6 +327,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
 }
 
 .status-btn:hover {
@@ -333,6 +340,8 @@
   border-color: transparent;
   transform: translateY(-2px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
 }
 
 .status-btn.active:nth-child(1) {
@@ -421,6 +430,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
 }
 
 .btn-edit {
@@ -458,6 +469,29 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 9999;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: var(--card-shadow);
+}
+
+.toast.success {
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+  background: var(--toast-success-bg);
+}
+
+.toast.error {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--toast-error-bg);
 }
 
 /* Status Colors */
@@ -505,6 +539,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  min-width: 120px;
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+
 }
 
 /* Cores específicas para cada botão */

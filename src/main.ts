@@ -1,8 +1,14 @@
 import './assets/main.css'
+import './assets/theme.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/index' // especifique o caminho completo
+
+// Configuração inicial do tema
+const savedTheme = localStorage.getItem('theme') || 
+                  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+document.documentElement.classList.toggle('dark', savedTheme === 'dark')
 
 const app = createApp(App)
 

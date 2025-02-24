@@ -78,16 +78,7 @@
           </span>
         </button>
 
-        <button class="utility-btn" @click="toggleTheme">
-          <img 
-            :src="`/icons/${isDarkMode ? 'sun' : 'moon'}.svg`" 
-            :alt="isDarkMode ? 'Modo Claro' : 'Modo Escuro'" 
-            class="icon" 
-          />
-          <span v-if="isExpanded" class="link-text">
-            {{ isDarkMode ? 'Modo Claro' : 'Modo Escuro' }}
-          </span>
-        </button>
+        <ThemeToggle :show-text="isExpanded" />
       </div>
 
       <!-- Novo botão de logout -->
@@ -105,6 +96,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/config/supabase'
+import ThemeToggle from './ThemeToggle.vue'
 
 const emit = defineEmits(['sidebarToggle']) // Adicione esta linha
 
@@ -147,18 +139,11 @@ const handleLogout = async () => {
   }
 }
 
-const isDarkMode = ref(localStorage.getItem('theme') === 'dark')
-
-const toggleTheme = () => {
-  isDarkMode.value = !isDarkMode.value
-  localStorage.setItem('theme', isDarkMode.value ? 'dark' : 'light')
-  document.documentElement.classList.toggle('dark-mode')
-}
+const isDarkMode = ref(false)
+const toggleTheme = () => {}
 
 onMounted(() => {
-  if (isDarkMode.value) {
-    document.documentElement.classList.add('dark-mode')
-  }
+  checkAdminStatus()
 })
 
 const notificationCount = ref(0)
@@ -180,8 +165,8 @@ onMounted(() => {
 
 /* Ajuste na classe .sidebar */
 .sidebar {
-  background: linear-gradient(180deg, #193155 0%, #0f1f35 100%);
-  color: white;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
   width: 280px;
   position: fixed;
   left: 0;
@@ -412,17 +397,6 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 2px;
-}
-
-/* Estilos para o modo escuro */
-:root {
-  --bg-color: #ffffff;
-  --text-color: #193155;
-}
-
-:root.dark-mode {
-  --bg-color: #1a1a1a;
-  --text-color: #ffffff;
 }
 
 /* Ajuste responsivo */

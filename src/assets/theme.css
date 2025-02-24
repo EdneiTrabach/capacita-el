@@ -1,0 +1,196 @@
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #193155;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --accent-color: #193155;
+  --sidebar-bg: linear-gradient(180deg, #193155 0%, #0f1f35 100%);
+  --sidebar-text: #ffffff;
+  --card-bg: #ffffff;
+  --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  /* Novas variáveis para elementos comuns */
+  --input-bg: #ffffff;
+  --input-text: #333333;
+  --input-border: #ced4da;
+  --input-focus: #4a90e2;
+  
+  --button-primary-bg: #193155;
+  --button-primary-text: #ffffff;
+  --button-secondary-bg: #e9ecef;
+  --button-secondary-text: #193155;
+  
+  --table-header-bg: #f8f9fa;
+  --table-border: #dee2e6;
+  --table-stripe: #f8f9fa;
+  
+  --card-hover-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Variáveis adicionais para componentes específicos */
+  --stat-card-bg: #ffffff;
+  --stat-number-color: #193155;
+  --chart-grid-color: #e0e4e8;
+  --status-badge-bg: rgba(25, 49, 85, 0.1);
+  --modal-content-bg: #ffffff;
+
+  /* Novas variáveis para componentes específicos */
+  --report-card-bg: #ffffff;
+  --report-card-hover: #f8f9fa;
+  --icon-filter: brightness(0) saturate(100%) invert(1);
+  --header-gradient: linear-gradient(135deg, #193155 0%, #254677 100%);
+
+  /* Novas variáveis para temas */
+  --hover-overlay: rgba(255, 255, 255, 0.1);
+  --toast-success-bg: linear-gradient(135deg, #28a745 0%, #218838 100%);
+  --toast-error-bg: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  --card-gradient: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-secondary) 100%);
+}
+
+:root.dark {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --border-color: #2d2d2d;
+  --accent-color: #4a90e2;
+  --sidebar-bg: linear-gradient(180deg, #0a1622 0%, #070d14 100%);
+  --sidebar-text: #ffffff;
+  --card-bg: #1e1e1e;
+  --card-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
+  /* Novas variáveis para modo escuro */
+  --input-bg: #2d2d2d;
+  --input-text: #ffffff;
+  --input-border: #404040;
+  --input-focus: #4a90e2;
+  
+  --button-primary-bg: #4a90e2;
+  --button-primary-text: #ffffff;
+  --button-secondary-bg: #2d2d2d;
+  --button-secondary-text: #ffffff;
+  
+  --table-header-bg: #1a1a1a;
+  --table-border: #404040;
+  --table-stripe: #252525;
+  
+  --card-hover-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  --modal-overlay: rgba(0, 0, 0, 0.8);
+
+  /* Variáveis adicionais para modo escuro */
+  --stat-card-bg: #2d2d2d;
+  --stat-number-color: #4a90e2;
+  --chart-grid-color: #404040;
+  --status-badge-bg: rgba(74, 144, 226, 0.1);
+  --modal-content-bg: #1e1e1e;
+
+  /* Novas variáveis para modo escuro */
+  --report-card-bg: #2d2d2d;
+  --report-card-hover: #363636;
+  --icon-filter: brightness(0) saturate(100%) invert(1);
+  --header-gradient: linear-gradient(135deg, #0a1622 0%, #070d14 100%);
+
+  /* Novas variáveis para modo escuro */
+  --hover-overlay: rgba(0, 0, 0, 0.2);
+  --toast-success-bg: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+  --toast-error-bg: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+  --card-gradient: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-primary) 100%);
+}
+
+/* Transições suaves */
+* {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease, 
+              box-shadow 0.3s ease;
+}
+
+/* Adicione estas classes utilitárias */
+.dark-mode-transition {
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+/* Utilitários para transições */
+.theme-transition {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+body {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.card {
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+.card:hover {
+  box-shadow: var(--card-hover-shadow);
+}
+
+/* Ajustes para elementos específicos */
+input, select, textarea {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--input-border);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+button {
+  background-color: var(--accent-color);
+  color: var(--sidebar-text);
+}
+
+button.primary {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}
+
+button.secondary {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+}
+
+table {
+  border-color: var(--table-border);
+}
+
+table th {
+  background-color: var(--table-header-bg);
+}
+
+table tr:nth-child(even) {
+  background-color: var(--table-stripe);
+}
+
+.modal-overlay {
+  background-color: var(--modal-overlay);
+}
+
+/* Classes temáticas comuns */
+.dark-card {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+}
+
+.dark-input {
+  background: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+}
+
+.dark-button {
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}

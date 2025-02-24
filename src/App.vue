@@ -6,6 +6,8 @@ import { supabase } from './config/supabase'
 import type { Component } from 'vue'
 import Navbar from './components/Navbar.vue'
 import NavigationButtons from '@/components/NavigationButtons/NavigationButtons.vue'
+import '@/assets/theme.css'
+import { useTheme } from '@/composables/useTheme'
 const route = useRoute()
 const isSidebarCollapsed = ref(false)
 
@@ -41,9 +43,12 @@ const shouldShowNavbar = computed(() => {
   
   return true
 })
+
+// Inicializa o tema
+const { isDark } = useTheme()
 </script>
 <template>
-  <div id="app" class="app-container">
+  <div id="app" class="app-container" :class="{ 'dark': isDark }">
     <Navbar v-if="shouldShowNavbar" @sidebar-toggle="handleSidebarToggle" />
     <main 
       class="main-content" 
@@ -137,6 +142,8 @@ body {
   width: 100%;
   position: relative;
   overflow-x: hidden;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 main {
@@ -149,6 +156,7 @@ main {
 main.with-sidebar {
   margin-left: 250px;
   width: calc(100% - 250px);
+  background: var(--bg-secondary);
 }
 
 main.with-sidebar.sidebar-collapsed {
@@ -201,7 +209,7 @@ body {
   margin-left: 280px; /* Largura do sidebar expandido */
   width: calc(100% - 250px);
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: var(--bg-secondary);
 }
 
 .main-content.with-sidebar.sidebar-collapsed {

@@ -126,7 +126,7 @@ export default {
 
 .home {
   padding: 2rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background-color: var(--bg-secondary);
   min-height: 100vh;
   font-family: 'JetBrains Mono', monospace;
 }
@@ -176,10 +176,11 @@ export default {
 }
 
 .nav-card {
-  background: white;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
   padding: 2rem;
   border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow);
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -226,7 +227,7 @@ export default {
 }
 
 .nav-card h2 {
-  color: #193155;
+  color: var(--text-primary);
   font-size: 1.5rem;
   margin: 0 0 1rem 0;
   font-weight: 600;
@@ -237,7 +238,7 @@ h2.about {
 }
 
 .nav-card p {
-  color: #6c757d;
+  color: var(--text-secondary);
   margin: 0;
   line-height: 1.5;
   font-size: 0.95rem;
@@ -245,7 +246,7 @@ h2.about {
 
 .card-action {
   margin-top: 1.5rem;
-  color: #193155;
+  color: var(--accent-color);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -266,7 +267,7 @@ h2.about {
 }
 
 .info-card {
-  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  background: var(--accent-color);
   color: white;
 }
 
