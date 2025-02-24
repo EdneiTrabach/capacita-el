@@ -2,9 +2,6 @@
   <div class="home">
     <header class="home-header">
       <h1>Bem-vindo ao Sistema de Gestão de Treinamentos do Grupo EL</h1>
-      <!-- <div class="signature">
-        Desenvolvido por Ednei Trabach
-      </div> -->
     </header>
 
     <div class="cards-grid">
@@ -87,7 +84,7 @@
           <img src="/public/icons/informacao.svg" alt="Info" class="icon-home" />
         </div>
         <h2 class="about">Sobre o Sistema</h2>
-        <p>Sistema desenvolvido por Ednei Trabach</p>
+        <p>Sistema desenvolvido por Ednei Trabach and Gilcimar Schunk</p>
         <p class="version">Versão 1.0</p>
       </div>
 
