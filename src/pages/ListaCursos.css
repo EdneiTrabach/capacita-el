@@ -526,10 +526,8 @@
 .btn-avaliacao,
 .btn-matricula {
   padding: 0.75rem 1.25rem;
-  height: 30px; /* Altura fixa para todos os botões */
   min-width: 240px; /* Largura mínima uniforme */
   border: none;
-  border-radius: 8px;
   cursor: pointer;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 500;
@@ -542,8 +540,15 @@
   min-width: 120px;
   background-color: var(--button-secondary-bg);
   color: var(--button-secondary-text);
-
 }
+
+.btn-edit, .btn-delete, .btn-presenca, .btn-download, .btn-view, .btn-emit, .btn-avaliacao, .btn-matricula {
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px! important;
+  width: 100%;
+  height: 30px; /* Altura fixa para todos os botões */
+}
+
 
 /* Cores específicas para cada botão */
 .btn-edit {

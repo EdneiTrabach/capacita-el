@@ -19,12 +19,13 @@ const { isDark, toggleTheme } = useTheme()
 .theme-toggle {
   background: transparent;
   border: none;
-  padding: 0.5rem;
+  padding: 0.75rem 1rem;  
   cursor: pointer;
   border-radius: 8px;
   transition: background-color 0.3s;
   display: flex;
   align-items: center;
+  font-family: jetbrains-mono, monospace;
 }
 
 .theme-toggle:hover {
