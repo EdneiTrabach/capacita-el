@@ -1,23 +1,23 @@
 import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute, RouteLocationRaw } from 'vue-router'
 
 export function useNavigation() {
   const router = useRouter()
   const route = useRoute()
 
   const systemRoutes = [
-    { path: '/', name: 'Home' },
-    { path: '/dashboard', name: 'Dashboard' },
-    { path: '/usuarios', name: 'Cadastro de Pessoas' },
-    { path: '/lista-usuarios', name: 'Gestão de Pessoas' },
-    { path: '/cursos', name: 'Cadastro de Treinamentos' },
-    { path: '/lista-cursos', name: 'Lista de Treinamentos' },
-    { path: '/certificados', name: 'Certificados' },
-    { path: '/relatorios', name: 'Relatórios' }
+    '/',
+    '/dashboard',
+    '/usuarios',
+    '/lista-usuarios',
+    '/cursos',
+    '/lista-cursos',
+    '/certificados',
+    '/relatorios'
   ]
 
   const currentIndex = computed(() => {
-    return systemRoutes.findIndex(r => r.path === route.path)
+    return systemRoutes.findIndex(r => r === route.path)
   })
 
   const hasPrevious = computed(() => currentIndex.value > 0)
@@ -33,33 +33,20 @@ export function useNavigation() {
     '/perfil'
   ]
 
-  const showNavigation = computed(() => !excludedRoutes.includes(route.path))
+  const showNavigation = computed(() => systemRoutes.includes(route.path) || isSpecialRoute.value)
 
   const isSpecialRoute = computed(() => {
     return route.path.includes('/edit') || route.path.includes('/new')
   })
 
   const getBackRoute = computed((): string => {
-    if (route.path.includes('/admin')) return '/admin'
-    return '/lista-cursos'  // rota padrão de retorno
+    return route.path.includes('/admin') ? '/admin' : '/lista-cursos'
   })
 
   const navigate = (direction: 'prev' | 'next') => {
-    let targetIndex: number
-
-    if (direction === 'prev' && hasPrevious.value) {
-      targetIndex = currentIndex.value - 1
-    } else if (direction === 'next' && hasNext.value) {
-      targetIndex = currentIndex.value + 1  
-    } else {
-      return
-    }
-
-    const targetRoute = systemRoutes[targetIndex]
-    if (targetRoute) {
-      router.push({
-        path: targetRoute.path
-      })
+    const targetIndex = direction === 'prev' ? currentIndex.value - 1 : currentIndex.value + 1
+    if (targetIndex >= 0 && targetIndex < systemRoutes.length) {
+      router.push(systemRoutes[targetIndex])
     }
   }
 

@@ -4,11 +4,11 @@ import './navigationButtons.css'
 
 const {
   showNavigation,
-  isSpecialRoute,
+  isSpecialRoute, 
   getBackRoute,
   hasPrevious,
   hasNext,
-  goToPrevious,
+  goToPrevious,  
   goToNext,
   router
 } = useNavigation()
