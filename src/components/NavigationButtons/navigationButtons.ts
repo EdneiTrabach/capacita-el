@@ -57,25 +57,34 @@ export function useNavigation() {
     return -1
   })
 
-  const navigate = (route: string | number) => {
-    router.push(String(route))
+  const navigate = (direction: 'prev' | 'next') => {
+    let targetIndex: number
+
+    if (direction === 'prev' && hasPrevious.value) {
+      targetIndex = currentIndex.value - 1
+    } else if (direction === 'next' && hasNext.value) {
+      targetIndex = currentIndex.value + 1  
+    } else {
+      return
+    }
+
+    const targetRoute = systemRoutes[targetIndex]
+    if (targetRoute) {
+      router.push({
+        path: targetRoute.path
+      })
+    }
   }
 
   const goToPrevious = () => {
     if (hasPrevious.value) {
-      const prevRoute = systemRoutes[currentIndex.value - 1].path
-      router.push(prevRoute).catch(() => {
-        console.warn(`Rota ${prevRoute} não encontrada`)
-      })
+      navigate('prev')
     }
   }
 
   const goToNext = () => {
     if (hasNext.value) {
-      const nextRoute = systemRoutes[currentIndex.value + 1].path
-      router.push(nextRoute).catch(() => {
-        console.warn(`Rota ${nextRoute} não encontrada`)
-      })
+      navigate('next')  
     }
   }
 
