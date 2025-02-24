@@ -69,7 +69,7 @@
 
       <div class="utility-section">
         <button class="utility-btn" @click="toggleNotifications">
-          <img src="../../public/icons/bell.svg" alt="Notificações" class="icon" />
+          <img src="/icons/bell.svg" alt="Notificações" class="icon" />
           <span v-if="isExpanded" class="link-text">
             Notificações
             <span v-if="notificationCount > 0" class="notification-badge">
@@ -80,7 +80,7 @@
 
         <button class="utility-btn" @click="toggleTheme">
           <img 
-            :src="`../../public/icons/${isDarkMode ? 'sun' : 'moon'}.svg`" 
+            :src="`/icons/${isDarkMode ? 'sun' : 'moon'}.svg`" 
             :alt="isDarkMode ? 'Modo Claro' : 'Modo Escuro'" 
             class="icon" 
           />
