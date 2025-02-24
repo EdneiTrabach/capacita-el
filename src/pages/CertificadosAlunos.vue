@@ -508,6 +508,8 @@ export default {
   background-color: #f8f9fa;
   min-height: 100vh;
   font-family: 'JetBrains Mono', monospace;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .certificados-header {
@@ -592,11 +594,9 @@ export default {
   overflow: hidden;
   transition: transform 0.3s ease;
   border: 1px solid rgba(25, 49, 85, 0.1);
-}
-
-.certificado-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
 }
 
 /* Card Header */
@@ -607,6 +607,8 @@ export default {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e0e4e8;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
 }
 
 /* Status Badge */
@@ -643,6 +645,7 @@ export default {
   margin: 0 0 1.25rem 0;
   font-weight: 600;
   line-height: 1.2;
+  color: var(--text-primary);
 }
 
 /* Information Grid */
@@ -662,6 +665,7 @@ export default {
   font-size: 0.85rem;
   color: #495057;
   font-weight: 500;
+  color: var(--text-secondary);
 }
 
 .info-item span:last-child {

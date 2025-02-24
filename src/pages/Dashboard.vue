@@ -672,9 +672,10 @@ const loadUserData = async () => {
 /* Main dashboard layout */
 .dashboard {
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   min-height: 100vh;
   font-family: 'JetBrains Mono', monospace;
+  color: var(--text-primary);
 }
 
 /* Dashboard header */
@@ -684,7 +685,7 @@ const loadUserData = async () => {
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  background: var(--accent-color);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   color: white;
@@ -704,14 +705,14 @@ const loadUserData = async () => {
 }
 
 .stat-card {
-  background: white;
+  background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--card-shadow);
   display: flex;
   align-items: center;
   transition: transform 0.3s ease;
-  border: 1px solid rgba(25, 49, 85, 0.1);
+  border: 1px solid var(--border-color);
 }
 
 .stat-card:hover {
@@ -733,7 +734,7 @@ const loadUserData = async () => {
 }
 
 .stat-info h3 {
-  color: #193155;  /* Mudando para azul escuro */
+  color: var(--text-primary);  /* Mudando para azul escuro */
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -741,7 +742,7 @@ const loadUserData = async () => {
 .stat-number {
   font-size: 2rem;
   font-weight: 700;
-  color: #254677;  /* Azul mais escuro para melhor contraste */
+  color: var(--accent-color);  /* Azul mais escuro para melhor contraste */
   margin-bottom: 0.25rem;
 }
 

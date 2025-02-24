@@ -546,4 +546,29 @@ textarea {
     width: 100%;
   }
 }
+
+.cadastro-container {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.cadastro-card {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+.modulos-section {
+  background: var(--bg-secondary);
+}
+
+.modulo-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+input, textarea, select {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+}
 </style>

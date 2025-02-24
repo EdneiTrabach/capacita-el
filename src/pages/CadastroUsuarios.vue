@@ -1061,4 +1061,25 @@ button {
 }
 
 /* ... rest of your styles */
+
+.cadastro-container {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.cadastro-card {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+input, select, textarea {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
 </style>

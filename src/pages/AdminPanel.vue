@@ -113,6 +113,8 @@ onMounted(() => {
   padding: 2rem;
   background-color: #f8f9fa;
   min-height: 100vh;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .admin-header {
@@ -135,12 +137,15 @@ onMounted(() => {
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
 }
 
 .admin-card h2 {
   color: #193155;
   margin-bottom: 1rem;
   font-size: 1.2rem;
+  color: var(--text-primary);
 }
 
 .admin-actions {
@@ -186,6 +191,8 @@ onMounted(() => {
   border-bottom: 1px solid #e0e4e8;
   font-size: 0.9rem;
   color: black;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .icon {
