@@ -162,12 +162,6 @@
           </div>
         </div>
       </div>
-
-      <div class="preview-data">
-        <h3>{{ sanitizeHTML(formData.nome) }}</h3>
-        <p>{{ sanitizeHTML(formData.email) }}</p>
-        <p>{{ sanitizeHTML(formData.setor) }}</p>
-      </div>
     </div>
   </div>
 
