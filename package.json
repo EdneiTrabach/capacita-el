@@ -11,6 +11,9 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
     "@supabase/supabase-js": "^2.48.1",
     "@types/crypto-js": "^4.2.2",
     "axios": "^1.6.7",

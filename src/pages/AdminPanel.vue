@@ -165,6 +165,7 @@ onMounted(() => {
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: jetbrains mono, monospace;
 }
 
 .admin-actions button:hover {
