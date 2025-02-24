@@ -604,6 +604,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  color: #193155;
 }
 
 .filter-group label {
