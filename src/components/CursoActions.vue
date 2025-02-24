@@ -24,6 +24,14 @@
       <img src="../../public/icons/lapis.svg" alt="Matrículas" class="icon"/>
       Gerenciar Matrículas
     </button>
+
+    <button 
+      @click="$router.push(`/curso/${curso.id}/avaliacao`)"
+      class="btn-avaliacao"
+    >
+      <img src="/public/icons/star.svg" alt="Avaliar" class="icon"/>
+      Avaliar Treinamento
+    </button>
   </div>
 </template>
 
