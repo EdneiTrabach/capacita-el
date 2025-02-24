@@ -28,7 +28,7 @@ const {
     
     <template v-else>
       <button 
-        @click="goToPrevious" 
+        @click="goToPrevious"
         :disabled="!hasPrevious"
         class="nav-btn prev-btn"
       >
@@ -36,7 +36,7 @@ const {
         Anterior
       </button>
       <button 
-        @click="goToNext" 
+        @click="goToNext"
         :disabled="!hasNext"
         class="nav-btn"
       >

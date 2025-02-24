@@ -12,7 +12,7 @@ export function useNavigation() {
     { path: '/lista-usuarios', name: 'Gestão de Pessoas' },
     { path: '/cursos', name: 'Cadastro de Treinamentos' },
     { path: '/lista-cursos', name: 'Lista de Treinamentos' },
-    { path: '/certificados', name: 'Emissão de Certificados' },
+    { path: '/certificados', name: 'Certificados' },
     { path: '/relatorios', name: 'Relatórios' }
   ]
 
@@ -36,25 +36,12 @@ export function useNavigation() {
   const showNavigation = computed(() => !excludedRoutes.includes(route.path))
 
   const isSpecialRoute = computed(() => {
-    const currentPath = route.path
-    return (
-      currentPath.includes('/lista-presenca') || 
-      currentPath.includes('/registrar-presenca') || 
-      currentPath.includes('/matricula-alunos') ||
-      currentPath.includes('/curso/') ||
-      ['/usuarios-sistema', '/permissoes', '/auditoria-acessos'].includes(currentPath)
-    )
+    return route.path.includes('/edit') || route.path.includes('/new')
   })
 
   const getBackRoute = computed(() => {
-    const currentPath = route.path
-    if (['/usuarios-sistema', '/permissoes', '/auditoria-acessos'].includes(currentPath)) {
-      return '/admin'
-    }
-    if (currentPath.includes('/curso/') || currentPath.includes('/matricula-alunos/')) {
-      return '/lista-cursos'
-    }
-    return -1
+    if (route.path.includes('/admin')) return '/admin'
+    return '/lista-cursos'  // rota padrão de retorno
   })
 
   const navigate = (direction: 'prev' | 'next') => {
