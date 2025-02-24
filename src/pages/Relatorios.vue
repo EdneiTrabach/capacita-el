@@ -140,7 +140,7 @@
       <!-- Cards existentes -->
       <div class="relatorio-card" @click="showAlunosReport = true">
         <div class="card-icon">
-          <!-- <img src="/public/icons/relatorio.svg" alt="Alunos por Curso" class="icon-black" /> -->
+          <font-awesome-icon :icon="['fas', 'users']" class="icon-black" />
         </div>
         <h3>Relatórios de Alunos por Curso</h3>
         <p>Visualize a distribuição de alunos em cada curso</p>
@@ -150,7 +150,7 @@
       <!-- Novos cards -->
       <div class="relatorio-card" @click="showPeriodoReport = true">
         <div class="card-icon">
-          <!-- <img src="/public/icons/calendario.svg" alt="Relatório por Período" class="icon-black" /> -->
+          <font-awesome-icon :icon="['fas', 'calendar-alt']" class="icon-black" />
         </div>
         <h3>Relatório por Período</h3>
         <p>Análise de treinamentos por período específico</p>
@@ -159,7 +159,7 @@
 
       <div class="relatorio-card" @click="showSetorReport = true">
         <div class="card-icon">
-          <!-- <img src="/public/icons/setor.svg" alt="Relatório por Setor" class="icon-black" /> -->
+          <font-awesome-icon :icon="['fas', 'building']" class="icon-black" />
         </div>
         <h3>Relatório por Setor</h3>
         <p>Distribuição de treinamentos por setor</p>
@@ -168,7 +168,7 @@
 
       <div class="relatorio-card" @click="showTempoReport = true">
         <div class="card-icon">
-          <!-- <img src="/public/icons/tempo.svg" alt="Tempo de Treinamento" class="icon-black" /> -->
+          <font-awesome-icon :icon="['fas', 'clock']" class="icon-black" />
         </div>
         <h3>Tempo de Treinamento</h3>
         <p>Análise por carga horária dos treinamentos</p>
@@ -177,7 +177,7 @@
 
       <div class="relatorio-card" @click="showTipoReport = true">
         <div class="card-icon">
-          <!-- <img src="/public/icons/tipo.svg" alt="Tipo de Treinamento" class="icon-black" /> -->
+          <font-awesome-icon :icon="['fas', 'chalkboard-teacher']" class="icon-black" />
         </div>
         <h3>Tipo de Treinamento</h3>
         <p>Relatórios por modalidade de treinamento</p>
@@ -186,7 +186,7 @@
 
       <div class="relatorio-card" @click="showAgendadosReport = true">
         <div class="card-icon">
-          <!-- <img src="/public/icons/agenda.svg" alt="Treinamentos Agendados" class="icon-black" /> -->
+          <font-awesome-icon :icon="['fas', 'calendar-check']" class="icon-black" />
         </div>
         <h3>Treinamentos Agendados</h3>
         <p>Visualize os próximos treinamentos</p>
@@ -195,7 +195,7 @@
 
       <div class="relatorio-card" @click="showPendentesReport = true">
         <div class="card-icon">
-          <!-- <img src="/public/icons/certificado.svg" alt="Certificados Pendentes" class="icon-black" /> -->
+          <font-awesome-icon :icon="['fas', 'certificate']" class="icon-black" />
         </div>
         <h3>Certificados Pendentes</h3>
         <p>Gestão de certificados pendentes</p>
@@ -239,6 +239,28 @@
 import { ref, onMounted, computed } from 'vue'
 import { supabase } from '@/config/supabase'
 import { sanitizeHTML } from '@/utils/sanitize'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { 
+  faUsers, 
+  faCalendarAlt, 
+  faBuilding, 
+  faClock, 
+  faChalkboardTeacher,
+  faCalendarCheck,
+  faCertificate
+} from '@fortawesome/free-solid-svg-icons'
+
+// Adicionar ícones à biblioteca
+library.add(
+  faUsers,
+  faCalendarAlt,
+  faBuilding,
+  faClock,
+  faChalkboardTeacher,
+  faCalendarCheck,
+  faCertificate
+)
 
 interface Certificado {
   id: string
@@ -400,10 +422,8 @@ onMounted(() => {
 }
 
 .icon-black {
-  font-size: 1.2rem;
-  width: 100px;
-  height: 60px;
-  text-align: center;
+  font-size: 2.5rem;
+  color: #193155;
 }
 
 .relatorios-container {
