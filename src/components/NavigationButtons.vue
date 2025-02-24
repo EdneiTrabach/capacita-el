@@ -88,6 +88,11 @@ const getBackRoute = computed(() => {
   
   return -1
 })
+
+// Remova as duas declarações anteriores e mantenha apenas esta
+const navigate = (route: string | number) => {
+  router.push(String(route))
+}
 </script>
 
 <template>
