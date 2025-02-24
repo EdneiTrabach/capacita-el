@@ -724,29 +724,4 @@ th {
   color: #193155;
   font-weight: 600;
 }
-
-.relatorios-container {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-.report-section {
-  background-color: var(--card-bg);
-  box-shadow: var(--card-shadow);
-}
-
-.filters-grid {
-  color: var(--text-primary);
-}
-
-.filter-group label {
-  color: var(--text-primary);
-}
-
-.filter-group select,
-.filter-group input {
-  background-color: var(--input-bg);
-  color: var(--input-text);
-  border-color: var(--input-border);
-}
 </style>

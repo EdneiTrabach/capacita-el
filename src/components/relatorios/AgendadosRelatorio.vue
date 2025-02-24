@@ -61,6 +61,7 @@
 import { ref, computed } from 'vue'
 import { supabase } from '@/config/supabase'
 import { formatDate } from '@/utils/date'
+import type { AgendadoItem } from '@/types/relatorio'
 
 const hoje = computed(() => {
   return new Date().toISOString().split('T')[0]
@@ -71,7 +72,7 @@ const filtros = ref({
   dataFim: ''
 })
 
-const dados = ref([])
+const dados = ref<AgendadoItem[]>([])
 const loading = ref(false)
 
 const buscarDados = async () => {
@@ -80,16 +81,26 @@ const buscarDados = async () => {
     const { data, error } = await supabase
       .from('cursos')
       .select(`
-        *,
-        matriculas:matriculas_count,
-        vagas_restantes:vagas-matriculas_count
+        id,
+        nome,
+        data_inicio,
+        tipo,
+        matriculas,
+        vagas,
+        status
       `)
       .gte('data_inicio', filtros.value.dataInicio)
       .lte('data_inicio', filtros.value.dataFim || '2099-12-31')
       .order('data_inicio', { ascending: true })
 
     if (error) throw error
-    dados.value = data || []
+
+    dados.value = data?.map(curso => ({
+      ...curso,
+      total_inscritos: curso.matriculas || 0,
+      vagas_restantes: (curso.vagas || 0) - (curso.matriculas || 0)
+    })) || []
+
   } catch (err) {
     console.error('Erro ao buscar dados:', err)
   } finally {
@@ -98,7 +109,8 @@ const buscarDados = async () => {
 }
 
 const gerarRelatorio = async () => {
-  // Implementar geração de PDF
+  // Implementar geração PDF
+  console.log('Gerando relatório...')
 }
 </script>
 

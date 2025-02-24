@@ -59,13 +59,14 @@
 import { ref, onMounted } from 'vue'
 import { supabase } from '@/config/supabase'
 import { formatDate } from '@/utils/date'
+import type { PendenteItem } from '@/types/relatorio'
 
 const filtros = ref({
   cursoId: ''
 })
 
-const dados = ref([])
-const cursos = ref([])
+const dados = ref<PendenteItem[]>([])
+const cursos = ref<{id: string, nome: string}[]>([])
 const loading = ref(false)
 
 const buscarCursos = async () => {
