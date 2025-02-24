@@ -137,27 +137,95 @@
 
     <!-- Cards de Relatórios -->
     <div v-if="!showCertificadosReport && !showAlunosReport" class="relatorios-grid">
+      <!-- Cards existentes -->
       <div class="relatorio-card" @click="showAlunosReport = true">
         <div class="card-icon">
-          <img src="/public/icons/relatorio.svg" alt="Alunos por Curso" class="icon-black" />
+          <!-- <img src="/public/icons/relatorio.svg" alt="Alunos por Curso" class="icon-black" /> -->
         </div>
-        <h3>Alunos por Curso</h3>
+        <h3>Relatórios de Alunos por Curso</h3>
         <p>Visualize a distribuição de alunos em cada curso</p>
-        <button class="btn-gerar">
-          Gerar Relatório
-        </button>
+        <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showCertificadosReport = true">
+      <!-- Novos cards -->
+      <div class="relatorio-card" @click="showPeriodoReport = true">
         <div class="card-icon">
-          <img src="/public/icons/grafico-linha.svg" alt="Certificados Emitidos" class="icon-black" />
+          <!-- <img src="/public/icons/calendario.svg" alt="Relatório por Período" class="icon-black" /> -->
         </div>
-        <h3>Certificados Emitidos</h3>
-        <p>Relatório de certificados emitidos por período</p>
-        <button class="btn-gerar">
-          Gerar Relatório
-        </button>
+        <h3>Relatório por Período</h3>
+        <p>Análise de treinamentos por período específico</p>
+        <button class="btn-gerar">Gerar Relatório</button>
       </div>
+
+      <div class="relatorio-card" @click="showSetorReport = true">
+        <div class="card-icon">
+          <!-- <img src="/public/icons/setor.svg" alt="Relatório por Setor" class="icon-black" /> -->
+        </div>
+        <h3>Relatório por Setor</h3>
+        <p>Distribuição de treinamentos por setor</p>
+        <button class="btn-gerar">Gerar Relatório</button>
+      </div>
+
+      <div class="relatorio-card" @click="showTempoReport = true">
+        <div class="card-icon">
+          <!-- <img src="/public/icons/tempo.svg" alt="Tempo de Treinamento" class="icon-black" /> -->
+        </div>
+        <h3>Tempo de Treinamento</h3>
+        <p>Análise por carga horária dos treinamentos</p>
+        <button class="btn-gerar">Gerar Relatório</button>
+      </div>
+
+      <div class="relatorio-card" @click="showTipoReport = true">
+        <div class="card-icon">
+          <!-- <img src="/public/icons/tipo.svg" alt="Tipo de Treinamento" class="icon-black" /> -->
+        </div>
+        <h3>Tipo de Treinamento</h3>
+        <p>Relatórios por modalidade de treinamento</p>
+        <button class="btn-gerar">Gerar Relatório</button>
+      </div>
+
+      <div class="relatorio-card" @click="showAgendadosReport = true">
+        <div class="card-icon">
+          <!-- <img src="/public/icons/agenda.svg" alt="Treinamentos Agendados" class="icon-black" /> -->
+        </div>
+        <h3>Treinamentos Agendados</h3>
+        <p>Visualize os próximos treinamentos</p>
+        <button class="btn-gerar">Gerar Relatório</button>
+      </div>
+
+      <div class="relatorio-card" @click="showPendentesReport = true">
+        <div class="card-icon">
+          <!-- <img src="/public/icons/certificado.svg" alt="Certificados Pendentes" class="icon-black" /> -->
+        </div>
+        <h3>Certificados Pendentes</h3>
+        <p>Gestão de certificados pendentes</p>
+        <button class="btn-gerar">Gerar Relatório</button>
+      </div>
+    </div>
+
+    <!-- Adicione após os relatórios existentes -->
+    <div v-if="showPeriodoReport" class="report-section">
+      <PeriodoRelatorio @voltar="showPeriodoReport = false" />
+    </div>
+
+    <div v-if="showSetorReport" class="report-section">
+      <SetorRelatorio @voltar="showSetorReport = false" />
+    </div>
+
+    <div v-if="showTempoReport" class="report-section">
+      <TempoRelatorio @voltar="showTempoReport = false" />
+    </div>
+
+    <div v-if="showTipoReport" class="report-section">
+      <TipoRelatorio @voltar="showTipoReport = false" />
+    </div>
+
+    <div v-if="showAgendadosReport" class="report-section">
+      <AgendadosRelatorio @voltar="showAgendadosReport = false" />
+    </div>
+
+    <div v-if="showPendentesReport" class="report-section">
+      <PendentesRelatorio @voltar="showPendentesReport = false" />
     </div>
   </div>
   <div v-if="selectedCertificado" class="report-data">
@@ -223,6 +291,14 @@ const alunosFilters = ref({
   dataFim: '',
   conclusao: ''
 })
+
+// Adicione os novos refs para controle de visibilidade
+const showPeriodoReport = ref(false)
+const showSetorReport = ref(false)
+const showTempoReport = ref(false)
+const showTipoReport = ref(false)
+const showAgendadosReport = ref(false)
+const showPendentesReport = ref(false)
 
 const loadData = async () => {
   try {
@@ -357,9 +433,21 @@ onMounted(() => {
 
 .relatorios-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .relatorios-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .relatorios-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .relatorio-card {
