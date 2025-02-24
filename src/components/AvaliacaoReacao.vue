@@ -238,6 +238,7 @@ textarea {
   border: 1px solid #e0e4e8;
   border-radius: 8px;
   resize: vertical;
+  font-family: jetbrains mono;
 }
 
 .form-actions {

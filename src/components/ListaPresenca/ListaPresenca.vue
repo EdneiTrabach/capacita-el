@@ -12,7 +12,9 @@ const {
   cursoNome,
   qrCode,
   formatDate,
-  gerarQRCode
+  gerarQRCode,
+  filtros,
+  loadPresencas
 } = useListaPresenca()
 </script>
 
@@ -27,6 +29,17 @@ const {
 
     <div v-if="error" class="error-message">{{ error }}</div>
     <div v-if="success" class="success-message">{{ success }}</div>
+
+    <!-- Filtros -->
+    <div class="filters">
+      <div class="date-filter">
+        <input 
+          type="date" 
+          v-model="filtros.dataAula"
+          @change="loadPresencas"
+        />
+      </div>
+    </div>
 
     <!-- Status do curso -->
     <div class="curso-status">
@@ -59,11 +72,12 @@ const {
             <th>Data</th>
             <th>Horário</th>
             <th>Status</th>
+            <th>Feedback</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="presenca in presencas" :key="presenca.id">
-            <td>{{ presenca.aluno_nome }}</td>
+            <td>{{ presenca.aluno_nome || '-' }}</td>
             <td>{{ formatDate(presenca.data_aula) }}</td>
             <td>{{ presenca.horario_registro }}</td>
             <td>
@@ -71,6 +85,7 @@ const {
                 {{ presenca.status }}
               </span>
             </td>
+            <td>{{ presenca.feedback || '-' }}</td>
           </tr>
         </tbody>
       </table>

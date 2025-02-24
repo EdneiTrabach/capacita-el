@@ -112,6 +112,11 @@ td {
   display: inline-block;
 }
 
+.status-badge.presente {
+  background: linear-gradient(135deg, #198754 0%, #28a745 100%);
+  color: white;
+}
+
 .presente {
   background: linear-gradient(135deg, #198754 0%, #28a745 100%);
   color: white;
