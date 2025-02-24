@@ -157,7 +157,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showSetorReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/setor')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'building']" class="icon-black" />
         </div>
