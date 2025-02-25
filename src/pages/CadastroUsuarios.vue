@@ -5,6 +5,11 @@
       {{ toast.message }}
     </div>
 
+    <!-- Moved illustration container before cadastro-card -->
+    <div class="illustration-container">
+      <img src="/public/usuarios.svg" alt="Ilustração de usuários" class="header-illustration">
+    </div>
+
     <div class="cadastro-card">
       <header class="cadastro-header">
         <h1>{{ isEditing ? 'Editar Aluno' : 'Cadastro de pessoas' }}</h1>
@@ -705,6 +710,7 @@ onMounted(loadSetores)
 }
 
 .cadastro-container {
+  position: relative;
   padding: 2rem;
   background-color: #f8f9fa;
   min-height: 100vh;
@@ -723,6 +729,10 @@ onMounted(loadSetores)
   color: white;
   padding: 1.5rem;
   margin-bottom: 2rem;
+  text-align: center; /* Adiciona centralização do texto */
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
 }
 
 .cadastro-header h1 {
@@ -1097,5 +1107,49 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
   border-color: var(--input-focus);
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* Updated illustration styles */
+.illustration-container {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  z-index: 1;
+  width: 300px;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0;
+  margin: 0;
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+.header-illustration {
+  width: 100%;
+  height: auto;
+  max-width: 220px;
+  transition: transform 0.3s ease;
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+
+@media (max-width: 768px) {
+  .illustration-container {
+    position: relative;
+    top: 0;
+    right: 0;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .header-illustration {
+    width: 150px;
+  }
 }
 </style>

@@ -1,5 +1,7 @@
 <template>
   <div class="certificados-container">
+
+    
     <!-- Add toast component at the top level -->
     <div class="toast" v-if="toast.show" :class="toast.type">
       {{ toast.message }}
@@ -11,7 +13,7 @@
         Novo Certificado
       </button>
     </header>
-
+    <img src="/public/gestao_certificados.svg" alt="Decoração" class="decorative-svg" />
     <div class="search-bar">
       <input type="text" v-model="searchTerm" placeholder="Buscar por pessoa ou curso...">
       <select v-model="statusFilter">
@@ -498,25 +500,34 @@ export default {
   color: var(--text-primary);
 }
 
+/* Adicione estes estilos para o SVG */
+.decorative-svg {
+  position: absolute;
+  top: 15px;
+  left: 35px;
+  width: 220px;
+  height: auto;
+  pointer-events: none; /* Para não interferir com interações do usuário */
+  z-index: 2;
+}
+
 .certificados-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;  /* Alterado de space-between para center */
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.certificados-header h1 {
-  color: #ffffff;
-  font-size: 1.8rem;
-  margin: 0;
-  font-weight: 600;
+  color: white;
+  position: relative;  /* Adicionado */
+  z-index: 1;
 }
 
 .btn-novo {
+  position: absolute;  /* Adicionado */
+  right: 2rem;        /* Adicionado */
   display: flex;
   align-items: center;
   gap: 0.5rem;
