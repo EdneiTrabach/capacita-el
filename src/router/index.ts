@@ -13,6 +13,8 @@ import CertificadosAlunos from '../pages/CertificadosAlunos.vue'
 import Relatorios from '../pages/Relatorios.vue'
 import ResetPassword from '@/pages/ResetPassword.vue'
 import NotFound from '@/pages/NotFound.vue'
+import RelatoriosPeriodo from '@/components/RelatoriosPeriodo/RelatoriosPeriodo.vue'
+import RelatoriosSetor from '@/components/RelatoriosSetor/RelatoriosSetor.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -137,6 +139,18 @@ const router = createRouter({
       path: '/curso/:id/avaliacao',
       name: 'AvaliacaoReacao',
       component: () => import('@/components/AvaliacaoReacao.vue')
+    },
+    {
+      path: '/relatorios/periodo',
+      name: 'RelatoriosPeriodo',
+      component: RelatoriosPeriodo,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios/setor',
+      name: 'RelatoriosSetor', 
+      component: RelatoriosSetor,
+      meta: { requiresAuth: true }
     },
     {
       path: '/:pathMatch(.*)*',
