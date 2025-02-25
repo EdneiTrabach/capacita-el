@@ -261,15 +261,6 @@ export default ListaUsuarios
   z-index: 2;
 }
 
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
 .header-content h1 {
   flex: 1;
   text-align: center;

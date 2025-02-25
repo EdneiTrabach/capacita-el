@@ -32,14 +32,6 @@ import ThemeToggle from '@/components/ThemeToggle.vue'
   padding: 1rem;
 }
 
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .logo {
   text-decoration: none;
   color: inherit;

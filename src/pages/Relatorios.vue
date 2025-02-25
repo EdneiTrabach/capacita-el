@@ -1,6 +1,7 @@
 <template>
   <div class="relatorios-container">
-    <header class="relatorios-header">
+    <!-- Header principal - mostrar apenas quando nenhum relatório específico estiver aberto -->
+    <header v-if="!showCertificadosReport && !showAlunosReport" class="relatorios-header">
       <div class="header-content">
         <img src="/relatorios.svg" alt="Relatórios" class="header-icon" />
         <h1>Relatórios</h1>
@@ -16,7 +17,7 @@
           Voltar
         </button>
       </div>
-      
+
       <div class="filters-grid">
         <div class="filter-group">
           <label>Aluno</label>
@@ -88,7 +89,7 @@
           <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
           Voltar
         </button>
-      </header> 
+      </header>
 
       <div class="filters-section">
         <div class="filter-group">
@@ -141,11 +142,7 @@
         </button>
       </div>
 
-      <DataTable 
-        v-if="dadosAlunos.length"
-        :dados="dadosAlunos"
-        :colunas="colunasAlunos"
-      />
+      <DataTable v-if="dadosAlunos.length" :dados="dadosAlunos" :colunas="colunasAlunos" />
     </div>
 
     <!-- Cards de Relatórios -->
@@ -267,11 +264,11 @@ declare module 'jspdf' {
 }
 import * as XLSX from 'xlsx'
 
-import { 
-  faUsers, 
-  faCalendarAlt, 
-  faBuilding, 
-  faClock, 
+import {
+  faUsers,
+  faCalendarAlt,
+  faBuilding,
+  faClock,
   faChalkboardTeacher,
   faCalendarCheck,
   faCertificate
@@ -291,7 +288,7 @@ library.add(
 interface Certificado {
   id: string
   aluno_nome: string
-  curso_nome: string 
+  curso_nome: string
   data_emissao: string
   status: string
   aluno_id: string
@@ -350,7 +347,7 @@ const showPendentesReport = ref(false)
 const loadData = async () => {
   try {
     loading.value = true
-    
+
     // Carregar certificados
     const { data, error: err } = await supabase
       .from('certificados')
@@ -362,14 +359,14 @@ const loadData = async () => {
       .order('created_at', { ascending: false })
 
     if (err) throw err
-    
+
     // Corrija o mapeamento dos certificados
     certificados.value = data?.map(cert => ({
       id: cert.id,
       aluno_id: cert.usuario_id,
       curso_id: cert.curso_id,
       aluno_nome: cert.usuarios?.nome || 'Nome não encontrado',
-      curso_nome: cert.cursos?.nome || 'Curso não encontrado', 
+      curso_nome: cert.cursos?.nome || 'Curso não encontrado',
       data_emissao: cert.data_emissao,
       status: cert.status,
       observacoes: cert.observacoes
@@ -400,11 +397,11 @@ const gerarRelatorioCertificados = async () => {
   try {
     // Crie uma nova instância do PDF
     const doc = new jsPDF()
-    
+
     // Configure o cabeçalho
     doc.setFontSize(16)
     doc.text('Relatório de Certificados', 14, 20)
-    
+
     // Prepare os dados
     const dados = filtrarCertificados.value.map(cert => [
       cert.aluno_nome,
@@ -447,7 +444,7 @@ const exportarCertificadosExcel = async () => {
       'Data Emissão': cert.data_emissao,
       Status: cert.status
     }))
-    
+
     const wb = XLSX.utils.book_new()
     const ws = XLSX.utils.json_to_sheet(dados)
     XLSX.utils.book_append_sheet(wb, ws, 'Certificados')
@@ -479,17 +476,17 @@ const exportarExcel = async () => {
 
 const filtrarCertificados = computed(() => {
   return certificados.value.filter(cert => {
-    const matchAluno = !certificadosFilters.value.alunoId || 
+    const matchAluno = !certificadosFilters.value.alunoId ||
       cert.aluno_id === certificadosFilters.value.alunoId
-    
-    const matchCurso = !certificadosFilters.value.cursoId || 
+
+    const matchCurso = !certificadosFilters.value.cursoId ||
       cert.curso_id === certificadosFilters.value.cursoId
-    
-    const matchStatus = !certificadosFilters.value.status || 
+
+    const matchStatus = !certificadosFilters.value.status ||
       cert.status === certificadosFilters.value.status
-    
+
     // Adicione outros filtros conforme necessário
-    
+
     return matchAluno && matchCurso && matchStatus
   })
 })
@@ -552,7 +549,7 @@ const carregarCursosAlunos = async () => {
     const { data } = await supabase
       .from('cursos')
       .select('id, nome')
-    
+
     cursosAlunos.value = data || []
   } catch (error) {
     console.error('Erro ao carregar cursos:', error)
@@ -572,7 +569,7 @@ const buscarDadosAlunos = async () => {
     loadingAlunos.value = true
     const from = (pagination.value.page - 1) * pagination.value.perPage
     const to = from + pagination.value.perPage - 1
-    
+
     let query = supabase
       .from('matriculas')
       .select(`
@@ -588,7 +585,7 @@ const buscarDadosAlunos = async () => {
     }
 
     if (alunosFiltros.value.status) {
-      query = query.eq('status', alunosFiltros.value.status)  
+      query = query.eq('status', alunosFiltros.value.status)
     }
 
     const { data, error } = await query
@@ -620,7 +617,6 @@ const handleError = (error: any, message: string) => {
 </script>
 
 <style scoped>
-
 .icon-black {
   font-size: 2.5rem;
   color: #193155;
@@ -635,21 +631,18 @@ const handleError = (error: any, message: string) => {
 
 .relatorios-header {
   display: flex;
-  justify-content: center; /* Alterado para centralizar */
+  justify-content: center;
+  /* Alterado para centralizar */
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: relative; /* Adicionado */
+  position: relative;
+  /* Adicionado */
 }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
 
 .header-icon {
   position: absolute;
@@ -882,7 +875,8 @@ const handleError = (error: any, message: string) => {
   }
 }
 
-.loading, .error {
+.loading,
+.error {
   text-align: center;
   padding: 2rem;
   color: #666;
@@ -900,7 +894,8 @@ table {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
-th, td {
+th,
+td {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid #e0e4e8;
@@ -935,7 +930,12 @@ th {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

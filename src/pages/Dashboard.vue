@@ -859,15 +859,6 @@ select:focus {
   color: white;
 }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-}
-
 .dashboard-icon {
   width: 200px;
   height: 200px;
