@@ -640,7 +640,175 @@ const loadUserData = async () => {
 </script>
 
 <style scoped>
-/* Icon styling */
+/* Variáveis CSS para modo escuro */
+:root {
+  --card-bg-dark: #1a1f2e;
+  --text-primary-dark: #e1e7ef;
+  --text-secondary-dark: #a1a8b6;
+  --border-color-dark: rgba(255, 255, 255, 0.1);
+  --hover-bg-dark: #252b3b;
+  --chart-bg-dark: #1e2432;
+}
+
+/* Estilos base atualizados */
+.dashboard {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, #1a1f2e 0%, #252b3b 100%);
+  border: 1px solid var(--border-color-dark);
+}
+
+.stat-card {
+  background: var(--card-bg-dark);
+  border: 1px solid var(--border-color-dark);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card:hover {
+  background: var(--hover-bg-dark);
+  border-color: var(--border-color-dark);
+}
+
+.stat-icon {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary-dark);
+}
+
+.stat-info h3 {
+  color: var(--text-primary-dark);
+}
+
+.stat-number {
+  color: #4d9fff;
+}
+
+/* Filtros no modo escuro */
+.filters-container {
+  background: var(--card-bg-dark);
+  border: 1px solid var(--border-color-dark);
+}
+
+.filters-title {
+  color: var(--text-primary-dark);
+}
+
+.filter-group label {
+  color: var(--text-primary-dark);
+}
+
+input[type="date"],
+select {
+  background: var(--hover-bg-dark);
+  border: 1px solid var(--border-color-dark);
+  color: var(--text-primary-dark);
+}
+
+input[type="date"]:focus,
+select:focus {
+  border-color: #4d9fff;
+  box-shadow: 0 0 0 3px rgba(77, 159, 255, 0.1);
+}
+
+/* Cards de status */
+.status-badge {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.status-badge.em-andamento { 
+  background: rgba(0, 123, 255, 0.1);
+  color: #4d9fff;
+}
+
+.status-badge.finalizados { 
+  background: rgba(40, 167, 69, 0.1);
+  color: #2ecc71;
+}
+
+.status-badge.cancelados { 
+  background: rgba(220, 53, 69, 0.1);
+  color: #ff6b6b;
+}
+
+/* Gráficos e containers */
+.chart-container {
+  background: var(--card-bg-dark);
+  border: 1px solid var(--border-color-dark);
+}
+
+.chart-title {
+  color: var(--text-primary-dark);
+}
+
+/* Info card específico */
+.info-card {
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  color: var(--text-primary-dark);
+}
+
+.info-card .stat-icon {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos para dados e estatísticas */
+.info-item {
+  background: var(--hover-bg-dark);
+  border: 1px solid var(--border-color-dark);
+}
+
+.info-label {
+  color: var(--text-secondary-dark);
+}
+
+.info-value {
+  color: var(--text-primary-dark);
+}
+
+/* Botões e ações */
+.refresh-btn {
+  background: var(--hover-bg-dark);
+  color: var(--text-primary-dark);
+  border: 1px solid var(--border-color-dark);
+}
+
+.refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-export {
+  background: var(--hover-bg-dark);
+  color: var(--text-primary-dark);
+  border: 1px solid var(--border-color-dark);
+}
+
+.btn-export:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Loading e estados */
+.loading {
+  color: var(--text-secondary-dark);
+}
+
+.filters-loading {
+  color: var(--text-secondary-dark);
+}
+
+.loading-spinner {
+  border-color: var(--border-color-dark);
+  border-top-color: #4d9fff;
+}
+
+/* Toast de erro */
+.toast-error {
+  background: #2c1215;
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+
 .icon-black {
   font-size: 1.2rem;
   width: 24px;
@@ -685,7 +853,7 @@ const loadUserData = async () => {
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
-  background: var(--accent-color);
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   color: white;
@@ -1068,7 +1236,7 @@ const loadUserData = async () => {
 }
 
 .filters-row {
-  background: white;
+  background: var(--bg-primary);
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -1085,7 +1253,7 @@ const loadUserData = async () => {
 
 .filter-group label {
   display: block;
-  color: #193155;
+  color: var(--text-primary-dark);
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
@@ -1096,8 +1264,9 @@ const loadUserData = async () => {
   padding: 0.75rem;
   border: 1px solid #e0e4e8;
   border-radius: 8px;
-  color: #193155;
+  color: var(--text-primary-dark);
   transition: all 0.3s ease;
+  background: var(--hover-bg-dark);
 }
 
 .date-range {
@@ -1269,15 +1438,16 @@ const loadUserData = async () => {
 }
 
 .filters-container {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--button-primary-text);
 }
 
 .filters-title {
-  color: #193155;
+  color: var(--text-primary-dark);
   font-size: 1.2rem;
   margin-bottom: 1.5rem;
   font-weight: 600;
@@ -1296,7 +1466,7 @@ const loadUserData = async () => {
 }
 
 .filter-group label {
-  color: #193155;
+  color: var(--text-primary-dark);
   font-weight: 500;
   font-size: 0.9rem;
 }
@@ -1333,7 +1503,7 @@ input[type="date"] {
   border: 1px solid #e0e4e8;
   border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
-  color: #193155;
+  color: var(--text-primary-dark);
   transition: all 0.3s ease;
 }
 

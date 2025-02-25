@@ -327,7 +327,7 @@ onMounted(() => {
 }
 
 .cadastro-card {
-  background: white;
+  background: var(--linear-gradient);
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
@@ -367,9 +367,17 @@ onMounted(() => {
 }
 
 label {
-  color: #193155;
+  color: var(--form-label);
   margin-bottom: 0.5rem;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.form-group label {
+  color: var(--form-label);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 input, textarea, select {
@@ -410,7 +418,7 @@ textarea {
 }
 
 .modulos-section h3 {
-  color: #193155;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
 }
 
@@ -430,7 +438,7 @@ textarea {
 }
 
 .modulo-header h4 {
-  color: #193155;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -553,7 +561,7 @@ textarea {
 }
 
 .cadastro-card {
-  background: var(--card-bg);
+  background: var(--bg-primary);
   box-shadow: var(--card-shadow);
 }
 
