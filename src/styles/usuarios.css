@@ -129,10 +129,6 @@
   border-bottom: 1px solid #e0e4e8;
 }
 
-.usuario-header :last-child {
-  width: 30px;
-}
-
 .usuario-avatar {
   width: 48px;
   height: 48px;
