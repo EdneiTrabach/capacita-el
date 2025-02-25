@@ -1,9 +1,9 @@
 <template>
-  <div class="relatorio-container">
+  <div class="relatorios-container">
     <TheSidebar />
     
     <div class="content-wrapper">
-      <header class="relatorio-header">
+      <header class="relatorios-header">
         <div class="header-content">
           <h1>Relatório por Período</h1>
           <p>Análise de treinamentos por período específico</p>
@@ -14,54 +14,55 @@
         </button>
       </header>
 
-      <div class="filters-section">
-        <div class="filter-group">
-          <label>Período</label>
-          <div class="date-range">
-            <input type="date" v-model="filtros.dataInicio" :max="filtros.dataFim">
-            <span>até</span>
-            <input type="date" v-model="filtros.dataFim" :min="filtros.dataInicio">
+      <div class="report-section">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label>Período</label>
+            <div class="date-range">
+              <input type="date" v-model="filtros.dataInicio" :max="filtros.dataFim">
+              <span>até</span>
+              <input type="date" v-model="filtros.dataFim" :min="filtros.dataInicio">
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label>Status</label>
+            <select v-model="filtros.status">
+              <option value="">Todos</option>
+              <option v-for="status in statusOptions" :key="status" :value="status">
+                {{ status }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Tipo</label>
+            <select v-model="filtros.tipo">
+              <option value="">Todos</option>
+              <option v-for="tipo in tiposOptions" :key="tipo" :value="tipo">
+                {{ tipo }}
+              </option>
+            </select>
           </div>
         </div>
 
-        <div class="filter-group">
-          <label>Status</label>
-          <select v-model="filtros.status">
-            <option value="">Todos</option>
-            <option v-for="status in statusOptions" :key="status" :value="status">
-              {{ status }}
-            </option>
-          </select>
+        <div class="actions-bar">
+          <button @click="buscarDados" class="btn-gerar-pdf">
+            <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
+            Gerar PDF
+          </button>
+          <button @click="exportarExcel" class="btn-export-excel">
+            <img src="/public/icons/excel.svg" alt="Excel" class="icon" />
+            Exportar Excel
+          </button>
         </div>
 
-        <div class="filter-group">
-          <label>Tipo</label>
-          <select v-model="filtros.tipo">
-            <option value="">Todos</option>
-            <option v-for="tipo in tiposOptions" :key="tipo" :value="tipo">
-              {{ tipo }}
-            </option>
-          </select>
-        </div>
+        <DataTable 
+          v-if="dados.length" 
+          :dados="dados"
+          :colunas="colunas"
+        />
       </div>
-
-      <div class="actions-bar">
-        <button @click="buscarDados" class="btn-buscar">
-          <font-awesome-icon :icon="['fas', 'search']" /> Buscar
-        </button>
-        <button @click="exportarPDF" class="btn-export">
-          <font-awesome-icon :icon="['fas', 'file-pdf']" /> PDF
-        </button>
-        <button @click="exportarExcel" class="btn-export">
-          <font-awesome-icon :icon="['fas', 'file-excel']" /> Excel
-        </button>
-      </div>
-
-      <DataTable 
-        v-if="dados.length" 
-        :dados="dados"
-        :colunas="colunas"
-      />
     </div>
   </div>
 </template>

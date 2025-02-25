@@ -8,76 +8,6 @@
       </div>
     </header>
 
-    <!-- Relatório de Certificados -->
-    <div v-if="showCertificadosReport" class="report-section">
-      <div class="report-header">
-        <h2>Relatório de Certificados Emitidos</h2>
-        <button @click="showCertificadosReport = false" class="btn-voltar">
-          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
-          Voltar
-        </button>
-      </div>
-
-      <div class="filters-grid">
-        <div class="filter-group">
-          <label>Aluno</label>
-          <select v-model="certificadosFilters.alunoId">
-            <option value="">Todos os alunos</option>
-            <option v-for="aluno in alunos" :key="aluno.id" :value="aluno.id">
-              {{ aluno.nome }}
-            </option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label>Curso</label>
-          <select v-model="certificadosFilters.cursoId">
-            <option value="">Todos os cursos</option>
-            <option v-for="curso in cursos" :key="curso.id" :value="curso.id">
-              {{ curso.nome }}
-            </option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label>Status</label>
-          <select v-model="certificadosFilters.status">
-            <option value="">Todos os status</option>
-            <option value="emitido">Emitido</option>
-            <option value="pendente">Pendente</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label>Período</label>
-          <div class="date-range">
-            <input type="date" v-model="certificadosFilters.dataInicio">
-            <span>até</span>
-            <input type="date" v-model="certificadosFilters.dataFim">
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <label>Ano</label>
-          <select v-model="certificadosFilters.ano">
-            <option value="">Todos os anos</option>
-            <option v-for="ano in anos" :key="ano" :value="ano">{{ ano }}</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="actions-bar">
-        <button @click="gerarRelatorioCertificados" class="btn-gerar-pdf">
-          <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
-          Gerar PDF
-        </button>
-        <button @click="exportarCertificadosExcel" class="btn-export-excel">
-          <img src="/public/icons/excel.svg" alt="EXCEL" class="icon" />
-          Exportar Excel
-        </button>
-      </div>
-    </div>
-
     <!-- Relatório de Alunos -->
     <div v-if="showAlunosReport" class="report-section">
       <header class="relatorio-header">
@@ -132,12 +62,16 @@
       </div>
 
       <div class="actions-bar">
-        <button @click="gerarPDF" class="btn-buscar">
-          <font-awesome-icon :icon="['fas', 'file-pdf']" />
+        <button @click="buscarDadosAlunos" class="btn-buscar">
+          <img src="/public/icons/search-line.svg" alt="Buscar" class="icon" />
+          Buscar
+        </button>
+        <button @click="gerarPDF" class="btn-gerar-pdf">
+          <img src="/public/icons/pdf.svg" alt="PDF" class="icon"/>
           Gerar PDF
         </button>
-        <button @click="exportarExcel" class="btn-export">
-          <font-awesome-icon :icon="['fas', 'file-excel']" />
+        <button @click="exportarExcel" class="btn-export-excel">
+          <img src="/public/icons/excel.svg" alt="Excel" class="icon"/>
           Exportar Excel
         </button>
       </div>
@@ -855,6 +789,25 @@ const handleError = (error: any, message: string) => {
   margin-top: 2rem;
   padding-top: 1.5rem;
   border-top: 1px solid #e0e4e8;
+}
+
+.btn-buscar {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-buscar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 49, 85, 0.2);
 }
 
 

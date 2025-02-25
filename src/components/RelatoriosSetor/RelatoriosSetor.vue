@@ -1,9 +1,9 @@
 <template>
-  <div class="relatorio-container">
+  <div class="relatorios-container">
     <TheSidebar />
     
     <div class="content-wrapper">
-      <header class="relatorio-header">
+      <header class="relatorios-header">
         <div class="header-content">
           <h1>Relatório por Setor</h1>
           <p>Distribuição de treinamentos por setor</p>
@@ -14,44 +14,45 @@
         </button>
       </header>
 
-      <div class="filters-section">
-        <div class="filter-group">
-          <label>Setor</label>
-          <select v-model="filtros.setor">
-            <option value="">Todos os setores</option>
-            <option v-for="setor in setores" :key="setor" :value="setor">
-              {{ setor }}
-            </option>
-          </select>
-        </div>
+      <div class="report-section">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label>Setor</label>
+            <select v-model="filtros.setor">
+              <option value="">Todos os setores</option>
+              <option v-for="setor in setores" :key="setor" :value="setor">
+                {{ setor }}
+              </option>
+            </select>
+          </div>
 
-        <div class="filter-group">
-          <label>Período</label>
-          <div class="date-range">
-            <input type="date" v-model="filtros.dataInicio" :max="filtros.dataFim">
-            <span>até</span>
-            <input type="date" v-model="filtros.dataFim" :min="filtros.dataInicio">
+          <div class="filter-group">
+            <label>Período</label>
+            <div class="date-range">
+              <input type="date" v-model="filtros.dataInicio" :max="filtros.dataFim">
+              <span>até</span>
+              <input type="date" v-model="filtros.dataFim" :min="filtros.dataInicio">
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="actions-bar">
-        <button @click="buscarDados" class="btn-buscar">
-          <font-awesome-icon :icon="['fas', 'search']" /> Buscar
-        </button>
-        <button @click="exportarPDF" class="btn-export">
-          <font-awesome-icon :icon="['fas', 'file-pdf']" /> PDF
-        </button>
-        <button @click="exportarExcel" class="btn-export">
-          <font-awesome-icon :icon="['fas', 'file-excel']" /> Excel
-        </button>
-      </div>
+        <div class="actions-bar">
+          <button @click="buscarDados" class="btn-gerar-pdf">
+            <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
+            Gerar PDF
+          </button>
+          <button @click="exportarExcel" class="btn-export-excel">
+            <img src="/public/icons/excel.svg" alt="Excel" class="icon" />
+            Exportar Excel
+          </button>
+        </div>
 
-      <DataTable 
-        v-if="dados.length" 
-        :dados="dados"
-        :colunas="colunas"
-      />
+        <DataTable 
+          v-if="dados.length" 
+          :dados="dados"
+          :colunas="colunas"
+        />
+      </div>
     </div>
   </div>
 </template>

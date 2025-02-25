@@ -225,7 +225,8 @@ table tr:nth-child(even) {
 
 .btn-voltar,
 .btn-gerar-pdf,
-.btn-export-excel {
+.btn-export-excel,
+.btn-buscar {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -278,6 +279,178 @@ img.icon-black {
   align-content: flex-start;
   justify-content: center;
   flex-wrap: nowrap;
+}
+
+
+/* Adicione essas classes em cada arquivo .css dos relatórios */
+
+.report-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  border-radius: 12px;
+  position: relative;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.report-header h1 {
+  color: #ffffff;
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.report-header p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.5rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.actions-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-voltar,
+.btn-gerar-pdf,
+.btn-export-excel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-voltar {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-gerar-pdf {
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  color: white;
+}
+
+.btn-export-excel {
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+  color: white;
+}
+
+.btn-voltar:hover,
+.btn-gerar-pdf:hover,
+.btn-export-excel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .report-section {
+    padding: 1rem;
+  }
+
+  .report-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-bar {
+    flex-direction: column;
+  }
+
+  .btn-voltar,
+  .btn-gerar-pdf,
+  .btn-export-excel {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Adicione em cada arquivo .css dos relatórios */
+.relatorios-container {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.relatorios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  color: white;
+}
+
+.header-content h1 {
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.header-content p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.5rem;
+}
+
+.report-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.actions-bar {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
 }
 
 

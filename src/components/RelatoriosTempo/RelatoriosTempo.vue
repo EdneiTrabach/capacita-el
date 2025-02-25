@@ -1,18 +1,18 @@
 <template>
-  <div class="relatorio-container">
-    <div class="content-wrapper">
-      <header class="relatorio-header">
-        <div class="header-content">
-          <h1>Relatório por Tempo de Treinamento</h1>
-          <p>Análise da distribuição de carga horária dos treinamentos</p>
-        </div>
-        <button @click="$router.push('/relatorios')" class="btn-voltar">
-          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
-          Voltar
-        </button>
-      </header>
+  <div class="relatorios-container">
+    <header class="relatorios-header">
+      <div class="header-content">
+        <h1>Relatório por Tempo de Treinamento</h1>
+        <p>Análise da distribuição de carga horária dos treinamentos</p>
+      </div>
+      <button @click="$router.push('/relatorios')" class="btn-voltar">
+        <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
+        Voltar
+      </button>
+    </header>
 
-      <div class="filters-section">
+    <div class="report-section">
+      <div class="filters-grid">
         <div class="filter-group">
           <label>Período</label>
           <div class="date-range">
@@ -53,16 +53,12 @@
       </div>
 
       <div class="actions-bar">
-        <button @click="buscarDados" class="btn-buscar">
-          <font-awesome-icon :icon="['fas', 'search']" class="icon" />
-          Buscar
+        <button @click="buscarDados" class="btn-gerar-pdf">
+          <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
+          Gerar PDF
         </button>
-        <button @click="exportarPDF" class="btn-export">
-          <font-awesome-icon :icon="['fas', 'file-pdf']" class="icon" />
-          Exportar PDF
-        </button>
-        <button @click="exportarExcel" class="btn-export">
-          <font-awesome-icon :icon="['fas', 'file-excel']" class="icon" />
+        <button @click="exportarExcel" class="btn-export-excel">
+          <img src="/public/icons/excel.svg" alt="Excel" class="icon" />
           Exportar Excel
         </button>
       </div>

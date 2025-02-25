@@ -1,19 +1,18 @@
-// src/components/RelatoriosPendentes/RelatoriosPendentes.vue
 <template>
-  <div class="relatorio-container">
-    <div class="content-wrapper">
-      <header class="relatorio-header">
-        <div class="header-content">
-          <h1>Relatório de Certificados Pendentes</h1>
-          <p>Visualize e gerencie os certificados pendentes de emissão</p>
-        </div>
-        <button @click="$router.push('/relatorios')" class="btn-voltar">
-          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
-          Voltar
-        </button>
-      </header>
+  <div class="relatorios-container">
+    <header class="relatorios-header">
+      <div class="header-content">
+        <h1>Relatório de Certificados Pendentes</h1>
+        <p>Visualize e gerencie os certificados pendentes de emissão</p>
+      </div>
+      <button @click="$router.push('/relatorios')" class="btn-voltar">
+        <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
+        Voltar
+      </button>
+    </header>
 
-      <div class="filters-section">
+    <div class="report-section">
+      <div class="filters-grid">
         <div class="filter-group">
           <label>Período</label>
           <div class="date-range">
@@ -52,16 +51,12 @@
       </div>
 
       <div class="actions-bar">
-        <button @click="buscarDados" class="btn-buscar">
-          <font-awesome-icon :icon="['fas', 'search']" />
-          Buscar
+        <button @click="buscarDados" class="btn-gerar-pdf">
+          <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
+          Gerar PDF
         </button>
-        <button @click="exportarPDF" class="btn-export">
-          <font-awesome-icon :icon="['fas', 'file-pdf']" />
-          Exportar PDF
-        </button>
-        <button @click="exportarExcel" class="btn-export">
-          <font-awesome-icon :icon="['fas', 'file-excel']" />
+        <button @click="exportarExcel" class="btn-export-excel">
+          <img src="/public/icons/excel.svg" alt="Excel" class="icon" />
           Exportar Excel
         </button>
       </div>
