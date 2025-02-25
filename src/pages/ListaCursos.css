@@ -33,6 +33,10 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background: var(--header-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .cursos-header h1 {
@@ -40,6 +44,15 @@
   font-size: 1.8rem;
   margin: 0;
   font-weight: 600;
+  text-align: center;
+}
+
+.cursos-header img.header-icon {
+  width: 180px;
+  height: 200px;
+  position: absolute;
+  left: 20px;
+  top: -40px;
 }
 
 /* Botão Novo com hover effect aprimorado */
@@ -57,6 +70,8 @@
   transition: all 0.3s ease;
   background-color: var(--button-secondary-bg);
   color: var(--button-secondary-text);
+  position: absolute;
+  right: 20px;
 }
 
 .btn-novo:hover {

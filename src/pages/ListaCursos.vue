@@ -5,6 +5,7 @@
     </div>
     
     <header class="cursos-header">
+      <img src="/treina_cadastrado.svg" alt="Treinamentos" class="header-icon" />
       <h1>Treinamentos Cadastrados</h1>
       <button @click="$router.push('/cursos')" class="btn-novo">
         <img src="/public/icons/adicao.svg" alt="Novo" class="icon-black" />

@@ -1,7 +1,10 @@
 <template>
   <div class="relatorios-container">
     <header class="relatorios-header">
-      <h1>Relatórios</h1>
+      <div class="header-content">
+        <img src="/relatorios.svg" alt="Relatórios" class="header-icon" />
+        <h1>Relatórios</h1>
+      </div>
     </header>
 
     <!-- Relatório de Certificados -->
@@ -431,13 +434,28 @@ onMounted(() => {
 
 .relatorios-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* Alterado para centralizar */
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative; /* Adicionado */
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-icon {
+  position: absolute;
+  right: 2rem;
+  width: 160px;
+  height: 140px;
+  top: -15px;
 }
 
 .relatorios-header h1 {
@@ -567,6 +585,12 @@ onMounted(() => {
 
   .btn-gerar {
     width: 100%;
+  }
+
+  .header-icon {
+    width: 60px;
+    height: 60px;
+    right: 1rem;
   }
 }
 
