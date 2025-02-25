@@ -148,7 +148,7 @@
       </div>
 
       <!-- Novos cards -->
-      <div class="relatorio-card" @click="showPeriodoReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/periodo')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'calendar-alt']" class="icon-black" />
         </div>
@@ -157,7 +157,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showSetorReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/setor')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'building']" class="icon-black" />
         </div>
@@ -203,11 +203,6 @@
       </div>
     </div>
 
-    <!-- Adicione após os relatórios existentes -->
-    <div v-if="showPeriodoReport" class="report-section">
-      <PeriodoRelatorio @voltar="showPeriodoReport = false" />
-    </div>
-
     <div v-if="showSetorReport" class="report-section">
       <SetorRelatorio @voltar="showSetorReport = false" />
     </div>
@@ -241,6 +236,8 @@ import { supabase } from '@/config/supabase'
 import { sanitizeHTML } from '@/utils/sanitize'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import RelatoriosPeriodo from '@/components/RelatoriosPeriodo/RelatoriosPeriodo.vue'
+
 import { 
   faUsers, 
   faCalendarAlt, 
@@ -315,7 +312,6 @@ const alunosFilters = ref({
 })
 
 // Adicione os novos refs para controle de visibilidade
-const showPeriodoReport = ref(false)
 const showSetorReport = ref(false)
 const showTempoReport = ref(false)
 const showTipoReport = ref(false)
