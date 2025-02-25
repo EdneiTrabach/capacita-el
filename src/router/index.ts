@@ -15,9 +15,13 @@ import ResetPassword from '@/pages/ResetPassword.vue'
 import NotFound from '@/pages/NotFound.vue'
 import RelatoriosPeriodo from '@/components/RelatoriosPeriodo/RelatoriosPeriodo.vue'
 import RelatoriosSetor from '@/components/RelatoriosSetor/RelatoriosSetor.vue'
+import RelatoriosTempo from '@/components/RelatoriosTempo/RelatoriosTempo.vue'
+import RelatoriosTipo from '@/components/RelatoriosTipo/RelatoriosTipo.vue'
+import RelatoriosAgendados from '@/components/RelatoriosAgendados/RelatoriosAgendados.vue'
+import RelatoriosPendentes from '@/components/RelatoriosPendentes/RelatoriosPendentes.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -90,8 +94,8 @@ const router = createRouter({
     },
     {
       path: '/relatorios',
-      name: 'relatorios',
-      component: () => import('../pages/Relatorios.vue'),
+      name: 'Relatorios', 
+      component: () => import('@/pages/Relatorios.vue'),
       meta: { requiresAuth: true }
     },
     {
@@ -150,6 +154,30 @@ const router = createRouter({
       path: '/relatorios/setor',
       name: 'RelatoriosSetor', 
       component: RelatoriosSetor,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios/tempo',
+      name: 'RelatoriosTempo',
+      component: RelatoriosTempo,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios/tipo',
+      name: 'RelatoriosTipo',
+      component: RelatoriosTipo,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios/agendados',
+      name: 'RelatoriosAgendados',
+      component: RelatoriosAgendados,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios/pendentes',
+      name: 'RelatoriosPendentes',
+      component: RelatoriosPendentes,
       meta: { requiresAuth: true }
     },
     {

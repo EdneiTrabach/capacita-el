@@ -77,21 +77,25 @@
       </div>
     </div>
 
-    <!-- Relatório de Alunos por Curso -->
+    <!-- Relatório de Alunos -->
     <div v-if="showAlunosReport" class="report-section">
-      <div class="report-header">
-        <h2>Relatório de Alunos por Curso</h2>
+      <header class="relatorio-header">
+        <div class="header-content">
+          <h1>Relatório de Alunos por Curso</h1>
+          <p>Visualize e gerencie os alunos matriculados nos cursos</p>
+        </div>
         <button @click="showAlunosReport = false" class="btn-voltar">
           <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
-          Voltar</button>
-      </div>
+          Voltar
+        </button>
+      </header> 
 
-      <div class="filters-grid">
+      <div class="filters-section">
         <div class="filter-group">
           <label>Curso</label>
-          <select v-model="alunosFilters.cursoId">
+          <select v-model="alunosFiltros.cursoId">
             <option value="">Todos os cursos</option>
-            <option v-for="curso in cursos" :key="curso.id" :value="curso.id">
+            <option v-for="curso in cursosAlunos" :key="curso.id" :value="curso.id">
               {{ curso.nome }}
             </option>
           </select>
@@ -99,7 +103,7 @@
 
         <div class="filter-group">
           <label>Status da Pessoa</label>
-          <select v-model="alunosFilters.status">
+          <select v-model="alunosFiltros.status">
             <option value="">Todos os status</option>
             <option value="ativo">Ativo</option>
             <option value="inativo">Inativo</option>
@@ -110,15 +114,15 @@
         <div class="filter-group">
           <label>Período de Matrícula</label>
           <div class="date-range">
-            <input type="date" v-model="alunosFilters.dataInicio">
+            <input type="date" v-model="alunosFiltros.dataInicio">
             <span>até</span>
-            <input type="date" v-model="alunosFilters.dataFim">
+            <input type="date" v-model="alunosFiltros.dataFim">
           </div>
         </div>
 
         <div class="filter-group">
           <label>Conclusão</label>
-          <select v-model="alunosFilters.conclusao">
+          <select v-model="alunosFiltros.conclusao">
             <option value="">Todos</option>
             <option value="concluido">Concluído</option>
             <option value="emAndamento">Em andamento</option>
@@ -127,15 +131,21 @@
       </div>
 
       <div class="actions-bar">
-        <button @click="gerarRelatorioAlunos" class="btn-gerar-pdf">
-          <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
+        <button @click="gerarPDF" class="btn-buscar">
+          <font-awesome-icon :icon="['fas', 'file-pdf']" />
           Gerar PDF
         </button>
-        <button @click="exportarAlunosExcel" class="btn-export-excel">
-          <img src="/public/icons/excel.svg" alt="EXCEL" class="icon" />
+        <button @click="exportarExcel" class="btn-export">
+          <font-awesome-icon :icon="['fas', 'file-excel']" />
           Exportar Excel
         </button>
       </div>
+
+      <DataTable 
+        v-if="dadosAlunos.length"
+        :dados="dadosAlunos"
+        :colunas="colunasAlunos"
+      />
     </div>
 
     <!-- Cards de Relatórios -->
@@ -169,7 +179,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showTempoReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/tempo')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'clock']" class="icon-black" />
         </div>
@@ -178,7 +188,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showTipoReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/tipo')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'chalkboard-teacher']" class="icon-black" />
         </div>
@@ -187,7 +197,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showAgendadosReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/agendados')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'calendar-check']" class="icon-black" />
         </div>
@@ -196,7 +206,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showPendentesReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/pendentes')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'certificate']" class="icon-black" />
         </div>
@@ -240,6 +250,8 @@ import { sanitizeHTML } from '@/utils/sanitize'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import RelatoriosPeriodo from '@/components/RelatoriosPeriodo/RelatoriosPeriodo.vue'
+import { useRouter } from 'vue-router'
+import DataTable from '@/components/DataTable.vue' // Adicione esta importação
 
 import { 
   faUsers, 
@@ -390,6 +402,16 @@ const exportarAlunosExcel = async () => {
   console.log('Exportando alunos para Excel...')
 }
 
+const gerarPDF = async () => {
+  // Implementar geração de PDF
+  console.log('Gerando PDF...')
+}
+
+const exportarExcel = async () => {
+  // Implementar exportação Excel
+  console.log('Exportando Excel...')
+}
+
 const filtrarCertificados = computed(() => {
   return certificados.value.filter(cert => {
     const matchAluno = !certificadosFilters.value.alunoId || 
@@ -409,16 +431,84 @@ const filtrarCertificados = computed(() => {
 
 onMounted(() => {
   loadData()
+  carregarCursosAlunos()
+  buscarDadosAlunos()
 })
+
+// Adicione o setup do RelatoriosAlunos
+const router = useRouter()
+const alunosFiltros = ref({
+  cursoId: '',
+  status: '',
+  dataInicio: '',
+  dataFim: '',
+  conclusao: ''
+})
+
+const dadosAlunos = ref([])
+const cursosAlunos = ref([])
+const loadingAlunos = ref(false)
+
+const colunasAlunos = [
+  { field: 'aluno', header: 'Aluno' },
+  { field: 'curso', header: 'Curso' },
+  { field: 'status', header: 'Status' },
+  { field: 'data_matricula', header: 'Data Matrícula' },
+  { field: 'conclusao', header: 'Conclusão' }
+]
+
+const carregarCursosAlunos = async () => {
+  try {
+    const { data } = await supabase
+      .from('cursos')
+      .select('id, nome')
+    
+    cursosAlunos.value = data || []
+  } catch (error) {
+    console.error('Erro ao carregar cursos:', error)
+  }
+}
+
+const buscarDadosAlunos = async () => {
+  try {
+    loadingAlunos.value = true
+    
+    let query = supabase
+      .from('matriculas')
+      .select(`
+        *, 
+        usuarios (id, nome),
+        cursos (id, nome)
+      `)
+      .order('created_at', { ascending: false })
+
+    if (alunosFiltros.value.cursoId) {
+      query = query.eq('curso_id', alunosFiltros.value.cursoId)
+    }
+
+    if (alunosFiltros.value.status) {
+      query = query.eq('status', alunosFiltros.value.status)  
+    }
+
+    const { data, error } = await query
+
+    if (error) throw error
+
+    dadosAlunos.value = data?.map(item => ({
+      ...item,
+      aluno: item.usuarios?.nome,
+      curso: item.cursos?.nome
+    })) || []
+
+  } catch (error) {
+    console.error('Erro ao buscar dados:', error)
+  } finally {
+    loadingAlunos.value = false
+  }
+}
 </script>
 
 <style scoped>
-.icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  filter: brightness(0) invert(1); /* Add this line to make SVG white */
-}
 
 .icon-black {
   font-size: 2.5rem;
@@ -663,42 +753,6 @@ onMounted(() => {
   border-top: 1px solid #e0e4e8;
 }
 
-.btn-voltar,
-.btn-gerar-pdf,
-.btn-export-excel {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.btn-voltar {
-  background-color: #6c757d;
-  color: white;
-}
-
-.btn-gerar-pdf {
-  background: linear-gradient(135deg, #193155 0%, #254677 100%);
-  color: white;
-}
-
-.btn-export-excel {
-  background-color: #28a745;
-  color: white;
-}
-
-.btn-voltar:hover,
-.btn-gerar-pdf:hover,
-.btn-export-excel:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
 
 @media (max-width: 768px) {
   .filters-grid {
@@ -745,30 +799,5 @@ th {
   background: #f8f9fa;
   color: #193155;
   font-weight: 600;
-}
-
-.relatorios-container {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-.report-section {
-  background-color: var(--card-bg);
-  box-shadow: var(--card-shadow);
-}
-
-.filters-grid {
-  color: var(--text-primary);
-}
-
-.filter-group label {
-  color: var(--text-primary);
-}
-
-.filter-group select,
-.filter-group input {
-  background-color: var(--input-bg);
-  color: var(--input-text);
-  border-color: var(--input-border);
 }
 </style>

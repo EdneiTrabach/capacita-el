@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router'
 import { supabase } from '@/config/supabase'
 import { presencaService } from '@/services/presencaService'
 import { logSystemAction } from '@/utils/logger'
-import type { Presenca } from './types'
+import type { Presenca } from '@/types/presenca' // Atualizar import aqui
 
 export function useListaPresenca() {
   const route = useRoute()
@@ -16,26 +16,27 @@ export function useListaPresenca() {
   const success = ref('')
   const cursoStatus = ref('')
   const qrCode = ref('')
+  const filtros = ref({
+    dataAula: new Date().toISOString().split('T')[0] // Data atual como valor inicial
+  })
 
   const loadPresencas = async () => {
     try {
-      loading.value = true
-      const { data, error: loadError } = await supabase
+      const { data, error } = await supabase
         .from('lista_presenca')
         .select(`
           *,
-          alunos:usuarios(nome)
+          aluno:usuarios(nome)
         `)
         .eq('curso_id', cursoId)
-        .order('data_aula', { ascending: false })
+        .eq('data_aula', filtros.value.dataAula) // Usar o filtro aqui
+        .order('horario_registro', { ascending: false })
 
-      if (loadError) throw loadError
-      presencas.value = data || []
+      if (error) throw error
+      presencas.value = data
     } catch (err) {
       console.error('Erro ao carregar presenças:', err)
-      error.value = 'Erro ao carregar dados'
-    } finally {
-      loading.value = false
+      error.value = 'Erro ao carregar lista de presença'
     }
   }
 
@@ -137,8 +138,13 @@ export function useListaPresenca() {
     }
   }
 
+  // Funções auxiliares para formatação
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('pt-BR')
+  }
+
+  const formatTime = (datetime: string) => {
+    return new Date(datetime).toLocaleTimeString('pt-BR')
   }
 
   // Modificar a função buscarStatusCurso para carregar o status do curso
@@ -192,6 +198,8 @@ export function useListaPresenca() {
     qrCode,
     registrarPresenca,
     gerarQRCode,
-    formatDate
+    formatDate,
+    filtros, // Adicionar filtros ao retorno
+    loadPresencas // Opcional: exportar loadPresencas se precisar chamar manualmente
   }
 }

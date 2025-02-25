@@ -285,7 +285,7 @@ onMounted(() => {
 /* Novo estilo para a seção de logout */
 .logout-section {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1rem;
+  padding: 1rem 0;
   margin-top: auto;
   flex-shrink: 0; /* Impede que a seção encolha */
 }
@@ -306,13 +306,6 @@ onMounted(() => {
 
 .logout-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
-}
-
-.icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  filter: brightness(0) invert(1); /* Add this line to make SVG white */
 }
 
 /* Adicione estas classes para garantir que os textos longos se ajustem */
@@ -352,7 +345,7 @@ onMounted(() => {
 
 .utility-section {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1rem;
+  padding: 1rem 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

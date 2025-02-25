@@ -4,8 +4,14 @@
     
     <div class="content-wrapper">
       <header class="relatorio-header">
-        <h1>Relatório por Período</h1>
-        <p>Análise de treinamentos por período específico</p>
+        <div class="header-content">
+          <h1>Relatório por Período</h1>
+          <p>Análise de treinamentos por período específico</p>
+        </div>
+        <button @click="$router.push('/relatorios')" class="btn-voltar">
+          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
+          Voltar
+        </button>
       </header>
 
       <div class="filters-section">

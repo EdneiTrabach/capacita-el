@@ -1,9 +1,9 @@
 .icon {
   font-size: 1.2rem;
-  width: 24px;
+  width: 20px;
+  height: 20px;
   text-align: center;
   filter: brightness(0) invert(1);
-  /* Add this line to make SVG white */
 }
 
 .icon-black {
@@ -117,7 +117,6 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
   transition: all 0.3s ease;
   border: 1px solid #e0e4e8;
   background-color: var(--card-bg);
@@ -424,13 +423,6 @@
   }
 }
 
-/* Action Buttons */
-.actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-direction: column;
-  min-width: 140px;
-}
 
 .btn-edit,
 .btn-delete {
@@ -524,133 +516,9 @@
   color: white;
 }
 
-/* Action Buttons */
-.actions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end; /* Mantém os botões à direita */
-}
 
-.btn-edit,
-.btn-delete,
-.btn-presenca,
-.btn-download,
-.btn-view,
-.btn-emit,
-.btn-avaliacao,
-.btn-matricula {
-  padding: 0.75rem 1.25rem;
-  height: 30px; /* Altura fixa para todos os botões */
-  min-width: 240px; /* Largura mínima uniforme */
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-width: 120px;
-  background-color: var(--button-secondary-bg);
-  color: var(--button-secondary-text);
 
-}
 
-/* Cores específicas para cada botão */
-.btn-edit {
-  background-color: #193155;
-  color: white;
-}
-
-.btn-delete {
-  background-color: #dc3545;
-  color: white;
-}
-
-.btn-presenca {
-  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
-  color: white;
-}
-
-.btn-download {
-  background-color: #254677;
-  color: white;
-}
-
-.btn-view {
-  background-color: #6c757d;
-  color: white;
-}
-
-.btn-emit {
-  background-color: #198754;
-  color: white;
-}
-
-/* Botão de avaliação */
-.btn-avaliacao {
-  padding: 0.75rem 1.25rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
-  color: white;
-}
-
-.btn-avaliacao:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-}
-
-.btn-avaliacao:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  background: #e0e0e0;
-  transform: none;
-  box-shadow: none;
-}
-
-.btn-avaliacao .icon {
-  width: 18px;
-  height: 18px;
-  filter: brightness(0) invert(1);
-}
-
-/* Hover effect unificado */
-.btn-edit:hover,
-.btn-delete:hover,
-.btn-presenca:hover,
-.btn-download:hover,
-.btn-view:hover,
-.btn-emit:hover,
-.btn-avaliacao:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Ícones dentro dos botões */
-.btn-edit .icon,
-.btn-delete .icon,
-.btn-presenca .icon,
-.btn-download .icon,
-.btn-view .icon,
-.btn-emit .icon,
-.btn-avaliacao .icon {
-  width: 18px;
-  height: 18px;
-  filter: brightness(0) invert(1);
-}
 
 /* Responsividade */
 @media (max-width: 768px) {
@@ -757,41 +625,12 @@ p.descriçao-card {
   color: #676767;
 }
 
-/* Estilo específico para o botão de lista de presença */
-.btn-presenca {
-  padding: 0.75rem 1.25rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
-  color: white;
-  min-width: 120px;
-  justify-content: center;
-}
-
-.btn-presenca:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
-}
-
 .btn-presenca:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   background: #e0e0e0;
   transform: none;
   box-shadow: none;
-}
-
-.btn-presenca .icon {
-  width: 18px;
-  height: 18px;
-  filter: brightness(0) invert(1);
 }
 
 /* Responsividade aprimorada */

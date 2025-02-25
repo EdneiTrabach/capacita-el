@@ -491,20 +491,6 @@ export default {
 </script>
 
 <style scoped>
-.icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  filter: brightness(0) invert(1);
-}
-
-.icon-black {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  filter: contrast(0.4);
-}
-
 .certificados-container {
   padding: 2rem;
   background-color: #f8f9fa;
@@ -695,12 +681,6 @@ export default {
   font-weight: 500;
   font-size: 0.95rem;
   color: var(--text-primary);
-}
-
-/* Action Buttons */
-.actions {
-  display: flex;
-  gap: 0.75rem;
 }
 
 .btn-edit,

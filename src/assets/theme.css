@@ -9,6 +9,9 @@
   --sidebar-text: #ffffff;
   --card-bg: #ffffff;
   --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  --icon-filter: brightness(0) saturate(100%) invert(1);
+
 
   /* Novas variáveis para elementos comuns */
   --input-bg: #ffffff;
@@ -194,3 +197,63 @@ table tr:nth-child(even) {
   background: var(--button-primary-bg);
   color: var(--button-primary-text);
 }
+
+.icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
+/* Header com gradiente */
+.relatorio-header {
+  margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+
+.btn-voltar,
+.btn-gerar-pdf,
+.btn-export-excel {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+}
+
+.btn-voltar {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-gerar-pdf {
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  color: white;
+}
+
+.btn-export-excel {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-voltar:hover,
+.btn-gerar-pdf:hover,
+.btn-export-excel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+

@@ -36,13 +36,6 @@
   border-left: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Área de ações com melhor espaçamento */
-.actions {
-  margin: 2rem 0;
-  display: flex;
-  justify-content: flex-end;
-}
-
 /* Botão de registro com hover effect */
 .btn-registrar {
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
@@ -110,6 +103,11 @@ td {
   font-size: 0.875rem;
   font-weight: 500;
   display: inline-block;
+}
+
+.status-badge.presente {
+  background: linear-gradient(135deg, #198754 0%, #28a745 100%);
+  color: white;
 }
 
 .presente {

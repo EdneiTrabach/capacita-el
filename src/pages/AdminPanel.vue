@@ -195,11 +195,6 @@ onMounted(() => {
   border-bottom: 1px solid var(--border-color);
 }
 
-.icon {
-  width: 20px;
-  height: 20px;
-}
-
 @media (max-width: 768px) {
   .admin-container {
     padding: 1rem;

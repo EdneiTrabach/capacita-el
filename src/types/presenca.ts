@@ -1,3 +1,4 @@
+// src/types/presenca.ts
 export interface DadosAula {
   codigo: string
   curso_id: string
@@ -12,7 +13,7 @@ export interface DadosAula {
 
 export interface Presenca {
   id: string
-  aluno_id: string 
+  aluno_id: string
   aluno_nome?: string
   curso_id: string
   data_aula: string

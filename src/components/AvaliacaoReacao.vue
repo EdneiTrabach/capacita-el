@@ -238,6 +238,7 @@ textarea {
   border: 1px solid #e0e4e8;
   border-radius: 8px;
   resize: vertical;
+  font-family: jetbrains mono;
 }
 
 .form-actions {
@@ -277,13 +278,6 @@ textarea {
 .btn-enviar:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(25, 49, 85, 0.2);
-}
-
-.icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  filter: brightness(0) invert(1);
 }
 
 @media (max-width: 768px) {
