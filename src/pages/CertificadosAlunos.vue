@@ -555,7 +555,7 @@ export default {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
-  background: white;
+  background: var(--card-bg);
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -564,18 +564,29 @@ export default {
 .search-bar input,
 .search-bar select {
   padding: 0.75rem;
-  border: 1px solid #e0e4e8;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
-  color: #193155;
+  color: var(--text-primary);
+  background-color: var(--input-bg);
   transition: all 0.3s ease;
+}
+
+.search-bar input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.search-bar select option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .search-bar input:focus,
 .search-bar select:focus {
   outline: none;
-  border-color: #193155;
-  box-shadow: 0 0 0 3px rgba(25, 49, 85, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-alpha);
 }
 
 /* Grid Layout */
@@ -672,6 +683,7 @@ export default {
   color: #193155;
   font-weight: 500;
   font-size: 0.95rem;
+  color: var(--text-primary);
 }
 
 /* Action Buttons */
@@ -785,6 +797,7 @@ export default {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: var(--bg-secondary);
 }
 
 .modal-content h2 {
@@ -792,6 +805,7 @@ export default {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .form-group {
@@ -803,6 +817,7 @@ export default {
   color: #193155;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .form-group select,
@@ -810,19 +825,33 @@ export default {
 .form-group textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #e0e4e8;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
-  color: #193155;
+  color: var(--text-primary);
+  background-color: var(--input-bg);
   transition: all 0.3s ease;
+}
+
+.form-group select option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 .form-group select:focus,
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.search-bar input:focus,
+.search-bar select:focus {
   outline: none;
-  border-color: #193155;
-  box-shadow: 0 0 0 3px rgba(25, 49, 85, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-alpha);
 }
 
 .form-group textarea {

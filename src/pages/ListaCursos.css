@@ -16,10 +16,9 @@
 /* Estilos para o container principal */
 .cursos-container {
   padding: 2rem;
-  background-color: #f8f9fa;
   min-height: 100vh;
   font-family: 'JetBrains Mono', monospace;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-secondary);
   color: var(--text-primary);
 }
 
@@ -30,7 +29,7 @@
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  background: linear-gradient(135deg, #193155 0%, #254677 100%) !important;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background: var(--header-gradient);
@@ -119,7 +118,7 @@
 
 .curso-header {
   padding: 1.5rem;
-  background: #f8f9fa;
+  background: var(--bg-primary);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -128,7 +127,7 @@
 }
 
 .curso-header h3 {
-  color: #193155;
+  color: var(--text-primary);
   font-size: 1.2rem;
   margin: 0;
   font-weight: 600;
@@ -300,7 +299,7 @@
 .card-actions {
   padding: 1.5rem;
   border-top: 1px solid #e0e4e8;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -697,7 +696,7 @@
 }
 
 p.descriçao-card {
-  color: black;
+  color: var(--text-primary);
 }
 
 /* Toast Notifications */

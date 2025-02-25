@@ -467,7 +467,7 @@ onMounted(() => {
 }
 
 .relatorio-card {
-  background: white;
+  background: var(--bg-secondary);
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -477,11 +477,13 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .relatorio-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 .card-icon {

@@ -726,7 +726,7 @@ onMounted(loadSetores)
 }
 
 .cadastro-header {
-  background: #193155;
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
   color: white;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -754,10 +754,39 @@ onMounted(loadSetores)
   flex-direction: column;
 }
 
+/* Variáveis de tema */
+:root {
+  --label-color-light: #193155;
+  --label-color-dark: #e1e7ef;
+}
+
+[data-theme="dark"] {
+  --label-color: var(--label-color-dark);
+}
+
+[data-theme="light"] {
+  --label-color: var(--label-color-light);
+}
+
 label {
-  color: #193155;
+  color: var(--form-label);
   margin-bottom: 0.5rem;
   font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.form-group label {
+  color: var(--form-label);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.modal-content label {
+  color: var(--form-label);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 input, select {
@@ -1062,7 +1091,7 @@ button {
 }
 
 .cadastro-card {
-  background: var(--card-bg);
+  background: var(--bg-primary);
   box-shadow: var(--card-shadow);
 }
 

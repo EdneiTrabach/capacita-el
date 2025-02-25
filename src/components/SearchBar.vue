@@ -47,3 +47,11 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.search-bar {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+}
+</style>
