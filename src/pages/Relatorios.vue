@@ -1,6 +1,7 @@
 <template>
   <div class="relatorios-container">
-    <header class="relatorios-header">
+    <!-- Header principal - só mostra se nenhum relatório estiver aberto -->
+    <header v-if="!showAlunosReport && !showCertificadosReport" class="relatorios-header">
       <h1>Relatórios</h1>
     </header>
 
@@ -74,10 +75,81 @@
       </div>
     </div>
 
+    <!-- Relatório de Alunos -->
+    <div v-if="showAlunosReport" class="report-section">
+      <header class="relatorio-header">
+        <div class="header-content">
+          <h1>Relatório de Alunos por Curso</h1>
+          <p>Visualize e gerencie os alunos matriculados nos cursos</p>
+        </div>
+        <button @click="showAlunosReport = false" class="btn-voltar">
+          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
+          Voltar
+        </button>
+      </header> 
+
+      <div class="filters-section">
+        <div class="filter-group">
+          <label>Curso</label>
+          <select v-model="alunosFiltros.cursoId">
+            <option value="">Todos os cursos</option>
+            <option v-for="curso in cursosAlunos" :key="curso.id" :value="curso.id">
+              {{ curso.nome }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Status da Pessoa</label>
+          <select v-model="alunosFiltros.status">
+            <option value="">Todos os status</option>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+            <option value="cursando">Cursando</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Período de Matrícula</label>
+          <div class="date-range">
+            <input type="date" v-model="alunosFiltros.dataInicio">
+            <span>até</span>
+            <input type="date" v-model="alunosFiltros.dataFim">
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Conclusão</label>
+          <select v-model="alunosFiltros.conclusao">
+            <option value="">Todos</option>
+            <option value="concluido">Concluído</option>
+            <option value="emAndamento">Em andamento</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions-bar">
+        <button @click="gerarPDF" class="btn-buscar">
+          <font-awesome-icon :icon="['fas', 'file-pdf']" />
+          Gerar PDF
+        </button>
+        <button @click="exportarExcel" class="btn-export">
+          <font-awesome-icon :icon="['fas', 'file-excel']" />
+          Exportar Excel
+        </button>
+      </div>
+
+      <DataTable 
+        v-if="dadosAlunos.length"
+        :dados="dadosAlunos"
+        :colunas="colunasAlunos"
+      />
+    </div>
+
     <!-- Cards de Relatórios -->
     <div v-if="!showCertificadosReport && !showAlunosReport" class="relatorios-grid">
       <!-- Cards existentes -->
-      <div class="relatorio-card" @click="$router.push('/relatorios/alunos')">
+      <div class="relatorio-card" @click="showAlunosReport = true">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'users']" class="icon-black" />
         </div>
@@ -176,6 +248,8 @@ import { sanitizeHTML } from '@/utils/sanitize'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import RelatoriosPeriodo from '@/components/RelatoriosPeriodo/RelatoriosPeriodo.vue'
+import { useRouter } from 'vue-router'
+import DataTable from '@/components/DataTable.vue' // Adicione esta importação
 
 import { 
   faUsers, 
@@ -326,6 +400,16 @@ const exportarAlunosExcel = async () => {
   console.log('Exportando alunos para Excel...')
 }
 
+const gerarPDF = async () => {
+  // Implementar geração de PDF
+  console.log('Gerando PDF...')
+}
+
+const exportarExcel = async () => {
+  // Implementar exportação Excel
+  console.log('Exportando Excel...')
+}
+
 const filtrarCertificados = computed(() => {
   return certificados.value.filter(cert => {
     const matchAluno = !certificadosFilters.value.alunoId || 
@@ -345,7 +429,81 @@ const filtrarCertificados = computed(() => {
 
 onMounted(() => {
   loadData()
+  carregarCursosAlunos()
+  buscarDadosAlunos()
 })
+
+// Adicione o setup do RelatoriosAlunos
+const router = useRouter()
+const alunosFiltros = ref({
+  cursoId: '',
+  status: '',
+  dataInicio: '',
+  dataFim: '',
+  conclusao: ''
+})
+
+const dadosAlunos = ref([])
+const cursosAlunos = ref([])
+const loadingAlunos = ref(false)
+
+const colunasAlunos = [
+  { field: 'aluno', header: 'Aluno' },
+  { field: 'curso', header: 'Curso' },
+  { field: 'status', header: 'Status' },
+  { field: 'data_matricula', header: 'Data Matrícula' },
+  { field: 'conclusao', header: 'Conclusão' }
+]
+
+const carregarCursosAlunos = async () => {
+  try {
+    const { data } = await supabase
+      .from('cursos')
+      .select('id, nome')
+    
+    cursosAlunos.value = data || []
+  } catch (error) {
+    console.error('Erro ao carregar cursos:', error)
+  }
+}
+
+const buscarDadosAlunos = async () => {
+  try {
+    loadingAlunos.value = true
+    
+    let query = supabase
+      .from('matriculas')
+      .select(`
+        *, 
+        usuarios (id, nome),
+        cursos (id, nome)
+      `)
+      .order('created_at', { ascending: false })
+
+    if (alunosFiltros.value.cursoId) {
+      query = query.eq('curso_id', alunosFiltros.value.cursoId)
+    }
+
+    if (alunosFiltros.value.status) {
+      query = query.eq('status', alunosFiltros.value.status)  
+    }
+
+    const { data, error } = await query
+
+    if (error) throw error
+
+    dadosAlunos.value = data?.map(item => ({
+      ...item,
+      aluno: item.usuarios?.nome,
+      curso: item.cursos?.nome
+    })) || []
+
+  } catch (error) {
+    console.error('Erro ao buscar dados:', error)
+  } finally {
+    loadingAlunos.value = false
+  }
+}
 </script>
 
 <style scoped>

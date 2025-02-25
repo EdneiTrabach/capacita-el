@@ -19,10 +19,9 @@ import RelatoriosTempo from '@/components/RelatoriosTempo/RelatoriosTempo.vue'
 import RelatoriosTipo from '@/components/RelatoriosTipo/RelatoriosTipo.vue'
 import RelatoriosAgendados from '@/components/RelatoriosAgendados/RelatoriosAgendados.vue'
 import RelatoriosPendentes from '@/components/RelatoriosPendentes/RelatoriosPendentes.vue'
-import RelatoriosAlunos from '@/components/RelatoriosAlunos/RelatoriosAlunos.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -95,8 +94,8 @@ const router = createRouter({
     },
     {
       path: '/relatorios',
-      name: 'relatorios',
-      component: () => import('../pages/Relatorios.vue'),
+      name: 'Relatorios', 
+      component: () => import('@/pages/Relatorios.vue'),
       meta: { requiresAuth: true }
     },
     {
@@ -179,12 +178,6 @@ const router = createRouter({
       path: '/relatorios/pendentes',
       name: 'RelatoriosPendentes',
       component: RelatoriosPendentes,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/relatorios/alunos',
-      name: 'RelatoriosAlunos',
-      component: RelatoriosAlunos,
       meta: { requiresAuth: true }
     },
     {
