@@ -1,9 +1,8 @@
 import './assets/main.css'
 import './assets/theme.css'
-
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router/index' // especifique o caminho completo
+import router from './router/index'
 
 // Configuração inicial do tema
 const savedTheme = localStorage.getItem('theme') || 

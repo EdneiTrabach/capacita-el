@@ -197,3 +197,9 @@ table tr:nth-child(even) {
   background: var(--button-primary-bg);
   color: var(--button-primary-text);
 }
+
+.icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
