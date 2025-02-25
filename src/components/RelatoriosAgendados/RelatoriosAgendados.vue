@@ -1,10 +1,15 @@
-
 <template>
   <div class="relatorio-container">
     <div class="content-wrapper">
       <header class="relatorio-header">
-        <h1>Relatório de Treinamentos Agendados</h1>
-        <p>Visualize os próximos treinamentos programados</p>
+        <div class="header-content">
+          <h1>Relatório de Treinamentos Agendados</h1>
+          <p>Visualize os próximos treinamentos programados</p>
+        </div>
+        <button @click="$router.push('/relatorios')" class="btn-voltar">
+          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
+          Voltar
+        </button>
       </header>
 
       <div class="filters-section">

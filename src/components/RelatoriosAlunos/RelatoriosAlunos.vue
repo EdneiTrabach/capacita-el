@@ -2,7 +2,10 @@
 <template>
   <div class="content-wrapper">
     <header class="relatorio-header">
-      <h2>Relatório de Alunos por Curso</h2>
+      <div class="header-content">
+        <h1>Relatório de Alunos por Curso</h1>
+        <p>Visualize e gerencie os alunos matriculados nos cursos</p>
+      </div>
       <button @click="$router.push('/relatorios')" class="btn-voltar">
         <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
         Voltar

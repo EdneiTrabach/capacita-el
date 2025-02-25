@@ -2,9 +2,15 @@
 <template>
   <div class="relatorio-container">
     <header class="relatorio-header">
-      <h1>Relatório por Tipo de Treinamento</h1>
-      <p>Análise de treinamentos por modalidade</p>
-    </header>
+        <div class="header-content">
+          <h1>Relatório por Tipo de Treinamento</h1>
+          <p>Análise de treinamentos por modalidade</p>
+        </div>
+        <button @click="$router.push('/relatorios')" class="btn-voltar">
+          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
+          Voltar
+        </button>
+      </header>
 
     <div class="filters-section">
       <div class="filter-group">
