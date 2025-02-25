@@ -36,13 +36,6 @@
   border-left: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Área de ações com melhor espaçamento */
-.actions {
-  margin: 2rem 0;
-  display: flex;
-  justify-content: flex-end;
-}
-
 /* Botão de registro com hover effect */
 .btn-registrar {
   background: linear-gradient(135deg, #193155 0%, #254677 100%);

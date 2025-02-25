@@ -43,13 +43,6 @@ const { isDark, toggleTheme } = useTheme()
   background-color: var(--hover-overlay);
 }
 
-.icon {
-  width: 24px;
-  height: 24px;
-  filter: var(--icon-filter);
-  margin-right: 0.5rem;
-}
-
 /* Remove margem direita quando não há texto */
 .theme-toggle:not(:has(.button-text)) .icon {
   margin-right: 0;
@@ -67,10 +60,6 @@ const { isDark, toggleTheme } = useTheme()
   .theme-toggle {
     padding: 0.75rem;
     width: 40px;
-  }
-  
-  .icon {
-    margin-right: 0;
   }
   
   .button-text {

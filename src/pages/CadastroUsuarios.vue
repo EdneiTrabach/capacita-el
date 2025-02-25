@@ -697,13 +697,6 @@ onMounted(loadSetores)
 </script>
 
 <style scoped>
-.icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  filter: brightness(0) invert(1); /* Add this line to make SVG white */
-}
-
 .icon-black {
   font-size: 1.2rem;
   width: 24px;

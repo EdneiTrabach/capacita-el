@@ -9,6 +9,9 @@
   --sidebar-text: #ffffff;
   --card-bg: #ffffff;
   --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  --icon-filter: brightness(0) saturate(100%) invert(1);
+
 
   /* Novas variáveis para elementos comuns */
   --input-bg: #ffffff;

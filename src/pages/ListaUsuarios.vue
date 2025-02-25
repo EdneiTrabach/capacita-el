@@ -55,7 +55,7 @@
               :title="usuario.tem_certificado ? 'Não é possível editar um usuário que possui certificados emitidos' : ''"
             >
               <img src="/public/icons/edicao.svg" alt="Editar" class="icon" />
-              Editar
+              <!-- Editar -->
             </button>
             <button 
               @click="deletarUsuario(usuario.id)" 
@@ -64,7 +64,7 @@
               :title="usuario.tem_certificado ? 'Não é possível excluir um aluno que possui certificados emitidos' : ''"
             >
               <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon" />
-              Excluir
+              <!-- Excluir -->
             </button>
           </div>
         </div>

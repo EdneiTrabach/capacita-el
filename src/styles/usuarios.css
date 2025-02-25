@@ -9,21 +9,6 @@
   pointer-events: none;
 }
 
-
-.icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  filter: brightness(0) invert(1); /* Add this line to make SVG white */
-}
-
-.icon-black {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  filter: contrast(0.4);
-}
-
 .usuarios-container {
   padding: 2rem;
   background-color: var(--bg-secondary);
@@ -100,7 +85,7 @@
 .search-bar select {
   flex: 1;
   min-width: 150px;
-  
+
 }
 
 .search-bar input:focus,
@@ -144,6 +129,10 @@
   border-bottom: 1px solid #e0e4e8;
 }
 
+.usuario-header :last-child {
+  width: 30px;
+}
+
 .usuario-avatar {
   width: 48px;
   height: 48px;
@@ -177,7 +166,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
-  word-break: break-word; /* Quebra palavras longas */
+  word-break: break-word;
+  /* Quebra palavras longas */
 }
 
 .info-item {
@@ -195,9 +185,12 @@
 
 /* Melhorando o contraste dos valores */
 .info-item span:last-child {
-  color: var(--text-secondary); /* Cor principal do projeto para melhor contraste */
-  font-weight: 500; /* Peso da fonte mais pronunciado */
-  font-size: 0.95rem; /* Tamanho ligeiramente maior */
+  color: var(--text-secondary);
+  /* Cor principal do projeto para melhor contraste */
+  font-weight: 500;
+  /* Peso da fonte mais pronunciado */
+  font-size: 0.95rem;
+  /* Tamanho ligeiramente maior */
 }
 
 /* Estilização específica para cada tipo de informação */
@@ -213,22 +206,16 @@
 }
 
 /* Status Badges */
-.status-ativo { 
+.status-ativo {
   color: #198754 !important;
 }
 
-.status-cursando { 
+.status-cursando {
   color: #0d6efd !important;
 }
 
-.status-inativo { 
+.status-inativo {
   color: #dc3545 !important;
-}
-
-/* Botões de Ação */
-.actions {
-  display: flex;
-  gap: 0.75rem;
 }
 
 .btn-edit,
@@ -265,7 +252,7 @@
 .card-actions {
   padding: 1rem;
   border-top: 1px solid #e0e4e8;
-  
+
 }
 
 /* Responsividade dos botões de status */
@@ -541,10 +528,11 @@
   cursor: pointer;
   font-family: 'JetBrains Mono', monospace;
   transition: all 0.3s ease;
+  width: 30px;
 }
 
 .btn-edit {
-  background-color: var(--edit-btn) ;
+  background-color: var(--edit-btn);
   color: white;
 }
 
@@ -602,6 +590,7 @@
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -753,8 +742,13 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideIn {
@@ -762,6 +756,7 @@
     transform: translateY(-20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;

@@ -308,13 +308,6 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  filter: brightness(0) invert(1); /* Add this line to make SVG white */
-}
-
 /* Adicione estas classes para garantir que os textos longos se ajustem */
 .link-text {
   white-space: nowrap;

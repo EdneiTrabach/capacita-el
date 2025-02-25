@@ -114,12 +114,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.icon {
-  width: 24px;
-  height: 24px;
-  filter: brightness(0) invert(1);
-}
-
 /* DataTable personalizado */
 .data-table {
   background: var(--bg-primary);
