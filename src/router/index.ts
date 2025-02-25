@@ -17,6 +17,8 @@ import RelatoriosPeriodo from '@/components/RelatoriosPeriodo/RelatoriosPeriodo.
 import RelatoriosSetor from '@/components/RelatoriosSetor/RelatoriosSetor.vue'
 import RelatoriosTempo from '@/components/RelatoriosTempo/RelatoriosTempo.vue'
 import RelatoriosTipo from '@/components/RelatoriosTipo/RelatoriosTipo.vue'
+import RelatoriosAgendados from '@/components/RelatoriosAgendados/RelatoriosAgendados.vue'
+import RelatoriosPendentes from '@/components/RelatoriosPendentes/RelatoriosPendentes.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -164,6 +166,18 @@ const router = createRouter({
       path: '/relatorios/tipo',
       name: 'RelatoriosTipo',
       component: RelatoriosTipo,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios/agendados',
+      name: 'RelatoriosAgendados',
+      component: RelatoriosAgendados,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios/pendentes',
+      name: 'RelatoriosPendentes',
+      component: RelatoriosPendentes,
       meta: { requiresAuth: true }
     },
     {

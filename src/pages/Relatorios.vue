@@ -184,7 +184,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showAgendadosReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/agendados')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'calendar-check']" class="icon-black" />
         </div>
@@ -193,7 +193,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showPendentesReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/pendentes')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'certificate']" class="icon-black" />
         </div>
