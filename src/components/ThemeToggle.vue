@@ -36,6 +36,7 @@ const { isDark, toggleTheme } = useTheme()
   justify-content: flex-start;
   font-family: jetbrains-mono, monospace;
   width: auto;
+  gap: 1rem;
 }
 
 .theme-toggle:hover {
