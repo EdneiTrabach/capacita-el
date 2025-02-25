@@ -25,11 +25,15 @@ export const presencaService = {
       }
 
       // 2. Se não existe, busca dados do curso para gerar novo código
-      const { data: dadosCurso } = await supabase
+      const { data: dadosCurso, error: cursoError } = await supabase
         .from('cursos')
         .select('professor_responsavel')
         .eq('id', cursoId)
         .single()
+
+      if (cursoError || !dadosCurso) {
+        throw new Error('Curso não encontrado')
+      }
 
       // 3. Gera um código composto
       const timestamp = Date.now()
