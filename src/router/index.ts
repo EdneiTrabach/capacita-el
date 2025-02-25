@@ -15,6 +15,8 @@ import ResetPassword from '@/pages/ResetPassword.vue'
 import NotFound from '@/pages/NotFound.vue'
 import RelatoriosPeriodo from '@/components/RelatoriosPeriodo/RelatoriosPeriodo.vue'
 import RelatoriosSetor from '@/components/RelatoriosSetor/RelatoriosSetor.vue'
+import RelatoriosTempo from '@/components/RelatoriosTempo/RelatoriosTempo.vue'
+import RelatoriosTipo from '@/components/RelatoriosTipo/RelatoriosTipo.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -150,6 +152,18 @@ const router = createRouter({
       path: '/relatorios/setor',
       name: 'RelatoriosSetor', 
       component: RelatoriosSetor,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios/tempo',
+      name: 'RelatoriosTempo',
+      component: RelatoriosTempo,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/relatorios/tipo',
+      name: 'RelatoriosTipo',
+      component: RelatoriosTipo,
       meta: { requiresAuth: true }
     },
     {

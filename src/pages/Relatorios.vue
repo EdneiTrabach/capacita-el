@@ -166,7 +166,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showTempoReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/tempo')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'clock']" class="icon-black" />
         </div>
@@ -175,7 +175,7 @@
         <button class="btn-gerar">Gerar Relatório</button>
       </div>
 
-      <div class="relatorio-card" @click="showTipoReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/tipo')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'chalkboard-teacher']" class="icon-black" />
         </div>
