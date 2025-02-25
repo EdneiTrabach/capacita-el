@@ -9,11 +9,14 @@
     </div>
     
     <header class="dashboard-header">
-      <h1>Dashboard</h1>
-      <button @click="atualizarDados" class="refresh-btn">
-        <img src="/public/icons/cursando.svg" alt="Atualizar" class="icon-black" />
-        Atualizar Dados
-      </button>
+      <div class="header-content">
+        <img src="/dashboard.svg" alt="Dashboard Icon" class="dashboard-icon" />
+        <h1>Dashboard</h1>
+        <button @click="atualizarDados" class="refresh-btn">
+          <img src="/public/icons/cursando.svg" alt="Atualizar" class="icon-black" />
+          Atualizar Dados
+        </button>
+      </div>
     </header>
 
     <div class="filters-container">
@@ -848,9 +851,6 @@ select:focus {
 
 /* Dashboard header */
 .dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
@@ -859,10 +859,45 @@ select:focus {
   color: white;
 }
 
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.dashboard-icon {
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  left: 0;
+}
+
 .dashboard-header h1 {
   font-size: 1.8rem;
-  margin: 0;
+  margin: 0 auto; /* Centraliza o título */
   font-weight: 600;
+  flex-grow: 1;
+  text-align: center;
+}
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .dashboard-icon {
+    position: static;
+    margin-bottom: 0.5rem;
+  }
+
+  .dashboard-header h1 {
+    margin: 0.5rem 0;
+  }
 }
 
 .stats-grid {

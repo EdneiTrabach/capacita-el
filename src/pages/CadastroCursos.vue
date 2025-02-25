@@ -3,7 +3,9 @@
     <div class="cadastro-card">
       <header class="cadastro-header">
         <h1>{{ isEditing ? 'Editar Curso' : 'Novo Treinamento' }}</h1>
+        
       </header>
+      <img src="/public/treinamento_2.svg" alt="Treinamento" class="header-icon" />
 
       <form @submit.prevent="handleSubmit" class="cadastro-form">
         <div class="form-grid">
@@ -331,6 +333,21 @@ onMounted(() => {
   padding: 1.5rem 2rem;
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  
+}
+
+.header-icon {
+  position: absolute; /* Adicionar */
+  right: 2.5rem; /* Adicionar */
+  top: 117px;
+  transform: translateY(-50%); /* Adicionar */
+  width: 270px; /* Adicionar */
+  height: 270px; /* Adicionar */
+  z-index: 5;
 }
 
 .cadastro-header h1 {

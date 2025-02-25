@@ -1,5 +1,9 @@
 <template>
   <div class="usuarios-container">
+    <div class="hero-image">
+      <img src="/gestao_pessoas.svg" alt="Gestão de Pessoas" />
+    </div>
+
     <!-- Loader enquanto carrega -->
     <div v-if="loading" class="loading">Carregando...</div>
 
@@ -10,11 +14,13 @@
       {{ toast.message }}
     </div>
     <header class="usuarios-header">
-      <h1>Gestão de pessoas</h1>
-      <button @click="$router.push('/usuarios')" class="btn-novo">
-        <img src="/public/icons/adicao.svg" alt="Novo" class="icon-black" />
-        Nova Pessoa
-      </button>
+      <div class="header-content">
+        <h1>Gestão de pessoas</h1>
+        <button @click="$router.push('/usuarios')" class="btn-novo">
+          <img src="/public/icons/adicao.svg" alt="Novo" class="icon-black" />
+          Nova Pessoa
+        </button>
+      </div>
     </header>
 
     <div class="search-bar">
@@ -234,4 +240,44 @@ export default ListaUsuarios
 
 <style>
 @import '../styles/usuarios.css';
+
+.hero-image {
+  position: absolute;
+  top: 5px;
+  left: 50px;
+  width: 200px;
+  z-index: 3;
+}
+
+.hero-image img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)); /* Added shadow */
+}
+
+/* Ajuste para evitar sobreposição do conteúdo */
+.usuarios-header {
+  position: relative;
+  z-index: 2;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header-content h1 {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+}
+
+.btn-novo {
+  position: absolute;
+  right: 20px;
+}
 </style>
