@@ -11,15 +11,6 @@
   background-color: #f8f9fa;
 }
 
-/* Header com gradiente */
-.relatorio-header {
-  margin-bottom: 2rem;
-  padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #193155 0%, #254677 100%);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
 .relatorio-header h1 {
   color: #ffffff;
   font-size: 1.8rem;

@@ -730,42 +730,6 @@ const buscarDadosAlunos = async () => {
   border-top: 1px solid #e0e4e8;
 }
 
-.btn-voltar,
-.btn-gerar-pdf,
-.btn-export-excel {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.btn-voltar {
-  background-color: #6c757d;
-  color: white;
-}
-
-.btn-gerar-pdf {
-  background: linear-gradient(135deg, #193155 0%, #254677 100%);
-  color: white;
-}
-
-.btn-export-excel {
-  background-color: #28a745;
-  color: white;
-}
-
-.btn-voltar:hover,
-.btn-gerar-pdf:hover,
-.btn-export-excel:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
 
 @media (max-width: 768px) {
   .filters-grid {

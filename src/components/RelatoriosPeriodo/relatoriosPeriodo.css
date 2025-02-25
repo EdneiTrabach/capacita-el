@@ -13,15 +13,6 @@
   transition: all 0.3s ease;
 }
 
-/* Header com gradiente */
-.relatorio-header {
-  margin-bottom: 2rem;
-  padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #193155 0%, #254677 100%) !important;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
 .relatorio-header h1,
 .relatorio-header p {
   color: var(--header-text);
