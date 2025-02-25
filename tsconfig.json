@@ -19,7 +19,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["node"]
+    "types": ["node", "jspdf", "jspdf-autotable"]
   },
   "include": [
     "src/**/*.ts",

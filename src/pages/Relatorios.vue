@@ -239,6 +239,10 @@
     <p>{{ sanitizeHTML(selectedCertificado.curso_nome) }}</p>
     <p>{{ sanitizeHTML(selectedCertificado.observacoes || '') }}</p>
   </div>
+  <!-- Adicione ao template -->
+  <div v-if="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -250,6 +254,16 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import RelatoriosPeriodo from '@/components/RelatoriosPeriodo/RelatoriosPeriodo.vue'
 import { useRouter } from 'vue-router'
 import DataTable from '@/components/DataTable.vue' // Adicione esta importação
+import { jsPDF } from 'jspdf'
+import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
+
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: typeof autoTable
+  }
+}
+import * as XLSX from 'xlsx'
 
 import { 
   faUsers, 
@@ -361,12 +375,12 @@ const loadData = async () => {
 
     // Carregar alunos e cursos para os filtros
     const [{ data: alunosData }, { data: cursosData }] = await Promise.all([
-      supabase.from('usuarios').select('*'),
-      supabase.from('cursos').select('*')
+      supabase.from('usuarios').select('id,nome'),
+      supabase.from('cursos').select('id,nome')
     ])
 
-    alunos.value = alunosData || []
-    cursos.value = cursosData || []
+    alunos.value = alunosData ?? []
+    cursos.value = cursosData ?? []
 
     // Gerar anos para filtro
     const currentYear = new Date().getFullYear()
@@ -381,13 +395,64 @@ const loadData = async () => {
 }
 
 const gerarRelatorioCertificados = async () => {
-  // Implemente a geração do relatório PDF
-  console.log('Gerando relatório de certificados...')
+  try {
+    // Crie uma nova instância do PDF
+    const doc = new jsPDF()
+    
+    // Configure o cabeçalho
+    doc.setFontSize(16)
+    doc.text('Relatório de Certificados', 14, 20)
+    
+    // Prepare os dados
+    const dados = filtrarCertificados.value.map(cert => [
+      cert.aluno_nome,
+      cert.curso_nome,
+      cert.data_emissao,
+      cert.status
+    ])
+
+    // Gere a tabela
+    doc.autoTable({
+      head: [['Aluno', 'Curso', 'Data Emissão', 'Status']],
+      body: dados,
+      startY: 30,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        cellPadding: 2,
+        lineColor: [0, 0, 0],
+        lineWidth: 0.1
+      },
+      headStyles: {
+        fillColor: [25, 49, 85],
+        textColor: [255, 255, 255]
+      }
+    })
+
+    // Salve o PDF
+    doc.save('relatorio-certificados.pdf')
+  } catch (error) {
+    console.error('Erro ao gerar PDF:', error)
+    handleError(error, 'Erro ao gerar PDF')
+  }
 }
 
 const exportarCertificadosExcel = async () => {
-  // Implemente a exportação para Excel
-  console.log('Exportando para Excel...')
+  try {
+    const dados = filtrarCertificados.value.map(cert => ({
+      Aluno: cert.aluno_nome,
+      Curso: cert.curso_nome,
+      'Data Emissão': cert.data_emissao,
+      Status: cert.status
+    }))
+    
+    const wb = XLSX.utils.book_new()
+    const ws = XLSX.utils.json_to_sheet(dados)
+    XLSX.utils.book_append_sheet(wb, ws, 'Certificados')
+    XLSX.writeFile(wb, 'certificados.xlsx')
+  } catch (error) {
+    console.error('Erro ao exportar Excel:', error)
+  }
 }
 
 const gerarRelatorioAlunos = async () => {
@@ -427,6 +492,16 @@ const filtrarCertificados = computed(() => {
   })
 })
 
+const validarFiltros = () => {
+  if (certificadosFilters.value.dataInicio && certificadosFilters.value.dataFim) {
+    if (new Date(certificadosFilters.value.dataInicio) > new Date(certificadosFilters.value.dataFim)) {
+      alert('Data inicial não pode ser maior que a data final')
+      return false
+    }
+  }
+  return true
+}
+
 onMounted(() => {
   loadData()
   carregarCursosAlunos()
@@ -443,8 +518,23 @@ const alunosFiltros = ref({
   conclusao: ''
 })
 
-const dadosAlunos = ref([])
-const cursosAlunos = ref([])
+interface DadoAluno {
+  id: string
+  aluno: string
+  curso: string
+  status: string
+  data_matricula: string
+  conclusao: string
+  [key: string]: any  // for additional properties
+}
+
+const dadosAlunos = ref<DadoAluno[]>([])
+interface CursoAluno {
+  id: string
+  nome: string
+}
+
+const cursosAlunos = ref<CursoAluno[]>([])
 const loadingAlunos = ref(false)
 
 const colunasAlunos = [
@@ -467,17 +557,28 @@ const carregarCursosAlunos = async () => {
   }
 }
 
+// Adicione ao setup
+const pagination = ref({
+  page: 1,
+  perPage: 10,
+  total: 0
+})
+
+// Modifique a consulta do Supabase
 const buscarDadosAlunos = async () => {
   try {
     loadingAlunos.value = true
+    const from = (pagination.value.page - 1) * pagination.value.perPage
+    const to = from + pagination.value.perPage - 1
     
     let query = supabase
       .from('matriculas')
       .select(`
-        *, 
-        usuarios (id, nome),
-        cursos (id, nome)
-      `)
+        *,
+        usuarios:usuario_id (id, nome),
+        cursos:curso_id (id, nome)
+      `, { count: 'exact' })
+      .range(from, to)
       .order('created_at', { ascending: false })
 
     if (alunosFiltros.value.cursoId) {
@@ -503,6 +604,16 @@ const buscarDadosAlunos = async () => {
   } finally {
     loadingAlunos.value = false
   }
+}
+
+const showError = ref('')
+
+const handleError = (error: any, message: string) => {
+  console.error(message, error)
+  showError.value = `${message}. Por favor, tente novamente.`
+  setTimeout(() => {
+    showError.value = ''
+  }, 5000)
 }
 </script>
 
@@ -776,5 +887,32 @@ th {
   background: #f8f9fa;
   color: #193155;
   font-weight: 600;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #193155;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
