@@ -185,7 +185,8 @@ export default {
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(25, 49, 85, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .nav-card::before {
@@ -195,24 +196,21 @@ export default {
   left: 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, #193155, #254677);
+  background: linear-gradient(90deg, #2196f3, #00bcd4);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .nav-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.nav-card:hover::before {
-  opacity: 1;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .card-icon {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  background: #f8f9fa;
+  background: var(--icon-bg, rgba(255, 255, 255, 0.05));
   width: 60px;
   height: 60px;
   display: flex;
@@ -224,6 +222,7 @@ export default {
 
 .nav-card:hover .card-icon {
   transform: scale(1.1);
+  background: var(--icon-bg-hover, rgba(255, 255, 255, 0.1));
 }
 
 .nav-card h2 {
@@ -267,8 +266,9 @@ h2.about {
 }
 
 .info-card {
-  background: var(--accent-color);
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
   color: white;
+  border: none;
 }
 
 .info-card p {
@@ -278,6 +278,14 @@ h2.about {
 .info-card h2,
 .info-card p {
   color: white;
+}
+
+.info-card .card-icon {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.info-card:hover .card-icon {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .info-card .version {

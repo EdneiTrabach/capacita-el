@@ -1,0 +1,13 @@
+:root {
+  /* Light theme */
+  --input-bg: #ffffff;
+  --primary-color: #193155;
+  --primary-color-alpha: rgba(25, 49, 85, 0.1);
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --input-bg: #2a2a2a;
+  --primary-color: #4a9eff;
+  --primary-color-alpha: rgba(74, 158, 255, 0.2);
+}

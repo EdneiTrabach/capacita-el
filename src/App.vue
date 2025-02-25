@@ -238,3 +238,30 @@ body {
   width: 100% !important;
 }
 </style>
+
+<style>
+:root {
+  --label-color-light: #193155;
+  --label-color-dark: #e1e7ef;
+  --text-muted-dark: #a1a8b6;
+  --text-muted-light: #6c757d;
+}
+
+[data-theme="dark"] {
+  --label-color: var(--label-color-dark);
+  --text-primary: #e1e7ef;
+  --text-secondary: #a1a8b6;
+  --text-muted: var(--text-muted-dark);
+  --input-label: #e1e7ef;
+  --form-label: #e1e7ef;
+}
+
+[data-theme="light"] {
+  --label-color: var(--label-color-light);
+  --text-primary: #193155;
+  --text-secondary: #6c757d;
+  --text-muted: var(--text-muted-light);
+  --input-label: #193155;
+  --form-label: #193155;
+}
+</style>
