@@ -1,7 +1,7 @@
 <template>
   <button @click="toggleTheme" class="theme-toggle" aria-label="Alternar tema">
     <img 
-      :src="`/public/icons/${isDark ? 'sun' : 'moon'}.svg`" 
+      :src="`/icons/${isDark ? 'sun' : 'moon'}.svg`" 
       :alt="isDark ? 'Modo Claro' : 'Modo Escuro'" 
       class="icon"
     />
