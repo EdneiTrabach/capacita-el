@@ -8,8 +8,8 @@
   --sidebar-bg: linear-gradient(180deg, #193155 0%, #0f1f35 100%);
   --sidebar-text: #ffffff;
   --card-bg: #ffffff;
-  --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  
+  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
   --icon-filter: brightness(0) saturate(100%) invert(1);
 
 
@@ -18,17 +18,17 @@
   --input-text: #333333;
   --input-border: #ced4da;
   --input-focus: #4a90e2;
-  
+
   --button-primary-bg: #193155;
   --button-primary-text: #ffffff;
   --button-secondary-bg: #e9ecef;
   --button-secondary-text: #193155;
-  
+
   --table-header-bg: #f8f9fa;
   --table-border: #dee2e6;
   --table-stripe: #f8f9fa;
-  
-  --card-hover-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+  --card-hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   --modal-overlay: rgba(0, 0, 0, 0.5);
 
   /* Variáveis adicionais para componentes específicos */
@@ -61,24 +61,24 @@
   --sidebar-bg: linear-gradient(180deg, #0a1622 0%, #070d14 100%);
   --sidebar-text: #ffffff;
   --card-bg: #1e1e1e;
-  --card-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
   /* Novas variáveis para modo escuro */
   --input-bg: #2d2d2d;
   --input-text: #ffffff;
   --input-border: #404040;
   --input-focus: #4a90e2;
-  
+
   --button-primary-bg: #4a90e2;
   --button-primary-text: #ffffff;
   --button-secondary-bg: #2d2d2d;
   --button-secondary-text: #ffffff;
-  
+
   --table-header-bg: #1a1a1a;
   --table-border: #404040;
   --table-stripe: #252525;
-  
-  --card-hover-shadow: 0 4px 8px rgba(0,0,0,0.3);
+
+  --card-hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   --modal-overlay: rgba(0, 0, 0, 0.8);
 
   /* Variáveis adicionais para modo escuro */
@@ -103,18 +103,18 @@
 
 /* Transições suaves */
 * {
-  transition: background-color 0.3s ease, 
-              color 0.3s ease, 
-              border-color 0.3s ease, 
-              box-shadow 0.3s ease;
+  transition: background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* Adicione estas classes utilitárias */
 .dark-mode-transition {
   transition: background-color 0.3s ease,
-              color 0.3s ease,
-              border-color 0.3s ease,
-              box-shadow 0.3s ease;
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* Utilitários para transições */
@@ -137,13 +137,17 @@ body {
 }
 
 /* Ajustes para elementos específicos */
-input, select, textarea {
+input,
+select,
+textarea {
   background-color: var(--input-bg);
   color: var(--input-text);
   border-color: var(--input-border);
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   border-color: var(--input-focus);
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
@@ -257,3 +261,11 @@ table tr:nth-child(even) {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+img.icon-black {
+  height: 20px;
+}
+
+.actions {
+  display: flex;
+  gap: 5px;
+}
