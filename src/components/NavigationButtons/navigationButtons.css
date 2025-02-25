@@ -33,8 +33,8 @@
   cursor: not-allowed;
   background-color: var(--button-secondary-bg);
   color: var(--button-secondary-text);
-  background: #e9ecef;
-  color: #6c757d;
+  background: #e9ecef !important;
+  color: #6c757d !important;
 }
 
 .prev-btn {
@@ -44,10 +44,16 @@
   color: #193155;
 }
 
+.prev-btn:not(:disabled) {
+  background: #193155;
+  color: white;
+}
+
 .prev-btn:hover:not(:disabled) {
   background-color: var(--button-secondary-bg);
   opacity: 0.9;
-  background: #dde1e5;
+  background: #254677;
+  transform: translateY(-1px);
 }
 
 .icon-white {
@@ -67,8 +73,17 @@
   color: var(--button-secondary-text);
 }
 
+:root.dark .prev-btn:not(:disabled) {
+  background: #3461ad;
+  color: white;
+}
+
+:root.dark .prev-btn:hover:not(:disabled) {
+  background: #4b7fd9;
+}
+
 :root.dark .nav-btn:disabled {
-  background: var(--button-secondary-bg);
-  color: var(--text-secondary);
+  background: #2a2a2a !important;
+  color: #666666 !important;
   opacity: 0.5;
 }

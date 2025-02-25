@@ -2,34 +2,29 @@
 .relatorio-container {
   display: flex;
   min-height: 100vh;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 .content-wrapper {
   flex: 1;
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: var(--bg-color);
+  transition: all 0.3s ease;
 }
 
 /* Header com gradiente */
 .relatorio-header {
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #193155 0%, #254677 100%);
+  background: linear-gradient(135deg, #193155 0%, #254677 100%) !important;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.relatorio-header h1 {
-  color: #ffffff;
-  font-size: 1.8rem;
-  margin: 0;
-  font-weight: 600;
-}
-
+.relatorio-header h1,
 .relatorio-header p {
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 0.5rem;
+  color: var(--header-text);
 }
 
 /* Seção de filtros */
@@ -39,7 +34,8 @@
   gap: 1rem;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: white;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -52,7 +48,7 @@
 
 .filter-group label {
   font-weight: 500;
-  color: #193155;
+  color: var(--text-color);
 }
 
 .date-range {
@@ -64,10 +60,11 @@
 .date-range input,
 .filter-group select {
   padding: 0.75rem;
-  border: 1px solid #e0e4e8;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
-  color: #193155;
+  background-color: var(--input-bg);
+  color: var(--text-color);
   transition: all 0.3s ease;
   width: 100%;
 }
@@ -100,22 +97,13 @@
   font-weight: 500;
   transition: all 0.3s ease;
   min-width: 120px;
-}
-
-.btn-buscar {
-  background: linear-gradient(135deg, #193155 0%, #254677 100%);
-  color: white;
-}
-
-.btn-export {
-  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
-  color: white;
+  background-color: var(--button-bg);
+  color: var(--button-text);
 }
 
 .btn-buscar:hover,
 .btn-export:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
 }
 
 /* Responsividade */
@@ -151,7 +139,8 @@
 
 /* DataTable personalizado */
 .data-table {
-  background: white;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
@@ -163,8 +152,8 @@
 }
 
 .data-table th {
-  background: #f8f9fa;
-  color: #193155;
+  background-color: var(--table-header-bg);
+  color: var(--text-color);
   font-weight: 600;
   text-align: left;
   padding: 1rem;
@@ -172,10 +161,14 @@
 
 .data-table td {
   padding: 1rem;
-  border-bottom: 1px solid #e0e4e8;
-  color: #495057;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
 }
 
 .data-table tr:hover {
-  background-color: #f8f9fa;
+  background-color: var(--table-stripe-bg);
+}
+
+.date-range span {
+  color: var(--text-color);
 }
