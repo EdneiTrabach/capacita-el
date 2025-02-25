@@ -74,71 +74,10 @@
       </div>
     </div>
 
-    <!-- Relatório de Alunos por Curso -->
-    <div v-if="showAlunosReport" class="report-section">
-      <div class="report-header">
-        <h2>Relatório de Alunos por Curso</h2>
-        <button @click="showAlunosReport = false" class="btn-voltar">
-          <img src="/public/icons/voltar.svg" alt="Voltar" class="icon" />
-          Voltar</button>
-      </div>
-
-      <div class="filters-grid">
-        <div class="filter-group">
-          <label>Curso</label>
-          <select v-model="alunosFilters.cursoId">
-            <option value="">Todos os cursos</option>
-            <option v-for="curso in cursos" :key="curso.id" :value="curso.id">
-              {{ curso.nome }}
-            </option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label>Status da Pessoa</label>
-          <select v-model="alunosFilters.status">
-            <option value="">Todos os status</option>
-            <option value="ativo">Ativo</option>
-            <option value="inativo">Inativo</option>
-            <option value="cursando">Cursando</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label>Período de Matrícula</label>
-          <div class="date-range">
-            <input type="date" v-model="alunosFilters.dataInicio">
-            <span>até</span>
-            <input type="date" v-model="alunosFilters.dataFim">
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <label>Conclusão</label>
-          <select v-model="alunosFilters.conclusao">
-            <option value="">Todos</option>
-            <option value="concluido">Concluído</option>
-            <option value="emAndamento">Em andamento</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="actions-bar">
-        <button @click="gerarRelatorioAlunos" class="btn-gerar-pdf">
-          <img src="/public/icons/pdf.svg" alt="PDF" class="icon" />
-          Gerar PDF
-        </button>
-        <button @click="exportarAlunosExcel" class="btn-export-excel">
-          <img src="/public/icons/excel.svg" alt="EXCEL" class="icon" />
-          Exportar Excel
-        </button>
-      </div>
-    </div>
-
     <!-- Cards de Relatórios -->
     <div v-if="!showCertificadosReport && !showAlunosReport" class="relatorios-grid">
       <!-- Cards existentes -->
-      <div class="relatorio-card" @click="showAlunosReport = true">
+      <div class="relatorio-card" @click="$router.push('/relatorios/alunos')">
         <div class="card-icon">
           <font-awesome-icon :icon="['fas', 'users']" class="icon-black" />
         </div>
