@@ -10,7 +10,7 @@ export default {
   setup() {
     const router = useRouter()
     
-    // Estados
+    // Estados locais
     const showEditModal = ref(false)
     const editingUser = ref({
       id: null,
@@ -23,14 +23,55 @@ export default {
       setor: ''
     })
 
+    // No início do setup()
+    const estados = [
+      { uf: 'AC', nome: 'Acre' },
+      { uf: 'AL', nome: 'Alagoas' },
+      { uf: 'AP', nome: 'Amapá' },
+      { uf: 'AM', nome: 'Amazonas' },
+      { uf: 'BA', nome: 'Bahia' },
+      { uf: 'CE', nome: 'Ceará' },
+      { uf: 'DF', nome: 'Distrito Federal' },
+      { uf: 'ES', nome: 'Espírito Santo' },
+      { uf: 'GO', nome: 'Goiás' },
+      { uf: 'MA', nome: 'Maranhão' },
+      { uf: 'MT', nome: 'Mato Grosso' },
+      { uf: 'MS', nome: 'Mato Grosso do Sul' },
+      { uf: 'MG', nome: 'Minas Gerais' },
+      { uf: 'PA', nome: 'Pará' },
+      { uf: 'PB', nome: 'Paraíba' },
+      { uf: 'PR', nome: 'Paraná' },
+      { uf: 'PE', nome: 'Pernambuco' },
+      { uf: 'PI', nome: 'Piauí' },
+      { uf: 'RJ', nome: 'Rio de Janeiro' },
+      { uf: 'RN', nome: 'Rio Grande do Norte' },
+      { uf: 'RS', nome: 'Rio Grande do Sul' },
+      { uf: 'RO', nome: 'Rondônia' },
+      { uf: 'RR', nome: 'Roraima' },
+      { uf: 'SC', nome: 'Santa Catarina' },
+      { uf: 'SP', nome: 'São Paulo' },	
+      { uf: 'SE', nome: 'Sergipe' },
+      { uf: 'TO', nome: 'Tocantins' },
+      { uf: 'EX', nome: 'Exterior' }
+    ]
+
+    // Inicialize municipios como ref
+    const municipios = ref([])
+
+    const toast = ref({
+      show: false,
+      message: '',
+      type: 'success'
+    })
+
     // Composables
     const { 
       usuarios,
       loading,
       error,
-      toast,
       loadUsuarios,
-      loadSetores
+      loadSetores,
+      setores
     } = useUsuarios()
 
     const {
@@ -42,40 +83,77 @@ export default {
       usuariosFiltrados
     } = useFilters(usuarios)
 
-    // Métodos
+    // Funções
+    const showToast = (message, type = 'success') => {
+      toast.value = {
+        show: true,
+        message,
+        type
+      }
+      setTimeout(() => {
+        toast.value.show = false
+      }, 3000)
+    }
+
     const deletarUsuario = async (id) => {
       const usuario = usuarios.value.find(u => u.id === id)
       if (!usuario) return
 
       if (confirm(`Deseja realmente excluir o usuário ${usuario.nome}?\nEsta ação não poderá ser desfeita.`)) {
         try {
-          const { error: err } = await supabase
+          const { error } = await supabase
             .from('usuarios')
             .delete()
             .eq('id', id)
 
-          if (err) throw err
-
+          if (error) throw error
+          
           await loadUsuarios()
-          toast.value = {
-            show: true,
-            message: 'Usuário excluído com sucesso!',
-            type: 'success'
-          }
+          showToast('Usuário excluído com sucesso!')
         } catch (error) {
           console.error('Erro ao excluir usuário:', error)
-          toast.value = {
-            show: true,
-            message: 'Não foi possível excluir o usuário. Tente novamente.',
-            type: 'error'
-          }
+          showToast('Erro ao excluir usuário', 'error')
         }
       }
     }
 
-    const editarUsuario = (usuario) => {
-      editingUser.value = { ...usuario }
-      showEditModal.value = true
+    const buscarMunicipios = async (uf) => {
+      try {
+        if (!uf) {
+          municipios.value = []
+          editingUser.value.cidade = ''
+          return
+        }
+        
+        loading.value = true
+        const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`)
+        const data = await response.json()
+        
+        municipios.value = data.map(municipio => ({
+          id: municipio.id,
+          nome: municipio.nome
+        }))
+      } catch (error) {
+        console.error('Erro ao buscar municípios:', error)
+        showToast('Erro ao carregar municípios', 'error')
+        municipios.value = []
+        editingUser.value.cidade = ''
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const editarUsuario = async (usuario) => {
+      try {
+        editingUser.value = { ...usuario }
+        if (usuario.estado) {
+          await buscarMunicipios(usuario.estado)
+        }
+        showEditModal.value = true
+      } catch (error) {
+        console.error('Erro ao preparar edição:', error)
+        showToast('Erro ao abrir formulário de edição', 'error')
+      }
     }
 
     const closeEditModal = () => {
@@ -112,18 +190,10 @@ export default {
         
         await loadUsuarios()
         showEditModal.value = false
-        toast.value = {
-          show: true,
-          message: 'Usuário atualizado com sucesso',
-          type: 'success'
-        }
+        showToast('Usuário atualizado com sucesso')
       } catch (error) {
         console.error('Erro ao atualizar usuário:', error)
-        toast.value = {
-          show: true,
-          message: 'Erro ao atualizar usuário',
-          type: 'error'
-        }
+        showToast('Erro ao atualizar usuário', 'error')
       } finally {
         loading.value = false
       }
@@ -146,10 +216,14 @@ export default {
 
     // Lifecycle hooks
     onMounted(async () => {
-      console.log('Componente montado')
-      await loadUsuarios()
-      await loadSetores()
-      console.log('Dados carregados:', usuarios.value)
+      try {
+        await Promise.all([
+          loadUsuarios(),
+          loadSetores()
+        ])
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error)
+      }
     })
 
     return {
@@ -157,13 +231,16 @@ export default {
       showEditModal,
       editingUser,
       usuarios,
-      loading,
-      error,
-      toast,
+      municipios,
+      setores,
       searchTerm,
       setorFilter,
+      loading,
+      error,
       statusFilter,
       sortBy,
+      toast,
+      estados,
       setoresUnicos,
       usuariosFiltrados,
 
@@ -176,7 +253,8 @@ export default {
       deletarUsuario,
       formatDate,
       getInitials,
-      sanitizeHTML
+      sanitizeHTML,
+      buscarMunicipios
     }
   }
 }

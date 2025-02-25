@@ -235,7 +235,69 @@
 
 <script>
 import ListaUsuarios from './ListaUsuarios.js'
-export default ListaUsuarios
+
+export default {
+  ...ListaUsuarios,
+  setup() {
+    try {
+      const {
+        loading,
+        error, 
+        toast,
+        usuarios,
+        searchTerm,
+        setorFilter,
+        statusFilter,
+        sortBy,
+        setores,
+        showEditModal,
+        editingUser,
+        municipios,
+        setoresUnicos,
+        usuariosFiltrados,
+        formatDate,
+        getInitials,
+        sanitizeHTML,
+        toggleStatus,
+        deletarUsuario,
+        editarUsuario,
+        handleEditSubmit,
+        closeEditModal
+      } = ListaUsuarios.setup()
+
+      return {
+        loading,
+        error,
+        toast,
+        usuarios,
+        searchTerm, 
+        setorFilter,
+        statusFilter,
+        sortBy,
+        setores,
+        showEditModal,
+        editingUser,
+        municipios,
+        setoresUnicos,
+        usuariosFiltrados,
+        formatDate,
+        getInitials,
+        sanitizeHTML,
+        toggleStatus,
+        deletarUsuario,
+        editarUsuario,
+        handleEditSubmit,
+        closeEditModal
+      }
+
+    } catch (error) {
+      console.error('Erro no setup:', error)
+      return {
+        error: error.message
+      }
+    }
+  }
+}
 </script>
 
 <style>
@@ -253,12 +315,6 @@ export default ListaUsuarios
   width: 100%;
   height: auto;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)); /* Added shadow */
-}
-
-/* Ajuste para evitar sobreposição do conteúdo */
-.usuarios-header {
-  position: relative;
-  z-index: 2;
 }
 
 .header-content h1 {

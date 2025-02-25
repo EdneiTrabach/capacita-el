@@ -252,7 +252,10 @@
 
     <div class="chart-container">
       <h2 class="chart-title">Matrículas por Treinamento</h2>
-      <DashboardChart :matriculasPorCurso="matriculasPorCurso" />
+      <DashboardChart 
+        :data="matriculasPorCurso" 
+        :matriculasPorCurso="matriculasPorCurso" 
+      />    
     </div>
   </div>
 </template>
