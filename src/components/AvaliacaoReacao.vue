@@ -227,10 +227,6 @@ const salvarAvaliacao = async () => {
   color: #ffed4a;
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
-  color: black;
-}
 
 textarea {
   width: 100%;

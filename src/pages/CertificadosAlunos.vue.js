@@ -125,43 +125,83 @@ export default (await import('vue')).defineComponent({
         },
         async salvarCertificado() {
             try {
+                // Primeiro verifica se o perfil existe
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('id', this.novoCertificado.alunoId)
+                    .single();
+                
+                // Se o perfil não existir, cria um novo
+                if (!profile) {
+                    // Obtém dados do usuário para criar o perfil
+                    const { data: usuario } = await supabase
+                        .from('usuarios')
+                        .select('id, nome, email')
+                        .eq('id', this.novoCertificado.alunoId)
+                        .single();
+                    
+                    if (usuario) {
+                        // Cria o perfil antes de inserir o certificado
+                        await supabase
+                            .from('profiles')
+                            .insert({
+                                id: usuario.id,
+                                nome: usuario.nome,
+                                email: usuario.email
+                                // outros campos necessários
+                            });
+                    }
+                }
+                
+                // Continua com a criação/atualização do certificado
                 const certificadoData = {
                     usuario_id: this.novoCertificado.alunoId,
                     curso_id: this.novoCertificado.cursoId,
                     data_conclusao: this.novoCertificado.dataConclusao,
                     observacoes: this.novoCertificado.observacoes,
                     updated_at: new Date().toISOString()
-                };
+                }
+            
+                // O restante do código permanece igual...
                 if (this.editingId) {
                     // Atualizar certificado existente
                     const { error } = await supabase
                         .from('certificados')
                         .update(certificadoData)
-                        .eq('id', this.editingId);
-                    if (error)
-                        throw error;
-                    this.showToast('Certificado atualizado com sucesso!', 'success');
-                }
-                else {
+                        .eq('id', this.editingId)
+            
+                    if (error) throw error
+                    this.showToast('Certificado atualizado com sucesso!', 'success')
+                } else {
                     // Inserir novo certificado
-                    certificadoData.status = 'pendente';
-                    certificadoData.created_at = new Date().toISOString();
+                    certificadoData.status = 'pendente'
+                    certificadoData.created_at = new Date().toISOString()
+                    certificadoData.codigo = this.gerarCodigoCertificado()
+                    
                     const { error } = await supabase
                         .from('certificados')
-                        .insert([certificadoData]);
-                    if (error)
-                        throw error;
-                    this.showToast('Certificado criado com sucesso!', 'success');
+                        .insert([certificadoData])
+            
+                    if (error) throw error
+                    this.showToast('Certificado criado com sucesso!', 'success')
                 }
-                this.showModal = false;
-                this.editingId = null;
-                this.resetForm();
-                await this.loadData();
+            
+                this.showModal = false
+                this.editingId = null
+                this.resetForm()
+                await this.loadData()
+            } catch (error) {
+                console.error('Erro ao salvar certificado:', error)
+                this.showToast('Erro ao salvar certificado', 'error')
             }
-            catch (error) {
-                console.error('Erro ao salvar certificado:', error);
-                this.showToast('Erro ao salvar certificado', 'error');
-            }
+        },
+        
+        // Adicione este método para gerar códigos de certificado únicos
+        gerarCodigoCertificado() {
+            const timestamp = Date.now().toString(36);
+            const random = Math.random().toString(36).substring(2, 8);
+            return `CERT-${timestamp}-${random}`.toUpperCase();
         },
         resetForm() {
             this.novoCertificado = {

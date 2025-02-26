@@ -194,10 +194,6 @@ const showToast = (message: string, type: string) => {
   margin: 0;
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
 .input-container {
   position: relative;
   margin-bottom: 1rem;

@@ -107,8 +107,8 @@
         <form @submit.prevent="salvarCertificado">
           <div class="form-group">
             <label>Aluno*</label>
-            <select v-model="novoCertificado.alunoId" required>
-              <option value="">Selecione um aluno</option>
+            <select v-model="novoCertificado.alunoId" required class="form-control">
+              <option value="" class="">Selecione um aluno</option>
               <option v-for="aluno in alunos" :key="aluno.id" :value="aluno.id">
                 {{ aluno.nome }}
               </option>
@@ -117,7 +117,7 @@
 
           <div class="form-group">
             <label>Treinamento*</label>
-            <select v-model="novoCertificado.cursoId" required>
+            <select v-model="novoCertificado.cursoId" required class="form-control">
               <option value="">Selecione um curso finalizado</option>
               <option v-for="curso in cursos" :key="curso.id" :value="curso.id"
                 :disabled="curso.status !== 'Finalizado'">
@@ -128,12 +128,12 @@
 
           <div class="form-group">
             <label>Data de Conclusão*</label>
-            <input type="date" v-model="novoCertificado.dataConclusao" required>
+            <input type="date" v-model="novoCertificado.dataConclusao" required class="form-control">
           </div>
 
           <div class="form-group">
             <label>Observações</label>
-            <textarea v-model="novoCertificado.observacoes" rows="3"></textarea>
+            <textarea v-model="novoCertificado.observacoes" rows="3" class="form-control"></textarea>
           </div>
 
           <div class="modal-actions">
@@ -758,32 +758,6 @@ export default {
   }
 }
 
-/* Modal styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  background: var(--bg-secondary);
-}
-
 .modal-content h2 {
   color: #193155;
   font-size: 1.5rem;
@@ -792,17 +766,6 @@ export default {
   color: var(--text-primary);
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  color: #193155;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
 
 .form-group select option {
   background-color: var(--bg-secondary);
@@ -828,6 +791,7 @@ export default {
 .form-group textarea {
   resize: vertical;
   min-height: 100px;
+  padding: 1rem;
 }
 
 .modal-actions {

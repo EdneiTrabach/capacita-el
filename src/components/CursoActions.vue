@@ -7,18 +7,18 @@
       <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon" />
     </button>
     <button 
-      @click="$router.push(`/curso/${curso.id}/presenca`)"
-      class="action-btn btn-presenca pos-center"
-      data-tooltip="Lista de Presença"
-    >
-      <img src="../../public/icons/check.svg" alt="Presença" class="icon"/>
-    </button>
-    <button 
       @click="$router.push(`/matricula-alunos/${curso.id}`)"
       class="action-btn btn-matricula pos-bottom-left"
       data-tooltip="Gerenciar Matrículas"
     >
       <img src="../../public/icons/lapis.svg" alt="Matrículas" class="icon"/>
+    </button>
+    <button 
+      @click="$router.push(`/curso/${curso.id}/presenca`)"
+      class="action-btn btn-presenca pos-center"
+      data-tooltip="Lista de Presença"
+    >
+      <img src="../../public/icons/check.svg" alt="Presença" class="icon"/>
     </button>
     <button 
       @click="$router.push(`/curso/${curso.id}/avaliacao`)"

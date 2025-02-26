@@ -419,13 +419,6 @@ const handleResetPassword = async () => {
   gap: 1.5rem;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  margin-bottom: 1.5rem;
-}
-
 label {
   position: absolute;
   left: 3rem;
@@ -606,28 +599,6 @@ input.error {
   }
 }
 
-/* Adicione estes estilos */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-}
-
 .reset-form {
   display: flex;
   flex-direction: column;
@@ -714,32 +685,6 @@ input.error {
   }
 }
 
-/* Modal Overlay */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
-}
-
-/* Modal Content */
-.modal-content {
-  background: white;
-  padding: 2.5rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  animation: slideIn 0.3s ease-out;
-}
-
 .modal-content h2 {
   color: #193155;
   font-size: 1.5rem;
@@ -747,11 +692,6 @@ input.error {
   font-weight: 600;
   padding-bottom: 1rem;
   border-bottom: 1px solid #e0e4e8;
-}
-
-/* Form Styling */
-.form-group {
-  margin-bottom: 1.5rem;
 }
 
 .input-container {
@@ -857,11 +797,6 @@ input:focus {
 
 /* Responsiveness */
 @media (max-width: 768px) {
-  .modal-content {
-    padding: 1.5rem;
-    width: 95%;
-  }
-
   .modal-actions {
     flex-direction: column;
     gap: 0.5rem;

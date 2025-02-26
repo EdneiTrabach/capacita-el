@@ -889,11 +889,6 @@ const loadUsuario = async (id) => {
   margin-bottom: 2rem;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
 /* Variáveis de tema */
 :root {
   --label-color-light: #193155;
@@ -912,13 +907,6 @@ label {
   color: var(--form-label);
   margin-bottom: 0.5rem;
   font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.form-group label {
-  color: var(--form-label);
-  font-weight: 500;
-  font-size: 0.9rem;
   transition: color 0.3s ease;
 }
 
@@ -1014,30 +1002,6 @@ button {
   }
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
-}
-
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  animation: slideIn 0.3s ease-out;
-}
-
 .modal-content h3 {
   color: #193155;
   font-size: 1.5rem;
@@ -1045,10 +1009,6 @@ button {
   font-weight: 600;
   padding-bottom: 1rem;
   border-bottom: 1px solid #e0e4e8;
-}
-
-.modal-content .form-group {
-  margin-bottom: 1.5rem;
 }
 
 .modal-content label {
@@ -1129,11 +1089,6 @@ button {
 }
 
 @media (max-width: 768px) {
-  .modal-content {
-    width: 95%;
-    padding: 1.5rem;
-  }
-
   .modal-actions {
     flex-direction: column;
     gap: 0.5rem;

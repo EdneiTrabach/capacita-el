@@ -440,23 +440,11 @@ const tutorialOptions = {
   margin-bottom: 2rem;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
 .form-group.full-width {
   grid-column: 1 / -1;
 }
 
 label {
-  color: var(--form-label);
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.form-group label {
   color: var(--form-label);
   margin-bottom: 0.5rem;
   font-weight: 500;

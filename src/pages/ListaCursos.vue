@@ -50,10 +50,7 @@
         </div>
 
         <div class="dialog-actions">
-          <button 
-            @click="cancelDeleteCurso" 
-            class="btn-cancelar"
-          >
+          <button type="button" @click="cancelDeleteCurso" class="btn-cancelar">
             <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon"/>
             Cancelar
           </button>
