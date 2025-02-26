@@ -750,81 +750,9 @@ const handleError = (error: any, message: string) => {
   margin-bottom: 2rem;
 }
 
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  color: #193155;
-}
-
-.filter-group label {
-  color: #193155;
-  font-weight: 500;
-}
-
-.filter-group select,
-.filter-group input {
-  padding: 0.75rem;
-  border: 1px solid #e0e4e8;
-  border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
-  color: #193155;
-  transition: all 0.3s ease;
-}
-
-.date-range {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.date-range input {
-  flex: 1;
-}
-
-.actions-bar {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e0e4e8;
-}
-
-.btn-buscar {
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #193155 0%, #254677 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-}
-
-.btn-buscar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(25, 49, 85, 0.2);
-}
-
-
 @media (max-width: 768px) {
   .filters-grid {
     grid-template-columns: 1fr;
-  }
-
-  .actions-bar {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .btn-voltar,
-  .btn-gerar-pdf,
-  .btn-export-excel {
-    width: 100%;
   }
 }
 

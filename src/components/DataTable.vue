@@ -23,12 +23,5 @@ export default {
 </script>
 
 <style>
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.data-table th, .data-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-}
+
 </style>

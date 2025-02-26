@@ -197,12 +197,6 @@ h1 {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
-.filter-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 label {
   color: #193155;
   font-weight: 500;
