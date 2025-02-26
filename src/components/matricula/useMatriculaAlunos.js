@@ -3,6 +3,9 @@ import { useRoute } from 'vue-router'
 import { supabase } from '@/config/supabase'
 
 export function useMatriculaAlunos() {
+  const showDeleteMatriculaDialog = ref(false)
+  const matriculaToDelete = ref(null)
+  
   const route = useRoute()
   const cursoId = route.params.cursoId
   const cursoSelecionado = ref(cursoId)
@@ -126,19 +129,34 @@ export function useMatriculaAlunos() {
   }
 
   const removerMatricula = async (matriculaId) => {
-    if (!confirm('Deseja realmente remover esta matrícula?')) return
+    const matricula = matriculas.value.find(m => m.id === matriculaId)
+    if (!matricula) return
+    
+    matriculaToDelete.value = matricula
+    showDeleteMatriculaDialog.value = true
+  }
+
+  const confirmRemoverMatricula = async () => {
+    if (!matriculaToDelete.value) return
 
     try {
+      loading.value = true
       const { error } = await supabase
         .from('matriculas')
         .delete()
-        .eq('id', matriculaId)
+        .eq('id', matriculaToDelete.value.id)
 
       if (error) throw error
 
+      success.value = 'Matrícula removida com sucesso!'
       await buscarAlunosDisponiveis()
+      showDeleteMatriculaDialog.value = false
     } catch (error) {
       console.error('Erro ao remover matrícula:', error)
+      error.value = 'Erro ao remover matrícula'
+    } finally {
+      loading.value = false
+      matriculaToDelete.value = null
     }
   }
 
@@ -159,6 +177,9 @@ export function useMatriculaAlunos() {
     success,
     toggleAluno,
     matricularAlunos,
-    removerMatricula
+    removerMatricula,
+    confirmRemoverMatricula,
+    showDeleteMatriculaDialog,
+    matriculaToDelete
   }
 }
