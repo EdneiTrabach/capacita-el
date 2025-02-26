@@ -173,7 +173,6 @@ export default {
 </script>
 
 <style scoped>
-
 .icon-home {
   width: 60px;
   height: 60px;
@@ -189,11 +188,31 @@ export default {
 .home-header {
   text-align: center;
   margin-bottom: 3rem;
-  padding: 2rem;
+  padding: 2.5rem;
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   color: white;
+  transform: translateY(0);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.home-header:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.home-header:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3f88f5, #5cb8f5);
+  opacity: 0.7;
 }
 
 .home-header h1 {
@@ -211,7 +230,7 @@ export default {
   background-color: #dc3545;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -224,23 +243,23 @@ export default {
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  gap: 2.5rem;
   max-width: 1400px;
   margin: 0 auto;
   padding: 1rem;
 }
 
 .nav-card {
-  background-color: var(--card-bg);
+  background-color: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: var(--card-shadow);
+  padding: 2.2rem;
+  border-radius: 24px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
 }
 
@@ -250,34 +269,39 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, #2196f3, #00bcd4);
+  height: 100%;
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1), transparent);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
 
 .nav-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.nav-card:hover::before {
+  opacity: 1;
 }
 
 .card-icon {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  background: var(--icon-bg, rgba(255, 255, 255, 0.05));
-  width: 60px;
-  height: 60px;
+  background: rgba(255, 255, 255, 0.08);
+  width: 70px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  border-radius: 20px;
+  transition: all 0.4s ease;
 }
 
 .nav-card:hover .card-icon {
-  transform: scale(1.1);
-  background: var(--icon-bg-hover, rgba(255, 255, 255, 0.1));
+  transform: scale(1.1) rotate(5deg);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .nav-card h2 {
@@ -285,10 +309,15 @@ export default {
   font-size: 1.5rem;
   margin: 0 0 1rem 0;
   font-weight: 600;
+  transition: transform 0.3s ease;
+}
+
+.nav-card:hover h2 {
+  transform: translateX(5px);
 }
 
 h2.about {
-  color: white ! important;
+  color: white !important;
 }
 
 .nav-card p {
@@ -296,10 +325,15 @@ h2.about {
   margin: 0;
   line-height: 1.5;
   font-size: 0.95rem;
+  transition: opacity 0.3s ease;
+}
+
+.nav-card:hover p {
+  opacity: 0.9;
 }
 
 .card-action {
-  margin-top: 1.5rem;
+  margin-top: 1.8rem;
   color: var(--accent-color);
   font-weight: 500;
   display: flex;
@@ -307,11 +341,27 @@ h2.about {
   gap: 0.5rem;
   opacity: 0.8;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .nav-card:hover .card-action {
   opacity: 1;
   transform: translateX(5px);
+}
+
+.card-action:after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.nav-card:hover .card-action:after {
+  width: 100%;
 }
 
 .signature {
@@ -324,6 +374,10 @@ h2.about {
   background: linear-gradient(135deg, #1e88e5, #1565c0);
   color: white;
   border: none;
+}
+
+.info-card::before {
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent);
 }
 
 .info-card p {
@@ -360,34 +414,58 @@ h2.about {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .easter-egg-modal {
   background: linear-gradient(135deg, #192231, #24344d);
-  padding: 2rem;
-  border-radius: 15px;
+  padding: 2.5rem;
+  border-radius: 30px;
   max-width: 90%;
   width: 500px;
   position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: modalSlideUp 0.4s ease;
+  transform: translateY(0);
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .close-btn {
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 15px;
+  right: 20px;
   background: none;
   border: none;
   color: white;
   font-size: 24px;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .easter-hint {
@@ -401,6 +479,7 @@ h2.about {
   text-align: center;
   color: #2196f3;
   margin-bottom: 1.5rem;
+  text-shadow: 0 2px 10px rgba(33, 150, 243, 0.3);
 }
 
 @media (max-width: 768px) {
@@ -411,6 +490,7 @@ h2.about {
   .home-header {
     padding: 1.5rem;
     margin-bottom: 2rem;
+    border-radius: 20px;
   }
 
   .home-header h1 {
@@ -419,11 +499,12 @@ h2.about {
 
   .cards-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .nav-card {
-    padding: 1.5rem;
+    padding: 1.8rem;
+    border-radius: 20px;
   }
 }
 </style>
