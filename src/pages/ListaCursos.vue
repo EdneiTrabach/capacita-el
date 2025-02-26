@@ -175,12 +175,11 @@ export default defineComponent({
       introJs,
       introSteps,
       introOptions,
-      startTutorial
-      // Retornar também estas propriedades
+      startTutorial,
       showDeleteDialog,
       cursoToDelete,
       confirmDeleteCurso,
-      cancelDeleteCurso
+      cancelDeleteCurso,
     }
   }
 })
