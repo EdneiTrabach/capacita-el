@@ -2,7 +2,7 @@
 .content-wrapper {
   flex: 1;
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
 }
 
 .date-range input,
@@ -11,7 +11,7 @@
   border: 1px solid #e0e4e8;
   border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
-  color: #193155;
+  color: var(--text-color);
   transition: all 0.3s ease;
   width: 100%;
 }

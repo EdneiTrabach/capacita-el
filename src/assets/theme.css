@@ -285,7 +285,7 @@ img.icon-black {
 /* Adicione essas classes em cada arquivo .css dos relatórios */
 
 .report-section {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -400,7 +400,7 @@ img.icon-black {
 /* Adicione em cada arquivo .css dos relatórios */
 .relatorios-container {
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   min-height: 100vh;
   font-family: 'JetBrains Mono', monospace;
 }
@@ -432,7 +432,7 @@ img.icon-black {
 }
 
 .report-section {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -468,7 +468,7 @@ img.icon-black {
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
-  background: var(--header-gradient);
+  background: linear-gradient(135deg, #193155 0%, #254677 100%);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

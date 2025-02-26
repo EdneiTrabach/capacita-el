@@ -8,7 +8,7 @@ export function useListaCursosLogic() {
   const loading = ref(false)
   const error = ref(null)
   const searchTerm = ref('')
-  const statusFilter = ref('')
+  const statusFilter = ref('todos')
   const router = useRouter()
 
   const toast = ref({

@@ -558,7 +558,7 @@ const handleError = (error: any, message: string) => {
 
 .relatorios-container {
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   min-height: 100vh;
   font-family: 'JetBrains Mono', monospace;
 }
@@ -723,7 +723,7 @@ const handleError = (error: any, message: string) => {
 }
 
 .report-section {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;

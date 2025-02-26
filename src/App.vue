@@ -6,6 +6,7 @@ import { supabase } from './config/supabase'
 import type { Component } from 'vue'
 import Navbar from './components/Navbar.vue'
 import NavigationButtons from '@/components/NavigationButtons/NavigationButtons.vue'
+import FirstTimeModal from '@/components/FirstTimeModal.vue'
 import '@/assets/theme.css'
 import { useTheme } from '@/composables/useTheme'
 const route = useRoute()
@@ -60,6 +61,7 @@ const { isDark } = useTheme()
       <router-view />
       <NavigationButtons />
     </main>
+    <FirstTimeModal />
   </div>
 </template>
 

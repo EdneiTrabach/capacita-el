@@ -17,7 +17,7 @@
 
       <form @submit.prevent="handleSubmit" class="cadastro-form">
         <div class="form-grid">
-          <div class="form-group">
+          <div class="form-group" data-intro="Digite o nome completo da pessoa que deseja cadastrar">
             <label>Nome Completo*</label>
             <input 
               type="text" 
@@ -29,7 +29,7 @@
             <span class="error-message" v-if="errors.nome">{{ errors.nome }}</span>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" data-intro="Informe um e-mail válido para contato">
             <label>Email*</label>
             <input 
               type="email" 
@@ -40,7 +40,7 @@
             <span class="error-message" v-if="errors.email">{{ errors.email }}</span>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" data-intro="Selecione a data de nascimento">
             <label>Data de Nascimento</label>
             <input 
               type="date" 
@@ -53,7 +53,7 @@
             <span class="error-message" v-if="errors.dataNascimento">{{ errors.dataNascimento }}</span>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" data-intro="Digite o número de telefone incluindo o DDD">
             <label>Telefone</label>
             <input 
               type="tel" 
@@ -67,7 +67,7 @@
             <span class="error-message" v-if="errors.telefone">{{ errors.telefone }}</span>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" data-intro="Insira um CPF válido para o cadastro">
             <label>CPF</label>
             <input 
               type="text" 
@@ -81,7 +81,7 @@
             <span class="error-message" v-if="errors.documento">{{ errors.documento }}</span>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" data-intro="Selecione o estado onde a pessoa reside">
             <label>Estado</label>
             <select 
               v-model="formData.estado"
@@ -96,7 +96,7 @@
             <span class="error-message" v-if="errors.estado">{{ errors.estado }}</span>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" data-intro="Após selecionar o estado, escolha a cidade correspondente">
             <label>Cidade</label>
             <select 
               v-model="formData.cidade"
@@ -111,7 +111,7 @@
             <span class="error-message" v-if="errors.cidade">{{ errors.cidade }}</span>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" data-intro="Selecione a origem ou adicione uma nova clicando no botão +">
             <label>Origem</label>
             <div class="setor-input-group">
               <select 
@@ -132,7 +132,7 @@
           </div>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions" data-intro="Utilize estes botões para salvar o cadastro ou cancelar a operação">
           <button type="button" class="btn-cancelar" @click="$router.push('/')">
             <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon"/>
             Cancelar
@@ -170,6 +170,13 @@
     </div>
   </div>
 
+  <!-- Componente IntroJS -->
+  <IntroJS 
+    :steps="introSteps" 
+    :options="introOptions"
+    ref="introInstance" 
+  />
+
   <!-- Adicione um indicador de loading -->
   <div v-if="loading" class="loading-overlay">
     <div class="loading-spinner"></div>
@@ -183,10 +190,12 @@ import { supabase } from '@/config/supabase'
 import { setorService } from '@/services/api'
 import { ibgeService } from '@/services/ibgeService'
 import { sanitizeHTML } from '@/utils/sanitize'
+import IntroJS from '@/components/IntroJS.vue'
 
 const router = useRouter()
 const route = useRoute()
 const isEditing = ref(false)
+const introInstance = ref(null)
 
 const formData = ref({
   nome: '',
@@ -198,6 +207,85 @@ const formData = ref({
   estado: '',
   setor: ''
 })
+
+// Configuração do IntroJS
+const introSteps = ref([
+  {
+    element: '.cadastro-header',
+    title: 'Cadastro de Pessoas',
+    intro: 'Nesta tela você pode cadastrar novas pessoas ou editar cadastros existentes.',
+    position: 'bottom'
+  },
+  {
+    element: '.form-grid',
+    title: 'Formulário',
+    intro: 'Preencha os dados nos campos abaixo. Os campos com * são obrigatórios.',
+    position: 'top'
+  },
+  {
+    element: '.form-group:nth-child(1)',
+    title: 'Nome Completo',
+    intro: 'Informe o nome completo da pessoa que está sendo cadastrada.',
+    position: 'right'
+  },
+  {
+    element: '.form-group:nth-child(2)',
+    title: 'Email',
+    intro: 'Digite um email válido para contato.',
+    position: 'left'
+  },
+  {
+    element: '.form-group:nth-child(3)',
+    title: 'Data de Nascimento',
+    intro: 'Selecione a data de nascimento no calendário.',
+    position: 'right'
+  },
+  {
+    element: '.form-group:nth-child(4)',
+    title: 'Telefone',
+    intro: 'Informe o número de telefone com DDD.',
+    position: 'left'
+  },
+  {
+    element: '.form-group:nth-child(5)',
+    title: 'CPF',
+    intro: 'Digite o CPF da pessoa. O sistema validará automaticamente.',
+    position: 'right'
+  },
+  {
+    element: '.form-group:nth-child(6)',
+    title: 'Estado',
+    intro: 'Selecione o estado onde a pessoa reside.',
+    position: 'left'
+  },
+  {
+    element: '.form-group:nth-child(7)',
+    title: 'Cidade',
+    intro: 'Após selecionar o estado, escolha a cidade correspondente.',
+    position: 'right'
+  },
+  {
+    element: '.form-group:nth-child(8)',
+    title: 'Origem',
+    intro: 'Selecione a origem da pessoa. Você pode adicionar uma nova origem clicando no botão +.',
+    position: 'left'
+  },
+  {
+    element: '.form-actions',
+    title: 'Ações',
+    intro: 'Clique em "Salvar" para cadastrar os dados ou "Cancelar" para voltar à tela anterior.',
+    position: 'top'
+  }
+])
+
+const introOptions = {
+  showProgress: true,
+  exitOnOverlayClick: false,
+  showBullets: true,
+  overlayOpacity: 0.7,
+  scrollToElement: true,
+  doneLabel: 'Concluir'
+}
 
 const errors = ref({})
 const setores = ref([])
@@ -221,6 +309,18 @@ onMounted(async () => {
   isEditing.value = route.query.edit === 'true'
   if (isEditing.value && route.params.id) {
     await loadUsuario(route.params.id)
+  }
+  
+  // Verifica se é a primeira visita do usuário à página
+  const firstVisit = localStorage.getItem('firstVisitCadastro') !== 'false'
+  if (firstVisit) {
+    // Inicia o tutorial automaticamente na primeira visita
+    setTimeout(() => {
+      if (introInstance.value) {
+        introInstance.value.startIntro()
+      }
+      localStorage.setItem('firstVisitCadastro', 'false')
+    }, 1000)
   }
 })
 
@@ -699,6 +799,43 @@ const validateTelefone = (telefone) => {
 }
 
 onMounted(loadSetores)
+
+// Função para carregar os dados do usuário quando estiver editando
+const loadUsuario = async (id) => {
+  try {
+    loading.value = true
+    const { data, error } = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('id', id)
+      .single()
+    
+    if (error) throw error
+    
+    if (data) {
+      formData.value = {
+        nome: data.nome || '',
+        email: data.email || '',
+        dataNascimento: data.data_nascimento || '',
+        telefone: data.telefone || '',
+        documento: data.documento || '',
+        estado: data.estado || '',
+        cidade: data.cidade || '',
+        setor: data.setor || ''
+      }
+      
+      // Se tiver estado, carrega os municípios
+      if (data.estado) {
+        await buscarMunicipios(data.estado)
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao carregar usuário:', error)
+    showToast('Erro ao carregar dados do usuário', 'error')
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <style scoped>

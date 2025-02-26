@@ -13,35 +13,45 @@
     <div v-if="toast.show" :class="['toast', toast.type]">
       {{ toast.message }}
     </div>
-    <header class="usuarios-header">
+    <header class="usuarios-header" data-intro="Bem-vindo à página de Gestão de Pessoas! Aqui você pode gerenciar todos os alunos cadastrados." data-step="1">
       <div class="header-content">
         <h1>Gestão de pessoas</h1>
-        <button @click="$router.push('/usuarios')" class="btn-novo">
+        <button @click="$router.push('/usuarios')" class="btn-novo" data-intro="Clique aqui para cadastrar uma nova pessoa no sistema" data-step="2">
           <img src="/public/icons/adicao.svg" alt="Novo" class="icon-black" />
           Nova Pessoa
         </button>
       </div>
     </header>
 
-    <div class="search-bar">
+    <div class="search-bar" data-intro="Use estas opções para filtrar e buscar pessoas específicas" data-step="3">
       <input 
         type="text" 
         v-model="searchTerm" 
         placeholder="Buscar por nome, email ou setor..."
+        data-intro="Digite aqui para buscar por nome, email ou setor" 
+        data-step="4"
       >
-      <select v-model="setorFilter">
+      <select 
+        v-model="setorFilter"
+        data-intro="Filtre as pessoas por setor" 
+        data-step="5"
+      >
         <option value="">Todos os setores</option>
         <option v-for="setor in setoresUnicos" :key="setor" :value="setor">
           {{ setor }}
         </option>
       </select>
-      <select v-model="statusFilter">
+      <select 
+        v-model="statusFilter"
+        data-intro="Filtre por status: Ativo, Cursando ou Inativo" 
+        data-step="6"
+      >
         <option value="">Todos os status</option>
         <option value="ativo">Ativo</option>
         <option value="cursando">Cursando</option>
         <option value="inativo">Inativo</option>
       </select>
-      <select v-model="sortBy">
+      <select v-model="sortBy" data-intro="Organize a visualização na ordem desejada" data-step="7">
         <option value="recent">Mais recentes</option>
         <option value="oldest">Mais antigos</option>
         <option value="alpha">Ordem alfabética</option>
@@ -49,11 +59,80 @@
     </div>
 
     <!-- Lista de usuários -->
-    <div v-if="usuarios.length" class="usuarios-grid">
-      <div v-for="usuario in usuariosFiltrados" :key="usuario.id" class="usuario-card">
+    <div v-if="usuariosFiltrados.length" class="usuarios-grid" data-intro="Aqui estão listados todos os alunos cadastrados no sistema" data-step="8">
+      <!-- Card demonstrativo para o tutorial quando não houver usuários -->
+      <div v-if="usuariosFiltrados.length === 0" class="usuario-card" data-intro="Cada card representa uma pessoa cadastrada com suas informações e opções de gerenciamento" data-step="9">
+        <div class="usuario-header">
+          <span class="usuario-avatar">AA</span>
+          <div class="actions" data-intro="Utilize estes botões para editar ou excluir o cadastro da pessoa" data-step="10">
+            <button class="btn-edit">
+              <img src="/public/icons/edicao.svg" alt="Editar" class="icon" />
+            </button>
+            <button class="btn-delete">
+              <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon" />
+            </button>
+          </div>
+        </div>
+        <div class="usuario-body">
+          <h3>Nome de Demonstração</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Email:</span>
+              <span>email@exemplo.com</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Telefone:</span>
+              <span>(00) 00000-0000</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Setor:</span>
+              <span>Exemplo</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Cidade:</span>
+              <span>Cidade/UF</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Data de Nascimento:</span>
+              <span>01/01/2000</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Status:</span>
+              <span class="status-ativo">ativo</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <div class="status-toggle" data-intro="Gerencie o status do aluno facilmente clicando em um destes botões" data-step="11">
+            <button class="status-btn">
+              <img src="/public/icons/check.svg" alt="Ativo" class="icon-black"/>
+              Ativo
+            </button>
+            <button class="status-btn">
+              <img src="/public/icons/cursando.svg" alt="Cursando" class="icon-black"/>
+              Cursando
+            </button>
+            <button class="status-btn">
+              <img src="/public/icons/fechar.svg" alt="Editar" class="icon-black"/>
+              Inativo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards reais de usuários -->
+      <div 
+        v-for="usuario in usuariosFiltrados" 
+        :key="usuario.id" 
+        class="usuario-card"
+        :data-intro="usuario === usuariosFiltrados[0] ? 'Cada card representa uma pessoa cadastrada com suas informações e opções de gerenciamento' : null"
+        :data-step="usuario === usuariosFiltrados[0] ? 9 : null"
+      >
         <div class="usuario-header">
           <span class="usuario-avatar">{{ getInitials(usuario.nome) }}</span>
-          <div class="actions">
+          <div class="actions"
+               :data-intro="usuario === usuariosFiltrados[0] ? 'Utilize estes botões para editar ou excluir o cadastro da pessoa' : null"
+               :data-step="usuario === usuariosFiltrados[0] ? 10 : null">
             <button 
               @click="editarUsuario(usuario)" 
               class="btn-edit"
@@ -61,7 +140,6 @@
               :title="usuario.tem_certificado ? 'Não é possível editar um usuário que possui certificados emitidos' : ''"
             >
               <img src="/public/icons/edicao.svg" alt="Editar" class="icon" />
-              <!-- Editar -->
             </button>
             <button 
               @click="deletarUsuario(usuario.id)" 
@@ -70,7 +148,6 @@
               :title="usuario.tem_certificado ? 'Não é possível excluir um aluno que possui certificados emitidos' : ''"
             >
               <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon" />
-              <!-- Excluir -->
             </button>
           </div>
         </div>
@@ -105,7 +182,9 @@
           </div>
         </div>
         <div class="card-actions">
-          <div class="status-toggle">
+          <div class="status-toggle"
+               :data-intro="usuario === usuariosFiltrados[0] ? 'Gerencie o status do aluno facilmente clicando em um destes botões' : null"
+               :data-step="usuario === usuariosFiltrados[0] ? 11 : null">
             <button 
               @click="toggleStatus(usuario, 'ativo')" 
               :class="['status-btn', { active: usuario.status === 'ativo' }]">
@@ -230,14 +309,24 @@
         </form>
       </div>
     </div>
+
+    <!-- Componente IntroJS -->
+    <IntroJS 
+      ref="introJs"
+      :steps="introSteps"
+      :options="introOptions" 
+    />
   </div>
 </template>
 
 <script>
 import ListaUsuarios from './ListaUsuarios.js'
+import IntroJS from '../components/IntroJS.vue'
 
 export default {
-  ...ListaUsuarios,
+  components: {
+    IntroJS
+  },
   setup() {
     try {
       const {
@@ -264,6 +353,75 @@ export default {
         handleEditSubmit,
         closeEditModal
       } = ListaUsuarios.setup()
+      
+      // Configurações do IntroJS
+      const introSteps = [
+        {
+          element: '.usuarios-header',
+          intro: 'Bem-vindo à página de Gestão de Pessoas! Aqui você pode gerenciar todos os alunos cadastrados.',
+          position: 'bottom'
+        },
+        {
+          element: '.btn-novo',
+          intro: 'Clique aqui para cadastrar uma nova pessoa no sistema',
+          position: 'left'
+        },
+        {
+          element: '.search-bar',
+          intro: 'Use estas opções para filtrar e buscar pessoas específicas',
+          position: 'bottom'
+        },
+        {
+          element: '.search-bar input',
+          intro: 'Digite aqui para buscar por nome, email ou setor',
+          position: 'bottom'
+        },
+        {
+          element: '.search-bar select:nth-child(2)',
+          intro: 'Filtre as pessoas por setor',
+          position: 'bottom'
+        },
+        {
+          element: '.search-bar select:nth-child(3)',
+          intro: 'Filtre por status: Ativo, Cursando ou Inativo',
+          position: 'bottom'
+        },
+        {
+          element: '.search-bar select:nth-child(4)',
+          intro: 'Organize a visualização na ordem desejada',
+          position: 'bottom'
+        },
+        {
+          element: '.usuarios-grid',
+          intro: 'Aqui estão listados todos os alunos cadastrados no sistema',
+          position: 'top'
+        },
+        {
+          element: '.usuario-card',
+          intro: 'Cada card representa uma pessoa cadastrada com suas informações e opções de gerenciamento',
+          position: 'right'
+        },
+        {
+          element: '.actions',
+          intro: 'Utilize estes botões para editar ou excluir o cadastro da pessoa',
+          position: 'left'
+        },
+        {
+          element: '.status-toggle',
+          intro: 'Gerencie o status do aluno facilmente clicando em um destes botões',
+          position: 'top'
+        }
+      ];
+      
+      const introOptions = {
+        showStepNumbers: true,
+        showBullets: true,
+        showProgress: true,
+        exitOnOverlayClick: false,
+        nextLabel: 'Próximo',
+        prevLabel: 'Anterior',
+        doneLabel: 'Concluir'
+      };
 
       return {
         loading,
@@ -287,13 +445,28 @@ export default {
         deletarUsuario,
         editarUsuario,
         handleEditSubmit,
-        closeEditModal
+        closeEditModal,
+        // Propriedades do IntroJS
+        introSteps,
+        introOptions
       }
 
     } catch (error) {
       console.error('Erro no setup:', error)
       return {
         error: error.message
+      }
+    }
+  },
+  mounted() {
+    // Iniciar o tutorial automaticamente na primeira visita
+    // Você pode adicionar uma lógica para verificar se é a primeira visita
+    // this.$refs.introJs.startIntro();
+  },
+  methods: {
+    startTutorial() {
+      if (this.$refs.introJs) {
+        this.$refs.introJs.startIntro();
       }
     }
   }

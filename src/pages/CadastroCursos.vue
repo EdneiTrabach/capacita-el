@@ -1,14 +1,14 @@
 <template>
   <div class="cadastro-container">
     <div class="cadastro-card">
-      <header class="cadastro-header">
+      <header class="cadastro-header" id="header-curso">
         <h1>{{ isEditing ? 'Editar Curso' : 'Novo Treinamento' }}</h1>
         
       </header>
       <img src="/public/treinamento_2.svg" alt="Treinamento" class="header-icon" />
 
       <form @submit.prevent="handleSubmit" class="cadastro-form">
-        <div class="form-grid">
+        <div class="form-grid" id="form-principal">
           <div class="form-group">
             <label>Nome do Curso*</label>
             <input 
@@ -72,7 +72,7 @@
           </div>
         </div>
 
-        <div class="modulos-section">
+        <div class="modulos-section" id="secao-modulos">
           <h3>Módulos do Curso</h3>
           <div v-for="(modulo, index) in formData.modulos" :key="index" class="modulo-item">
             <div class="modulo-header">
@@ -96,13 +96,13 @@
             </div>
           </div>
           
-          <button type="button" @click="adicionarModulo" class="btn-add-modulo">
+          <button type="button" @click="adicionarModulo" class="btn-add-modulo" id="btn-add-modulo">
             <img src="/public/icons/adicao.svg" alt="Info" class="icon" />
             Adicionar Módulo
           </button>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions" id="acoes-formulario">
           <button type="button" @click="$router.push('/lista-cursos')" class="btn-cancelar">
             <img src="/public/icons/fechar.svg" alt="Dashboard" class="icon" />
             Cancelar
@@ -114,6 +114,13 @@
         </div>
       </form>
     </div>
+    
+    <!-- Componente IntroJS -->
+    <IntroJS 
+      :steps="tutorialSteps" 
+      :options="tutorialOptions"
+      :showSetupButton="true"
+    />
   </div>
 </template>
 
@@ -122,6 +129,7 @@ import { ref, onMounted } from 'vue'
 import { supabase } from '../config/supabase'
 import { useRouter, useRoute } from 'vue-router'
 import { sanitizeHTML } from '@/utils/sanitize'
+import IntroJS from '../components/IntroJS.vue'
 
 interface Modulo {
   id?: string
@@ -310,6 +318,70 @@ onMounted(() => {
     loadCurso(route.params.id as string)
   }
 })
+
+// Configuração do tutorial
+const tutorialSteps = [
+  {
+    element: '#header-curso',
+    title: 'Cadastro de Treinamento',
+    intro: 'Bem-vindo à tela de cadastro de treinamentos. Aqui você poderá criar ou editar cursos.'
+  },
+  {
+    element: '#form-principal',
+    title: 'Informações Principais',
+    intro: 'Nesta seção, você deve preencher as informações básicas do curso, como nome, duração, data de início, etc.'
+  },
+  {
+    element: '.form-group:nth-child(1)',
+    title: 'Nome do Curso',
+    intro: 'Insira aqui o nome do treinamento que será exibido para os alunos.'
+  },
+  {
+    element: '.form-group:nth-child(2)',
+    title: 'Carga Horária',
+    intro: 'Defina aqui a carga horária total do curso em horas.'
+  },
+  {
+    element: '.form-group:nth-child(3)',
+    title: 'Data de Início',
+    intro: 'Selecione a data em que o treinamento começará.'
+  },
+  {
+    element: '.form-group:nth-child(4)',
+    title: 'Professor Responsável',
+    intro: 'Informe o nome do professor que será responsável pelo curso.'
+  },
+  {
+    element: '.form-group:nth-child(5)',
+    title: 'Descrição do Curso',
+    intro: 'Descreva detalhadamente o conteúdo do curso para que os alunos entendam do que se trata.'
+  },
+  {
+    element: '#secao-modulos',
+    title: 'Módulos do Curso',
+    intro: 'Nesta seção você pode dividir seu curso em módulos para melhor organização do conteúdo.'
+  },
+  {
+    element: '#btn-add-modulo',
+    title: 'Adicionar Módulo',
+    intro: 'Clique aqui para adicionar um novo módulo ao seu curso.'
+  },
+  {
+    element: '#acoes-formulario',
+    title: 'Salvar ou Cancelar',
+    intro: 'Após preencher todos os campos necessários, clique em "Salvar" para confirmar ou "Cancelar" para desistir.'
+  }
+];
+
+const tutorialOptions = {
+  doneLabel: 'Finalizar',
+  nextLabel: 'Próximo',
+  prevLabel: 'Anterior',
+  scrollToElement: true,
+  showStepNumbers: true,
+  exitOnOverlayClick: false,
+  showBullets: true
+};
 
 </script>
 

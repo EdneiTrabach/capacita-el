@@ -214,6 +214,75 @@ export default {
         .slice(0, 2)
     }
 
+    // Adicionar configurações do IntroJS
+    const introSteps = [
+      {
+        element: '.usuarios-header',
+        intro: 'Bem-vindo à página de Gestão de Pessoas! Aqui você pode gerenciar todos os alunos cadastrados.',
+        position: 'bottom'
+      },
+      {
+        element: '.btn-novo',
+        intro: 'Clique aqui para cadastrar uma nova pessoa no sistema',
+        position: 'left'
+      },
+      {
+        element: '.search-bar',
+        intro: 'Use estas opções para filtrar e buscar pessoas específicas',
+        position: 'bottom'
+      },
+      {
+        element: '.search-bar input',
+        intro: 'Digite aqui para buscar por nome, email ou setor',
+        position: 'bottom'
+      },
+      {
+        element: '.search-bar select:nth-child(2)',
+        intro: 'Filtre as pessoas por setor',
+        position: 'bottom'
+      },
+      {
+        element: '.search-bar select:nth-child(3)',
+        intro: 'Filtre por status: Ativo, Cursando ou Inativo',
+        position: 'bottom'
+      },
+      {
+        element: '.search-bar select:nth-child(4)',
+        intro: 'Organize a visualização na ordem desejada',
+        position: 'bottom'
+      },
+      {
+        element: '.usuarios-grid',
+        intro: 'Aqui estão listados todos os alunos cadastrados no sistema',
+        position: 'top'
+      },
+      {
+        element: '.usuario-card',
+        intro: 'Cada card representa uma pessoa cadastrada com suas informações e opções de gerenciamento',
+        position: 'right'
+      },
+      {
+        element: '.actions',
+        intro: 'Utilize estes botões para editar ou excluir o cadastro da pessoa',
+        position: 'left'
+      },
+      {
+        element: '.status-toggle',
+        intro: 'Gerencie o status do aluno facilmente clicando em um destes botões',
+        position: 'top'
+      }
+    ];
+    
+    const introOptions = {
+      showStepNumbers: true,
+      showBullets: true,
+      showProgress: true,
+      exitOnOverlayClick: false,
+      nextLabel: 'Próximo',
+      prevLabel: 'Anterior',
+      doneLabel: 'Concluir'
+    };
+
     // Lifecycle hooks
     onMounted(async () => {
       try {
@@ -254,7 +323,9 @@ export default {
       formatDate,
       getInitials,
       sanitizeHTML,
-      buscarMunicipios
+      buscarMunicipios,
+      introSteps,
+      introOptions
     }
   }
 }

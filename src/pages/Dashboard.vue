@@ -252,10 +252,7 @@
 
     <div class="chart-container">
       <h2 class="chart-title">Matrículas por Treinamento</h2>
-      <DashboardChart 
-        :data="matriculasPorCurso" 
-        :matriculasPorCurso="matriculasPorCurso" 
-      />    
+      <DashboardChart :matriculasPorCurso="matriculasPorCurso" />
     </div>
   </div>
 </template>
@@ -701,6 +698,10 @@ const loadUserData = async () => {
   color: var(--text-primary-dark);
 }
 
+.filter-group label {
+  color: var(--text-primary-dark);
+}
+
 input[type="date"],
 select {
   background: var(--hover-bg-dark);
@@ -779,6 +780,15 @@ select:focus {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.btn-export {
+  background: var(--hover-bg-dark);
+  color: var(--text-primary-dark);
+  border: 1px solid var(--border-color-dark);
+}
+
+.btn-export:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
 
 /* Loading e estados */
 .loading {
@@ -847,6 +857,15 @@ select:focus {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   color: white;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
 }
 
 .dashboard-icon {
@@ -1018,6 +1037,17 @@ select:focus {
     flex-direction: column;
     padding: 1rem;
   }
+
+  .filter-group {
+    width: 100%;
+    min-width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .date-range {
+    flex-direction: column;
+  }
+
   .date-range span {
     margin: 0.5rem 0;
   }
@@ -1111,6 +1141,11 @@ select:focus {
     gap: 0.5rem;
   }
 
+  .btn-export {
+    width: 100%;
+    justify-content: center;
+  }
+
   .curso-header h3 {
     font-size: 1rem;
   }
@@ -1164,6 +1199,25 @@ select:focus {
   border-top: 1px solid #e0e4e8;
 }
 
+.filters-section {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .status-badge {
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
@@ -1200,6 +1254,22 @@ select:focus {
   margin-top: 1rem;
 }
 
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-export:hover {
+  transform: translateY(-2px);
+}
+
 .filters-row {
   background: var(--bg-primary);
   padding: 1.5rem;
@@ -1209,6 +1279,39 @@ select:focus {
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-group label {
+  display: block;
+  color: var(--text-primary-dark);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.filter-group select,
+.filter-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e0e4e8;
+  border-radius: 8px;
+  color: var(--text-primary-dark);
+  transition: all 0.3s ease;
+  background: var(--hover-bg-dark);
+}
+
+.date-range {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.date-range input {
+  flex: 1;
 }
 
 .cursos-container {
@@ -1391,6 +1494,24 @@ select:focus {
   gap: 1.5rem;
 }
 
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  color: var(--text-primary-dark);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .date-input {
   position: relative;
   flex: 1;
@@ -1479,6 +1600,10 @@ input:focus, select:focus {
 @media (max-width: 768px) {
   .filters-row {
     grid-template-columns: 1fr;
+  }
+
+  .date-range {
+    flex-direction: column;
   }
 
   .date-separator {
