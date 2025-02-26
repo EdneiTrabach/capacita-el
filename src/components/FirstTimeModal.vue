@@ -12,7 +12,7 @@
         
         <h3>Sobre nossa plataforma</h3>
         
-        <p>Este sistema foi desenvolvido para facilitar a gestão completa de treinamentos do Grupo EL, proporcionando uma experiência integrada para administradores e usuários.</p>
+        <p>Este sistema foi desenvolvido para facilitar a gestão completa de treinamentos do Grupo EL, proporcionando uma experiência integrada para administradores</p>
         
         <h4>Principais recursos:</h4>
         <ul>
