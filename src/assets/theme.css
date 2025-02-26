@@ -662,12 +662,6 @@ img.icon-black {
   margin: 2rem 0;
 }
 
-.warning-icon {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 1.5rem;
-}
-
 .warning-text {
   color: #dc3545;
   font-size: 0.9rem;
@@ -726,4 +720,11 @@ img.icon-black {
   font-size: 3rem;
   color: #dc3545;
   margin-bottom: 1.5rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  word-break: break-word;
 }

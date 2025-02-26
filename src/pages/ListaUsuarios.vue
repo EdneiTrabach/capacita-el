@@ -154,7 +154,7 @@
 
         <div class="usuario-body">
           <h3>{{ sanitizeHTML(usuario.nome) }}</h3>
-          <div class="info-grid">
+          <div class="info-grid-users">
             <div class="info-item">
               <span class="label">Email:</span>
               <span>{{ sanitizeHTML(usuario.email) }}</span>

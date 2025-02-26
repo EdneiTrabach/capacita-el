@@ -656,13 +656,6 @@ export default {
   color: var(--text-primary);
 }
 
-/* Information Grid */
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
-}
-
 .info-item {
   display: flex;
   flex-direction: column;
@@ -809,19 +802,6 @@ export default {
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: var(--text-primary);
-}
-
-.form-group select,
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--text-primary);
-  background-color: var(--input-bg);
-  transition: all 0.3s ease;
 }
 
 .form-group select option {

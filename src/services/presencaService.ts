@@ -12,46 +12,63 @@ const uniqueId = Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0'
 export const presencaService = {
   async gerarCodigoAula(cursoId: string, dataAula: string) {
     try {
-      const dataHoje = new Date().toISOString().split('T')[0]
+      const dataHoje = dataAula || new Date().toISOString().split('T')[0]
       const agora = new Date()
       
       // 1. Primeiro verifica se já existe um código válido
-      const { data: codigoExistente } = await supabase
+      const { data: codigoExistente, error: errorBusca } = await supabase
         .from('codigos_aula')
         .select('codigo, validade')
         .eq('curso_id', cursoId)
         .eq('data_aula', dataHoje)
-        .gte('validade', agora.toISOString())  // Use gte ao invés de gt
-        .maybeSingle()  // Use maybeSingle em vez de single para evitar erros
+        .order('validade', { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
-      if (codigoExistente) {
+      // Se já existe um código válido, retorna o QR code correspondente
+      if (codigoExistente && new Date(codigoExistente.validade) > agora) {
         const urlPresenca = `https://registro-presenca.vercel.app/presenca/${codigoExistente.codigo}`
         return await QRCode.toDataURL(urlPresenca)
       }
-
-      // 2. Se não existe, gera o código sem depender do ID do professor
-      // 3. Gera um código composto
+      
+      // 2. Se não existe um código válido, verificamos se precisamos atualizar um existente ou criar um novo
       const timestamp = Date.now()
       const codigoBase = `${cursoId}_${dataHoje}_${timestamp}`
       const codigoAula = btoa(codigoBase)
-
-      // 4. Salva o novo código
       const validade = new Date(agora.getTime() + 15 * 60000) // 15 minutos
       
-      const { error } = await supabase.from('codigos_aula').insert({
-        codigo: codigoAula,
-        curso_id: cursoId,
-        data_aula: dataHoje,
-        horario_geracao: agora.toISOString(),
-        validade: validade.toISOString()
-        // Removemos o campo professor_id que estava causando o erro
-      })
+      // Verificamos se precisamos atualizar um código existente expirado
+      if (codigoExistente) {
+        // Atualize o código existente
+        const { error: updateError } = await supabase
+          .from('codigos_aula')
+          .update({
+            codigo: codigoAula,
+            horario_geracao: agora.toISOString(),
+            validade: validade.toISOString()
+          })
+          .eq('curso_id', cursoId)
+          .eq('data_aula', dataHoje)
+        
+        if (updateError) throw updateError
+      } else {
+        // Insira um novo código
+        const { error: insertError } = await supabase
+          .from('codigos_aula')
+          .insert({
+            codigo: codigoAula,
+            curso_id: cursoId,
+            data_aula: dataHoje,
+            horario_geracao: agora.toISOString(),
+            validade: validade.toISOString()
+          })
+        
+        if (insertError) throw insertError
+      }
 
-      if (error) throw error
-
+      // Gera e retorna o QR code
       const urlPresenca = `https://registro-presenca.vercel.app/presenca/${codigoAula}`
       return await QRCode.toDataURL(urlPresenca)
-
     } catch (error) {
       console.error('Erro ao gerar código da aula:', error)
       throw new Error('Não foi possível gerar o código da aula')

@@ -120,19 +120,29 @@ export function useListaPresenca() {
     try {
       loading.value = true
       error.value = ''
+      success.value = ''
       
       // Certifique-se que cursoId é uma string
       const cursoIdString = Array.isArray(cursoId) ? cursoId[0] : cursoId
-      const dataAulaAtual = new Date().toISOString().split('T')[0]
+      
+      // Use a data do filtro ou a data atual
+      const dataAulaAtual = filtros.value.dataAula || new Date().toISOString().split('T')[0]
       
       qrCode.value = await presencaService.gerarCodigoAula(cursoIdString, dataAulaAtual)
       
+      // Adiciona uma mensagem de sucesso
+      success.value = 'QR Code gerado com sucesso! Validade: 15 minutos'
+      
+      // Limpeza automática após 15 minutos
       setTimeout(() => {
-        qrCode.value = ''
+        if (qrCode.value) {
+          qrCode.value = ''
+          success.value = ''
+        }
       }, 15 * 60 * 1000)
     } catch (err) {
       console.error('Erro ao gerar QR Code:', err)
-      error.value = 'Erro ao gerar QR Code'
+      error.value = 'Erro ao gerar QR Code. Por favor, tente novamente.'
     } finally {
       loading.value = false
     }

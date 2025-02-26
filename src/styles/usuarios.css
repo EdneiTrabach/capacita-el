@@ -164,14 +164,6 @@
   line-height: 1.2;
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
-  word-break: break-word;
-  /* Quebra palavras longas */
-}
-
 .info-item {
   display: flex;
   flex-direction: column;
@@ -310,10 +302,6 @@
 
 /* Responsividade */
 @media (max-width: 768px) {
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-
   .status-toggle {
     flex-direction: column;
   }
@@ -352,10 +340,6 @@
 
   .usuario-card {
     margin-bottom: 1rem;
-  }
-
-  .info-grid {
-    grid-template-columns: 1fr;
   }
 
   .usuario-header {
@@ -684,7 +668,7 @@
 
 .form-group input,
 .form-group select {
-  padding: 0.75rem;
+  padding: 0.75rem 2.5rem;
   border: 1px solid #e0e4e8;
   border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;

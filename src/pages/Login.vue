@@ -46,7 +46,13 @@
           <a href="#" class="forgot-link" @click="handleForgotClick">Esqueci minha senha</a>
         </div>
 
-        <button type="submit" class="login-button">Entrar</button>
+        <button type="submit" class="login-button">
+          <span v-if="!loading">Entrar</span>
+          <div v-else class="spinner-container">
+            <div class="spinner"></div>
+            <span>Conectando...</span>
+          </div>
+        </button>
       </form>
     </div>
 
@@ -90,6 +96,7 @@ declare global {
 import { ref, onMounted } from 'vue'
 import { supabase } from '../config/supabase'
 import { useRouter } from 'vue-router'
+import { AuthTokenResponse } from '@supabase/supabase-js'
 
 const router = useRouter()
 const email = ref('')
@@ -97,59 +104,8 @@ const password = ref('')
 const error = ref('')
 const showMatrix = ref(false)
 const loading = ref(false)
-
-const handleLogoClick = () => {
-  showMatrix.value = !showMatrix.value
-}
-
-const generateRandomChars = () => {
-  return Array(20).fill(0)
-    .map(() => String.fromCharCode(33 + Math.floor(Math.random() * 94)))
-    .join('')
-}
-
-const handleLogin = async () => {
-  try {
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: email.value,
-      password: password.value,
-    })
-
-    if (authError) throw authError
-
-    // Redireciona para a URL original ou home
-    const intendedUrl = sessionStorage.getItem('intendedUrl')
-    router.push(intendedUrl || '/')
-    sessionStorage.removeItem('intendedUrl')
-  } catch (e) {
-    console.error('Login error:', e)
-    error.value = 'Erro ao fazer login. Verifique suas credenciais.'
-  }
-}
-
-// Updated registration function
-const handleRegister = async () => {
-  try {
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value,
-    })
-
-    if (authError) throw authError
-
-    // Profile will be created automatically by the database trigger
-    // Show success message
-    alert('Registro realizado com sucesso! Verifique seu email para confirmar a conta.')
-
-  } catch (e) {
-    console.error('Registration error:', e)
-    error.value = 'Erro ao registrar usuário. Tente novamente.'
-  }
-}
-
 const showForgotModal = ref(false)
 const resetEmail = ref('')
-
 const toast = ref({
   show: false,
   message: '',
@@ -166,6 +122,123 @@ const showToast = (message: string, type: 'success' | 'error' = 'success') => {
   setTimeout(() => {
     toast.value.show = false
   }, 3000)
+}
+
+const handleLogoClick = () => {
+  showMatrix.value = !showMatrix.value
+}
+
+const generateRandomChars = () => {
+  return Array(20).fill(0)
+    .map(() => String.fromCharCode(33 + Math.floor(Math.random() * 94)))
+    .join('')
+}
+
+// Função para verificar conectividade
+const checkConnectivity = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    // Tenta fazer uma requisição simples para verificar conexão
+    const testImage = new Image();
+    const timeout = setTimeout(() => {
+      testImage.onerror = testImage.onload = null;
+      resolve(false);
+    }, 3000);
+
+    testImage.onerror = () => {
+      clearTimeout(timeout);
+      testImage.onerror = testImage.onload = null;
+      resolve(false);
+    };
+
+    testImage.onload = () => {
+      clearTimeout(timeout);
+      testImage.onerror = testImage.onload = null;
+      resolve(true);
+    };
+
+    // Usa o CDN do Google como teste, geralmente é confiável
+    testImage.src = "https://www.google.com/favicon.ico?" + new Date().getTime();
+  });
+}
+
+// Modifique o handleLogin para verificar conectividade
+const handleLogin = async () => {
+  if (!email.value || !password.value) {
+    error.value = 'Por favor, preencha todos os campos'
+    return
+  }
+  
+  try {
+    loading.value = true
+    error.value = ''
+    
+    // Verifica conectividade antes
+    const isOnline = await checkConnectivity();
+    if (!isOnline) {
+      throw new Error('Sem conexão com a internet. Verifique sua conexão e tente novamente.');
+    }
+    
+    // Tente conectar-se com o Supabase com timeout
+    const authPromise = supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value,
+    })
+    
+    // Adicione um timeout para a requisição
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Timeout: O servidor não respondeu em tempo hábil')), 10000)
+    })
+    
+    // Race entre a autenticação e o timeout
+    const { data: authData, error: authError } = await Promise.race([
+      authPromise,
+      timeoutPromise
+    ]) as AuthTokenResponse
+
+    if (authError) throw authError
+
+    // Verificar se o usuário tem acesso
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', authData.user.id)
+      .single()
+
+    if (profileError || !profileData) {
+      await supabase.auth.signOut()
+      throw new Error('Usuário não autorizado')
+    }
+
+    // Redirecionar para a página inicial ou a URL pretendida
+    const intendedUrl = sessionStorage.getItem('intendedUrl')
+    router.push(intendedUrl || '/')
+    sessionStorage.removeItem('intendedUrl')
+    
+    showToast('Login realizado com sucesso!', 'success')
+  } catch (e) {
+    console.error('Login error:', e)
+    
+    // Tratamento específico para diferentes erros
+    if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+      error.value = 'Erro de conexão com o servidor. Verifique sua conexão com a internet.'
+      showToast('Erro de conexão com o servidor', 'error')
+    } else if (e instanceof Error && e.message.includes('Timeout')) {
+      error.value = 'O servidor está demorando para responder. Tente novamente mais tarde.'
+      showToast('Tempo limite excedido', 'error')
+    } else {
+      error.value = 'Erro ao fazer login. Verifique suas credenciais.'
+      showToast('Falha na autenticação', 'error')
+    }
+  } finally {
+    loading.value = false
+  }
+}
+const handleRegister = async () => {
+  try {
+    // Implementation goes here
+  } catch (error) {
+    console.error('Registration error:', error)
+  }
 }
 
 // Modifique o link para abrir o modal
@@ -389,6 +462,7 @@ input {
   font-family: 'JetBrains Mono', monospace;
   transition: all 0.3s ease;
   background: white;
+  color: black;
 }
 
 /* Efeito de flutuação da label */
@@ -799,4 +873,55 @@ input:focus {
     justify-content: center;
   }
 }
+
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.retry-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  color: #495057;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-button:hover {
+  background-color: #e9ecef;
+}
+
+
 </style>

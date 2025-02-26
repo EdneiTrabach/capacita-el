@@ -1379,12 +1379,6 @@ select:focus {
   margin-bottom: 1.5rem;
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
 .info-item {
   display: flex;
   justify-content: space-between;
