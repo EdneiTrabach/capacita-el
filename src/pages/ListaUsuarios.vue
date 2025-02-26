@@ -316,6 +316,38 @@
       :steps="introSteps"
       :options="introOptions" 
     />
+    <!-- Delete Dialog -->
+    <div v-if="showDeleteDialog" class="modal-overlay">
+      <div class="delete-dialog">
+        <h2>Confirmar Exclusão</h2>
+        
+        <div class="dialog-content">
+          <font-awesome-icon 
+            :icon="['fas', 'triangle-exclamation']" 
+            class="warning-icon"
+          />
+          <p>Tem certeza que deseja excluir o usuário <strong>{{ userToDelete?.nome }}</strong>?</p>
+          <p class="warning-text">Esta ação não poderá ser desfeita.</p>
+        </div>
+
+        <div class="dialog-actions">
+          <button 
+            @click="showDeleteDialog = false" 
+            class="btn-cancelar"
+          >
+            <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon"/>
+            Cancelar
+          </button>
+          <button 
+            @click="confirmDelete" 
+            class="btn-deletar"
+          >
+            <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon"/>
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -351,7 +383,10 @@ export default {
         deletarUsuario,
         editarUsuario,
         handleEditSubmit,
-        closeEditModal
+        closeEditModal,
+        showDeleteDialog,
+        userToDelete,
+        confirmDelete
       } = ListaUsuarios.setup()
       
       // Configurações do IntroJS
@@ -446,9 +481,11 @@ export default {
         editarUsuario,
         handleEditSubmit,
         closeEditModal,
-        // Propriedades do IntroJS
         introSteps,
         introOptions
+        showDeleteDialog,
+        userToDelete,
+        confirmDelete
       }
 
     } catch (error) {

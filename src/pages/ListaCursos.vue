@@ -34,6 +34,39 @@
       :options="introOptions"
       ref="introJs"
     />
+
+    <!-- Modal de confirmação de exclusão -->
+    <div v-if="showDeleteDialog" class="modal-overlay">
+      <div class="delete-dialog">
+        <h2>Confirmar Exclusão</h2>
+        
+        <div class="dialog-content">
+          <font-awesome-icon 
+            :icon="['fas', 'triangle-exclamation']" 
+            class="warning-icon"
+          />
+          <p>Tem certeza que deseja excluir o curso <strong>{{ cursoToDelete?.nome }}</strong>?</p>
+          <p class="warning-text">Esta ação excluirá permanentemente o curso e todos os dados relacionados. Esta ação não poderá ser desfeita.</p>
+        </div>
+
+        <div class="dialog-actions">
+          <button 
+            @click="cancelDeleteCurso" 
+            class="btn-cancelar"
+          >
+            <img src="/public/icons/fechar.svg" alt="Cancelar" class="icon"/>
+            Cancelar
+          </button>
+          <button 
+            @click="confirmDeleteCurso" 
+            class="btn-deletar"
+          >
+            <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon"/>
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -59,7 +92,12 @@ export default defineComponent({
       editarCurso,
       deletarCurso,
       toggleStatus,
-      toast
+      toast,
+      // Adicionar estas propriedades para o modal de confirmação
+      showDeleteDialog,
+      cursoToDelete,
+      confirmDeleteCurso,
+      cancelDeleteCurso
     } = useListaCursosLogic()
 
     // Referência para o componente IntroJS
@@ -138,6 +176,11 @@ export default defineComponent({
       introSteps,
       introOptions,
       startTutorial
+      // Retornar também estas propriedades
+      showDeleteDialog,
+      cursoToDelete,
+      confirmDeleteCurso,
+      cancelDeleteCurso
     }
   }
 })
