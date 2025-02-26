@@ -10,6 +10,10 @@ export function useListaCursosLogic() {
   const searchTerm = ref('')
   const statusFilter = ref('')
   const router = useRouter()
+  
+  // Adicionar estas variáveis para o modal de confirmação
+  const showDeleteDialog = ref(false)
+  const cursoToDelete = ref(null)
 
   const toast = ref({
     show: false,
@@ -53,6 +57,10 @@ export function useListaCursosLogic() {
   const loadCursos = async () => {
     try {
       loading.value = true
+      
+      // Limpar o cache antes de buscar novamente
+      cursos.value = []
+      
       const { data, error: supabaseError } = await supabase
         .from('cursos')
         .select(`
@@ -70,7 +78,14 @@ export function useListaCursosLogic() {
         .order('created_at', { ascending: false })
 
       if (supabaseError) throw supabaseError
-      cursos.value = data
+      
+      // Adicionar logs para debug
+      console.log(`Cursos carregados: ${data?.length || 0}`)
+      
+      // Atribuir os dados apenas se houver resposta válida
+      if (data) {
+        cursos.value = data
+      }
     } catch (err) {
       console.error('Error loading courses:', err)
       error.value = 'Erro ao carregar cursos'
@@ -105,23 +120,145 @@ export function useListaCursosLogic() {
     }
   }
 
-  // Adicionar função deletarCurso
+  // Modificar a função deletarCurso para mostrar o modal
   const deletarCurso = async (id) => {
-    try {
-      const { error: deleteError } = await supabase
-        .from('cursos')
-        .delete()
-        .eq('id', id)
+    // Encontrar o curso pelo ID para exibir informações no modal
+    const curso = cursos.value.find(c => c.id === id)
+    if (!curso) return
+    
+    // Armazenar o curso a ser excluído e mostrar o modal
+    cursoToDelete.value = curso
+    showDeleteDialog.value = true
+  }
 
-      if (deleteError) throw deleteError
+  // Modificar a função confirmDeleteCurso para resolver o problema com códigos_aula
+  const confirmDeleteCurso = async () => {
+    if (!cursoToDelete.value) return
+    
+    const id = cursoToDelete.value.id
+    
+    try {
+      loading.value = true
       
-      // Recarregar lista após deletar
-      await loadCursos()
+      // 1. Primeiro verificar se há certificados emitidos
+      const temCertificado = await verificarCertificadosEmitidos(id)
+      if (temCertificado) {
+        showToast('Não é possível excluir um curso que possui certificados emitidos', 'error')
+        showDeleteDialog.value = false
+        return
+      }
+      
+      console.log('Curso ID a ser excluído:', id)
+      
+      // 2. Realizar exclusão direta do código de aula usando DELETE
+      const { data: codigos } = await supabase
+        .from('codigos_aula')
+        .select('id')
+        .eq('curso_id', id)
+      
+      console.log('Códigos a excluir:', codigos?.length || 0)
+      
+      if (codigos && codigos.length > 0) {
+        // Vamos tentar uma abordagem direta via DELETE em vez de RPC
+        try {
+          const { error: deleteCodigosError } = await supabase
+            .from('codigos_aula')
+            .delete()
+            .eq('curso_id', id)
+            
+          if (deleteCodigosError) {
+            console.error('Erro ao excluir códigos via DELETE:', deleteCodigosError)
+          }
+        } catch (err) {
+          console.error('Exceção ao excluir códigos:', err)
+        }
+      }
+      
+      // 3. Excluir outras relações
+      await Promise.all([
+        // Avaliações de reação
+        supabase.from('avaliacoes_reacao').delete().eq('curso_id', id),
+        
+        // Certificados pendentes
+        supabase.from('certificados').delete().eq('curso_id', id).neq('status', 'emitido'),
+        
+        // Lista de presença
+        supabase.from('lista_presenca').delete().eq('curso_id', id),
+        
+        // Matrículas
+        supabase.from('matriculas').delete().eq('curso_id', id),
+        
+        // Módulos
+        supabase.from('modulos').delete().eq('curso_id', id)
+      ])
+      
+      // 4. Verificação final e exclusão do curso
+      try {
+        // Tenta excluir o curso
+        const { error: cursoError } = await supabase
+          .from('cursos')
+          .delete()
+          .eq('id', id)
+        
+        if (cursoError) {
+          console.error('Erro ao excluir curso:', cursoError)
+          throw cursoError
+        }
+        
+        // 5. Verificar se o curso ainda existe (confirmação explícita)
+        const { data: cursoVerificacao } = await supabase
+          .from('cursos')
+          .select('id')
+          .eq('id', id)
+          .single()
+        
+        if (cursoVerificacao) {
+          throw new Error('O curso não foi excluído completamente. Tente novamente.')
+        }
+      } catch (err) {
+        // Se houver erro na exclusão normal, tente uma abordagem mais direta
+        console.error('Erro na exclusão do curso, tentando SQL direto:', err)
+        
+        try {
+          // Execute SQL direto como último recurso
+          await supabase.rpc('excluir_curso_completo', { 
+            curso_id_param: id
+          })
+          
+          // Verificação final
+          const { data: cursoFinal } = await supabase
+            .from('cursos')
+            .select('id')
+            .eq('id', id)
+            .single()
+          
+          if (cursoFinal) {
+            throw new Error('Não foi possível excluir o curso mesmo após tentativa direta.')
+          }
+        } catch (finalErr) {
+          console.error('Erro final na exclusão:', finalErr)
+          throw finalErr
+        }
+      }
+      
+      // 6. Recarregar lista após deletar - implementando um mecanismo mais robusto
+      cursos.value = cursos.value.filter(c => c.id !== id) // Remover localmente primeiro
+      await loadCursos() // Depois atualiza do servidor
       showToast('Curso excluído com sucesso')
     } catch (err) {
       console.error('Erro ao excluir curso:', err)
-      showToast('Erro ao excluir curso', 'error')
+      showToast(`Erro ao excluir curso: ${err.message || 'Tente novamente mais tarde'}`, 'error')
+    } finally {
+      loading.value = false
+      showDeleteDialog.value = false
+      cursoToDelete.value = null
     }
+  }
+  
+  // Adicionar função para cancelar a exclusão
+  const cancelDeleteCurso = () => {
+    showDeleteDialog.value = false
+    cursoToDelete.value = null
   }
 
   // Adicionar função editarCurso
@@ -173,6 +310,11 @@ export function useListaCursosLogic() {
     formatDate,
     sanitizeHTML,
     toast,
-    showToast
+    showToast,
+    // Adicionar as novas variáveis e funções ao retorno
+    showDeleteDialog,
+    cursoToDelete,
+    confirmDeleteCurso,
+    cancelDeleteCurso
   }
 }

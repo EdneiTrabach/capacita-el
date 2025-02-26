@@ -4,9 +4,18 @@ import { supabase } from '@/config/supabase'
 import { sanitizeHTML } from '@/utils/sanitize'
 import { useUsuarios } from '../composables/useUsuarios'
 import { useFilters } from '../composables/useFilters'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
+
+// Adicione o ícone à biblioteca
+library.add(faTriangleExclamation)
 
 export default {
   name: 'ListaUsuarios',
+  components: {
+    FontAwesomeIcon
+  },
   setup() {
     const router = useRouter()
     
@@ -22,6 +31,9 @@ export default {
       estado: '',
       setor: ''
     })
+
+    const showDeleteDialog = ref(false)
+    const userToDelete = ref(null)
 
     // No início do setup()
     const estados = [
@@ -99,21 +111,55 @@ export default {
       const usuario = usuarios.value.find(u => u.id === id)
       if (!usuario) return
 
-      if (confirm(`Deseja realmente excluir o usuário ${usuario.nome}?\nEsta ação não poderá ser desfeita.`)) {
-        try {
-          const { error } = await supabase
-            .from('usuarios')
-            .delete()
-            .eq('id', id)
+      // Primeiro, verificar se o usuário tem matrículas
+      try {
+        const { data: matriculas, error: matriculasError } = await supabase
+          .from('matriculas')
+          .select('id')
+          .eq('aluno_id', id)
+        
+        if (matriculasError) throw matriculasError
 
-          if (error) throw error
-          
-          await loadUsuarios()
-          showToast('Usuário excluído com sucesso!')
-        } catch (error) {
-          console.error('Erro ao excluir usuário:', error)
-          showToast('Erro ao excluir usuário', 'error')
+        if (matriculas?.length > 0) {
+          showToast(
+            'Não é possível excluir um usuário que possui matrículas. Remova primeiro as matrículas do usuário.',
+            'error'
+          )
+          return
         }
+
+        // Se não tiver matrículas, mostra o diálogo de confirmação
+        userToDelete.value = usuario
+        showDeleteDialog.value = true
+
+      } catch (error) {
+        console.error('Erro ao verificar matrículas:', error)
+        showToast('Erro ao verificar matrículas do usuário', 'error')
+      }
+    }
+
+    const confirmDelete = async () => {
+      if (!userToDelete.value) return
+
+      try {
+        const { error } = await supabase
+          .from('usuarios')
+          .delete()
+          .eq('id', userToDelete.value.id)
+
+        if (error) throw error
+        
+        usuarios.value = usuarios.value.filter(u => u.id !== userToDelete.value.id)
+        showToast('Usuário excluído com sucesso!', 'success')
+        showDeleteDialog.value = false
+      } catch (error) {
+        console.error('Erro ao excluir usuário:', error)
+        showToast(
+          'Não foi possível excluir o usuário. Verifique se não existem dados vinculados.',
+          'error'
+        )
+      } finally {
+        userToDelete.value = null
       }
     }
 
@@ -243,6 +289,8 @@ export default {
       estados,
       setoresUnicos,
       usuariosFiltrados,
+      showDeleteDialog,
+      userToDelete,
 
       // Métodos
       editarUsuario,
@@ -251,6 +299,7 @@ export default {
       loadUsuarios,
       loadSetores,
       deletarUsuario,
+      confirmDelete,
       formatDate,
       getInitials,
       sanitizeHTML,

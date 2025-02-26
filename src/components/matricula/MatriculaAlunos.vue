@@ -64,6 +64,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Matrícula Dialog -->
+    <div v-if="showDeleteMatriculaDialog" class="modal-overlay">
+      <div class="delete-dialog">
+        <h2>Confirmar Remoção de Matrícula</h2>
+        
+        <div class="dialog-content">
+          <font-awesome-icon 
+            :icon="['fas', 'triangle-exclamation']" 
+            class="warning-icon"
+          />
+          <p>Tem certeza que deseja remover a matrícula de <strong>{{ matriculaToDelete?.aluno?.nome }}</strong>?</p>
+          <p class="warning-text">Esta ação não poderá ser desfeita.</p>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="button" @click="showDeleteMatriculaDialog = false" class="btn-cancelar">
+            <img src="/icons/fechar.svg" alt="Cancelar" class="icon"/>
+            Cancelar
+          </button>
+          <button 
+            @click="confirmRemoverMatricula" 
+            class="btn-deletar"
+          >
+            <img src="/public/icons/lixeira.svg" alt="Excluir" class="icon"/>
+            Remover
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -83,6 +113,9 @@ const {
   success,
   toggleAluno,
   matricularAlunos,
-  removerMatricula
+  removerMatricula,
+  showDeleteMatriculaDialog,
+  matriculaToDelete,
+  confirmRemoverMatricula
 } = useMatriculaAlunos()
 </script>
