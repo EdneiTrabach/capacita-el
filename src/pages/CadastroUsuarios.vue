@@ -851,7 +851,7 @@ const loadUsuario = async (id) => {
   padding: 2rem;
   background-color: #f8f9fa;
   min-height: 100vh;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 .cadastro-card {
@@ -933,7 +933,7 @@ input, select {
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: border-color 0.3s ease;
 }
 
@@ -962,7 +962,7 @@ button {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1063,7 +1063,7 @@ button {
   padding: 0.75rem;
   border: 1px solid #e0e4e8;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: #193155;
   transition: all 0.3s ease;
 }
@@ -1087,7 +1087,7 @@ button {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;

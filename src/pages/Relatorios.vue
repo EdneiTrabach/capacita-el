@@ -560,7 +560,7 @@ const handleError = (error: any, message: string) => {
   padding: 2rem;
   background-color: var(--bg-secondary);
   min-height: 100vh;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 .relatorios-header {
@@ -665,7 +665,7 @@ const handleError = (error: any, message: string) => {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
   width: 100%;

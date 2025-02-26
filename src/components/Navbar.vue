@@ -300,7 +300,7 @@ onMounted(() => {
   border: none;
   color: white;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -364,7 +364,7 @@ onMounted(() => {
   border: none;
   color: white;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;

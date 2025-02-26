@@ -495,7 +495,7 @@ export default {
   padding: 2rem;
   background-color: #f8f9fa;
   min-height: 100vh;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
 }
@@ -537,7 +537,7 @@ export default {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
 }
@@ -563,7 +563,7 @@ export default {
   padding: 0.75rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: var(--text-primary);
   background-color: var(--input-bg);
   transition: all 0.3s ease;
@@ -685,7 +685,7 @@ export default {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
   display: flex;
@@ -844,7 +844,7 @@ export default {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;

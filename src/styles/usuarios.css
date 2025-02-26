@@ -14,7 +14,7 @@
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   min-height: 100vh;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 .usuarios-header {
@@ -50,7 +50,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
 }
@@ -79,7 +79,7 @@
   color: var(--input-text);
   border: 1px solid var(--input-border);
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -218,7 +218,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
   display: flex;
@@ -263,7 +263,7 @@
   border: 1px solid #dee2e6;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   background-color: var(--button-secondary-bg);
   color: var(--button-secondary-text);
   transition: all 0.3s ease;
@@ -383,7 +383,7 @@
   padding: 2rem;
   background-color: #f8f9fa;
   min-height: 100vh;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 .certificados-header {
@@ -414,7 +414,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
 }
@@ -441,7 +441,7 @@
   padding: 0.75rem;
   border: 1px solid #e0e4e8;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: var(--input-text);
   transition: all 0.3s ease;
 }
@@ -513,7 +513,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
   width: 56px;
 }
@@ -671,7 +671,7 @@
   padding: 0.75rem 2.5rem;
   border: 1px solid #e0e4e8;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: #193155;
   transition: all 0.3s ease;
 }
@@ -696,7 +696,7 @@
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;

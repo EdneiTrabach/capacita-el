@@ -830,7 +830,7 @@ select:focus {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -845,7 +845,7 @@ select:focus {
   padding: 2rem;
   background-color: var(--bg-secondary);
   min-height: 100vh;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: var(--text-primary);
 }
 
@@ -1531,7 +1531,7 @@ input[type="date"] {
   padding-left: 2.5rem;
   border: 1px solid #e0e4e8;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: var(--text-primary-dark);
   transition: all 0.3s ease;
 }
@@ -1546,7 +1546,7 @@ select {
   padding-right: 2rem;
   border: 1px solid #e0e4e8;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: #193155;
   appearance: none;
   background: white;

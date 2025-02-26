@@ -165,7 +165,7 @@ const showToast = (message: string, type: string) => {
   min-height: 100vh;
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
   padding: 1rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 .reset-card {
@@ -224,7 +224,7 @@ input {
   padding-left: 3rem;
   border: 2px solid #e9ecef;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -278,7 +278,7 @@ input.error {
   color: white;
   border: none;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -301,7 +301,7 @@ input.error {
   color: white;
   border: none;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;

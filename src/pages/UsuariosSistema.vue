@@ -140,7 +140,7 @@ button {
   margin-right: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 .btn-danger {

@@ -183,7 +183,7 @@ export default {
   padding: 2rem;
   background-color: var(--bg-secondary);
   min-height: 100vh;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 .home-header {

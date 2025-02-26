@@ -183,7 +183,7 @@ h1 {
   padding: 1.5rem 2rem;
   background: linear-gradient(135deg, #193155 0%, #254677 100%);
   border-radius: 12px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* Filtros */
@@ -200,7 +200,7 @@ h1 {
 label {
   color: #193155;
   font-weight: 500;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 input[type="date"],
@@ -208,7 +208,7 @@ select {
   padding: 0.75rem;
   border: 1px solid #e0e4e8;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: #193155;
   background: #f8f9fa;
   transition: all 0.3s ease;
@@ -242,7 +242,7 @@ th {
   font-size: 0.875rem;
   padding: 1rem;
   text-align: left;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 td {
@@ -263,7 +263,7 @@ tr:hover {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -306,7 +306,7 @@ tr:hover {
   color: #193155;
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 .btn-close {
@@ -317,7 +317,7 @@ tr:hover {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
   width: 100%;
 }
@@ -331,14 +331,14 @@ tr:hover {
   padding: 2rem;
   text-align: center;
   color: #193155;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 pre {
   background: #f8f9fa;
   padding: 1rem;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: #193155;
   overflow-x: auto;
 }

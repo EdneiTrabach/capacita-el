@@ -129,7 +129,7 @@ nav a:first-of-type {
 }
 
 #app {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 body {

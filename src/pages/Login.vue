@@ -384,7 +384,7 @@ const handleResetPassword = async () => {
   padding: 0.75rem;
   border: none;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -459,7 +459,7 @@ input {
   padding-left: 3rem;
   border: 2px solid #e9ecef;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
   background: white;
   color: black;
@@ -544,7 +544,7 @@ input.error {
   width: 100%;
   height: 100%;
   color: #00ff00;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-size: 1.5rem;
   text-shadow: 0 0 5px #00ff00;
   animation: matrixRain 2s linear infinite;
@@ -774,7 +774,7 @@ input {
   padding-left: 3rem;
   border: 2px solid #e9ecef;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -802,7 +802,7 @@ input:focus {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;

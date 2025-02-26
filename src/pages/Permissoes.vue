@@ -208,7 +208,7 @@ select {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.2s ease;
   width: 100%;
   margin-top: 1rem;

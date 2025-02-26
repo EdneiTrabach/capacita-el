@@ -10,7 +10,7 @@
   padding: 0.75rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   color: var(--text-color);
   background-color: var(--input-bg);
   transition: all 0.3s ease;

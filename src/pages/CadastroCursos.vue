@@ -391,7 +391,7 @@ const tutorialOptions = {
   padding: 2rem;
   background-color: #f8f9fa;
   min-height: 100vh;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
 }
 
 .cadastro-card {
@@ -467,7 +467,7 @@ input, textarea, select {
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -538,7 +538,7 @@ textarea {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
   margin-top: 1rem;
 }
@@ -577,7 +577,7 @@ textarea {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
