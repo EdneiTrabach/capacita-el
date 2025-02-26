@@ -27,7 +27,8 @@ export const presencaService = {
 
       // Se já existe um código válido, retorna o QR code correspondente
       if (codigoExistente && new Date(codigoExistente.validade) > agora) {
-        const urlPresenca = `https://registro-presenca.vercel.app/presenca/${codigoExistente.codigo}`
+        const baseUrl = window.location.origin
+        const urlPresenca = `https://registro-presenca-itilh.vercel.app/presenca/${codigoExistente.codigo}`
         return await QRCode.toDataURL(urlPresenca)
       }
       
@@ -67,7 +68,8 @@ export const presencaService = {
       }
 
       // Gera e retorna o QR code
-      const urlPresenca = `https://registro-presenca.vercel.app/presenca/${codigoAula}`
+      const baseUrl = window.location.origin
+      const urlPresenca = `https://registro-presenca-itilh.vercel.app/presenca/${codigoAula}`
       return await QRCode.toDataURL(urlPresenca)
     } catch (error) {
       console.error('Erro ao gerar código da aula:', error)
