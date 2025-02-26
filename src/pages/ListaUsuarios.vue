@@ -482,7 +482,7 @@ export default {
         handleEditSubmit,
         closeEditModal,
         introSteps,
-        introOptions
+        introOptions,
         showDeleteDialog,
         userToDelete,
         confirmDelete

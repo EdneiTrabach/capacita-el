@@ -79,24 +79,46 @@
         <div class="card-action">Acessar →</div>
       </div>
 
-      <div class="nav-card info-card">
+      <div class="nav-card info-card" @click="handleInfoCardClick">
         <div class="card-icon">
           <img src="/public/icons/informacao.svg" alt="Info" class="icon-home" />
         </div>
         <h2 class="about">Sobre o Sistema</h2>
         <p>Sistema desenvolvido por Ednei Trabach and Gilcimar Schunk</p>
         <p class="version">Versão 1.0</p>
+        <p v-if="clickCount > 0 && clickCount < 5" class="easter-hint">{{ 5 - clickCount }} cliques para surpresa...</p>
       </div>
 
+    </div>
+    
+    <!-- Easter Egg Modal -->
+    <div v-if="showEasterEgg" class="easter-egg-overlay" @click.self="closeEasterEgg">
+      <div class="easter-egg-modal">
+        <button class="close-btn" @click="closeEasterEgg">×</button>
+        <h2>🎮 Easter Egg Encontrado! 🎮</h2>
+        <easter-egg-game @game-complete="handleGameComplete" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { supabase } from '../config/supabase'
+import EasterEggGame from '../components/EasterEggGame.vue'
 
 export default {
   name: 'Home',
+  components: {
+    EasterEggGame
+  },
+  data() {
+    return {
+      clickCount: 0,
+      clickTimer: null,
+      showEasterEgg: false,
+      easterEggUnlocked: false
+    }
+  },
   methods: {
     async handleLogout() {
       try {
@@ -112,7 +134,40 @@ export default {
         console.error('Erro ao sair:', error)
         alert('Erro ao sair do sistema. Tente novamente.')
       }
+    },
+    handleInfoCardClick() {
+      clearTimeout(this.clickTimer);
+      this.clickCount++;
+      
+      // Se atingir 5 cliques, ativa o Easter Egg
+      if (this.clickCount === 5) {
+        this.activateEasterEgg();
+      }
+      
+      // Reset do contador após 3 segundos sem cliques
+      this.clickTimer = setTimeout(() => {
+        this.clickCount = 0;
+      }, 3000);
+    },
+    activateEasterEgg() {
+      this.showEasterEgg = true;
+      this.easterEggUnlocked = true;
+      this.clickCount = 0;
+      
+      // Salvar no localStorage que o usuário já descobriu o easter egg
+      localStorage.setItem('easterEggFound', 'true');
+    },
+    closeEasterEgg() {
+      this.showEasterEgg = false;
+    },
+    handleGameComplete(score) {
+      alert(`Parabéns! Você completou o mini-jogo com pontuação: ${score}`);
+      this.closeEasterEgg();
     }
+  },
+  mounted() {
+    // Verificar se o Easter Egg já foi encontrado anteriormente
+    this.easterEggUnlocked = localStorage.getItem('easterEggFound') === 'true';
   }
 }
 </script>
@@ -297,6 +352,55 @@ h2.about {
 .version {
   font-size: 0.8rem;
   margin-top: 0.5rem;
+}
+
+.easter-egg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.easter-egg-modal {
+  background: linear-gradient(135deg, #192231, #24344d);
+  padding: 2rem;
+  border-radius: 15px;
+  max-width: 90%;
+  width: 500px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.easter-hint {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.easter-egg-modal h2 {
+  text-align: center;
+  color: #2196f3;
+  margin-bottom: 1.5rem;
 }
 
 @media (max-width: 768px) {
