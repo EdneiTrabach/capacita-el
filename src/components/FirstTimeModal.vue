@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isVisible" class="modal-overlay">
+  <div v-if="shouldShowModal" class="modal-overlay">
     <div class="modal-container" ref="modalContent">
       <div class="modal-header">
         <h2>Bem-vindo ao Sistema de Gestão de Treinamentos</h2>
@@ -37,11 +37,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { supabase } from '@/config/supabase';
 
 const isVisible = ref(false);
 const dontShowAgain = ref(false);
 const modalContent = ref<HTMLElement | null>(null);
+const route = useRoute();
+
+// Verifica se o usuário está autenticado
+const isAuthenticated = computed(() => {
+  return !!supabase.auth.getSession();
+});
+
+// Verifica se é uma rota de autenticação (login)
+const isAuthRoute = computed(() => {
+  return route.path === '/login' || !!route.meta.isAuthRoute;
+});
+
+// Computed property para controlar se o modal deve ser exibido
+const shouldShowModal = computed(() => {
+  return isVisible.value && isAuthenticated.value && !isAuthRoute.value;
+});
 
 // Verifica se o modal já foi visto antes
 const checkFirstTimeVisit = (): boolean => {
@@ -63,16 +81,33 @@ const handleOutsideClick = (event: MouseEvent) => {
 };
 
 onMounted(() => {
-  // Verifica se é a primeira visita
-  isVisible.value = checkFirstTimeVisit();
+  // Verifica se é a primeira visita E se o usuário está autenticado E não está na página de login
+  if (checkFirstTimeVisit() && isAuthenticated.value && !isAuthRoute.value) {
+    isVisible.value = true;
+  }
   
   // Adiciona o event listener para detectar cliques fora do modal
   document.addEventListener('mousedown', handleOutsideClick);
   
   // Impede scroll quando o modal está aberto
-  if (isVisible.value) {
+  if (shouldShowModal.value) {
     document.body.style.overflow = 'hidden';
   }
+  
+  // Monitora mudanças no estado de autenticação
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN' && checkFirstTimeVisit()) {
+      // Pequeno timeout para garantir que a navegação termine antes de mostrar o modal
+      setTimeout(() => {
+        if (!isAuthRoute.value) {
+          isVisible.value = true;
+        }
+      }, 500);
+    } else if (event === 'SIGNED_OUT') {
+      // Esconder o modal quando o usuário sair
+      isVisible.value = false;
+    }
+  });
 });
 
 // Remove o event listener quando o componente é desmontado
@@ -83,13 +118,23 @@ onMounted(() => {
 });
 
 // Restaura o scroll quando o modal é fechado
-watch(isVisible, (newValue) => {
+watch(shouldShowModal, (newValue) => {
   if (newValue) {
     document.body.style.overflow = 'hidden';
   } else {
     document.body.style.overflow = 'auto';
   }
 });
+
+// Monitora mudanças na rota para esconder o modal em rotas de autenticação
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath === '/login' || route.meta.isAuthRoute) {
+      isVisible.value = false;
+    }
+  }
+);
 </script>
 
 <style scoped>
