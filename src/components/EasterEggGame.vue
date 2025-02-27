@@ -5,23 +5,33 @@
       <div class="time">Tempo: {{ timeLeft }}s</div>
     </div>
 
-    <div class="game-area" ref="gameArea" @mousemove="movePlayer" @click="collectItem">
-      <div class="player" :style="playerStyle"></div>
-      
+    <div class="game-area" ref="gameArea" tabindex="0" @keydown="handleKeyPress">
+      <!-- Cobra (cabeça e segmentos do corpo) -->
       <div 
-        v-for="(item, index) in items" 
-        :key="index" 
-        class="item" 
+        v-for="(segment, index) in snake" 
+        :key="'snake-'+index" 
+        class="snake-segment"
         :style="{
-          left: item.x + 'px',
-          top: item.y + 'px',
-          backgroundColor: item.color
+          left: segment.x + 'px',
+          top: segment.y + 'px',
+          backgroundColor: index === 0 ? '#2196F3' : '#4CAF50'
+        }"
+      ></div>
+      
+      <!-- Comida -->
+      <div 
+        class="food" 
+        :style="{
+          left: food.x + 'px',
+          top: food.y + 'px',
+          backgroundColor: food.color
         }"
       ></div>
       
       <div class="instructions" v-if="!gameStarted">
-        <h3>Coletador de Códigos</h3>
-        <p>Clique nos quadrados coloridos para coletar pontos!</p>
+        <h3>Snake Game</h3>
+        <p>Use as setas direcionais para mover a cobrinha.</p>
+        <p>Colete os blocos coloridos para crescer e ganhar pontos!</p>
         <button @click="startGame" class="start-btn">Iniciar Jogo</button>
       </div>
       
@@ -36,29 +46,24 @@
 
 <script>
 export default {
-  name: 'EasterEggGame',
+  name: 'SnakeGame',
   emits: ['game-complete'],
   data() {
     return {
       score: 0,
-      timeLeft: 30,
+      timeLeft: 60,
       timer: null,
+      gameTimer: null,
       gameStarted: false,
       gameOver: false,
-      playerX: 0,
-      playerY: 0,
-      items: [],
+      direction: 'right', // 'up', 'down', 'left', 'right'
+      nextDirection: 'right',
+      snake: [], // array de segmentos {x, y}
+      food: { x: 0, y: 0, color: '#FF5252' },
       gameAreaWidth: 0,
       gameAreaHeight: 0,
-      colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0']
-    }
-  },
-  computed: {
-    playerStyle() {
-      return {
-        left: this.playerX + 'px',
-        top: this.playerY + 'px'
-      }
+      gridSize: 20, // tamanho de cada segmento/bloco
+      colors: ['#FF5252', '#FFC107', '#9C27B0', '#E91E63', '#F44336']
     }
   },
   methods: {
@@ -66,82 +71,168 @@ export default {
       this.gameStarted = true;
       this.gameOver = false;
       this.score = 0;
-      this.timeLeft = 30;
-      this.spawnItems();
+      this.timeLeft = 60;
+      this.direction = 'right';
+      this.nextDirection = 'right';
       
+      // Inicializa a cobra com 3 segmentos
+      const startX = Math.floor(this.gameAreaWidth / (2 * this.gridSize)) * this.gridSize;
+      const startY = Math.floor(this.gameAreaHeight / (2 * this.gridSize)) * this.gridSize;
+      
+      this.snake = [
+        { x: startX, y: startY },             // Cabeça
+        { x: startX - this.gridSize, y: startY },  // Corpo
+        { x: startX - this.gridSize * 2, y: startY }   // Cauda
+      ];
+      
+      // Gerar comida inicial
+      this.spawnFood();
+      
+      // Iniciar temporizadores
       this.timer = setInterval(() => {
         this.timeLeft--;
         if (this.timeLeft <= 0) {
           this.endGame();
         }
       }, 1000);
+      
+      // Velocidade do jogo (movimento da cobra)
+      this.gameTimer = setInterval(() => {
+        this.moveSnake();
+      }, 150); // velocidade inicial: 150ms
+
+      // Dar foco ao elemento de jogo para capturar eventos de teclado
+      this.$nextTick(() => {
+        this.$refs.gameArea.focus();
+      });
     },
     
     resetGame() {
-      this.items = [];
+      this.clearTimers();
       this.startGame();
     },
     
     endGame() {
-      clearInterval(this.timer);
+      this.clearTimers();
       this.gameOver = true;
       this.gameStarted = false;
       this.$emit('game-complete', this.score);
     },
     
-    spawnItems() {
-      // Limpa os itens existentes
-      this.items = [];
-      
-      // Cria 8 itens aleatórios
-      for (let i = 0; i < 8; i++) {
-        this.createRandomItem();
-      }
+    clearTimers() {
+      if (this.timer) clearInterval(this.timer);
+      if (this.gameTimer) clearInterval(this.gameTimer);
     },
     
-    createRandomItem() {
-      const padding = 30; // Espaço da borda
-      const x = Math.random() * (this.gameAreaWidth - 2 * padding) + padding;
-      const y = Math.random() * (this.gameAreaHeight - 2 * padding) + padding;
-      const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+    spawnFood() {
+      // Gera comida em uma posição aleatória alinhada à grade
+      const maxX = Math.floor(this.gameAreaWidth / this.gridSize) - 1;
+      const maxY = Math.floor(this.gameAreaHeight / this.gridSize) - 1;
       
-      this.items.push({ x, y, color });
-    },
-    
-    movePlayer(e) {
-      if (!this.gameStarted || this.gameOver) return;
+      let newX, newY;
+      let validPosition = false;
       
-      const rect = this.$refs.gameArea.getBoundingClientRect();
-      this.playerX = e.clientX - rect.left - 15; // 15 é metade do tamanho do jogador
-      this.playerY = e.clientY - rect.top - 15;
-    },
-    
-    collectItem(e) {
-      if (!this.gameStarted || this.gameOver) return;
-      
-      const rect = this.$refs.gameArea.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const clickY = e.clientY - rect.top;
-      
-      // Verificar se clicou em algum item
-      for (let i = this.items.length - 1; i >= 0; i--) {
-        const item = this.items[i];
-        const distance = Math.sqrt(
-          Math.pow(clickX - (item.x + 10), 2) + 
-          Math.pow(clickY - (item.y + 10), 2)
-        );
+      // Garante que a comida não apareça sobre a cobra
+      while (!validPosition) {
+        newX = Math.floor(Math.random() * maxX) * this.gridSize;
+        newY = Math.floor(Math.random() * maxY) * this.gridSize;
         
-        if (distance < 20) {
-          // Item coletado
-          this.score += 10;
-          this.items.splice(i, 1);
-          this.createRandomItem();
-          
-          // Adiciona tempo extra
-          this.timeLeft = Math.min(this.timeLeft + 2, 30);
-          
+        validPosition = !this.snake.some(segment => 
+          segment.x === newX && segment.y === newY
+        );
+      }
+      
+      const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+      this.food = { x: newX, y: newY, color };
+    },
+    
+    handleKeyPress(e) {
+      if (!this.gameStarted || this.gameOver) return;
+      
+      // Prevenir que a cobra faça 180° imediatamente
+      switch (e.key) {
+        case 'ArrowUp':
+          if (this.direction !== 'down') this.nextDirection = 'up';
           break;
+        case 'ArrowDown':
+          if (this.direction !== 'up') this.nextDirection = 'down';
+          break;
+        case 'ArrowLeft':
+          if (this.direction !== 'right') this.nextDirection = 'left';
+          break;
+        case 'ArrowRight':
+          if (this.direction !== 'left') this.nextDirection = 'right';
+          break;
+      }
+      
+      e.preventDefault(); // Previne a rolagem da página com as teclas de seta
+    },
+    
+    moveSnake() {
+      if (!this.gameStarted || this.gameOver) return;
+      
+      // Atualiza a direção atual com a próxima direção
+      this.direction = this.nextDirection;
+      
+      // Posição atual da cabeça
+      const head = { ...this.snake[0] };
+      
+      // Calcula nova posição baseada na direção
+      switch (this.direction) {
+        case 'up':
+          head.y -= this.gridSize;
+          break;
+        case 'down':
+          head.y += this.gridSize;
+          break;
+        case 'left':
+          head.x -= this.gridSize;
+          break;
+        case 'right':
+          head.x += this.gridSize;
+          break;
+      }
+      
+      // Verificar colisão com parede
+      if (
+        head.x < 0 || 
+        head.y < 0 || 
+        head.x >= this.gameAreaWidth || 
+        head.y >= this.gameAreaHeight
+      ) {
+        this.endGame();
+        return;
+      }
+      
+      // Verificar colisão com o próprio corpo
+      if (this.snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+        this.endGame();
+        return;
+      }
+      
+      // Adiciona nova cabeça
+      this.snake.unshift(head);
+      
+      // Verificar se comeu a comida
+      if (head.x === this.food.x && head.y === this.food.y) {
+        // Incrementa score e spawna nova comida
+        this.score += 10;
+        this.spawnFood();
+        
+        // Adiciona tempo extra
+        this.timeLeft = Math.min(this.timeLeft + 5, 60);
+        
+        // Aumenta a velocidade a cada 50 pontos
+        if (this.score % 50 === 0) {
+          clearInterval(this.gameTimer);
+          const newSpeed = Math.max(50, 150 - Math.floor(this.score / 50) * 10);
+          this.gameTimer = setInterval(() => {
+            this.moveSnake();
+          }, newSpeed);
         }
+      } else {
+        // Remove a cauda se não comeu comida
+        this.snake.pop();
       }
     }
   },
@@ -152,16 +243,14 @@ export default {
         this.gameAreaWidth = this.$refs.gameArea.clientWidth;
         this.gameAreaHeight = this.$refs.gameArea.clientHeight;
         
-        // Posiciona o player no centro inicialmente
-        this.playerX = this.gameAreaWidth / 2 - 15;
-        this.playerY = this.gameAreaHeight / 2 - 15;
+        // Ajustar dimensões para grid perfeito
+        this.gameAreaWidth = Math.floor(this.gameAreaWidth / this.gridSize) * this.gridSize;
+        this.gameAreaHeight = Math.floor(this.gameAreaHeight / this.gridSize) * this.gridSize;
       }
     });
   },
   beforeUnmount() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
+    this.clearTimers();
   }
 }
 </script>
@@ -189,32 +278,30 @@ export default {
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   overflow: hidden;
-  cursor: crosshair;
+  outline: none; /* remove o contorno de foco */
 }
 
-.player {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background-color: white;
-  border: 2px solid #2196F3;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 10;
-  box-shadow: 0 0 10px rgba(33, 150, 243, 0.8);
-}
-
-.item {
+.snake-segment {
   position: absolute;
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  transition: transform 0.2s;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
-.item:hover {
-  transform: scale(1.2);
+.food {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 .instructions, .game-over {
