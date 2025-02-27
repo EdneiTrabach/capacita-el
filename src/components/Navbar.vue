@@ -315,6 +315,7 @@ onMounted(() => {
   transition: opacity 0.3s ease;
   overflow: hidden;
   text-overflow: ellipsis; /* Adiciona "..." quando o texto é muito longo */
+  font-size: 15px;
 }
 
 .collapsed .link-text {

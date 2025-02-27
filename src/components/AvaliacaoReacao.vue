@@ -234,7 +234,7 @@ textarea {
   border: 1px solid #e0e4e8;
   border-radius: 8px;
   resize: vertical;
-  font-family: jetbrains mono;
+  font-family: 'Roboto', sans-serif;
 }
 
 .form-actions {

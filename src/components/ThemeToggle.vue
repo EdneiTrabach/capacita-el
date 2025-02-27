@@ -34,7 +34,7 @@ const { isDark, toggleTheme } = useTheme()
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  font-family: jetbrains-mono, monospace;
+  font-family: 'Roboto', sans-serif;
   width: auto;
   gap: 1rem;
 }
@@ -49,7 +49,7 @@ const { isDark, toggleTheme } = useTheme()
 }
 
 .button-text {
-  font-size: 1rem;
+  font-size: 15px;
   color: var(--text-color);
   white-space: nowrap;
   overflow: hidden;
