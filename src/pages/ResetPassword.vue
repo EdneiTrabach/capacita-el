@@ -75,8 +75,30 @@ const toast = ref({
   type: 'success'
 })
 
+// Implementação de um rate limiter simples no frontend
+const lastAttempt = ref(0)
+const attemptsCount = ref(0)
+const maxAttempts = 3 // Máximo de 3 tentativas
+const cooldownPeriod = 60000 // 1 minuto em milissegundos
+
 const handleResetPassword = async () => {
   try {
+    // Verificar se o usuário atingiu o limite de tentativas
+    const now = Date.now()
+    if (now - lastAttempt.value < cooldownPeriod && attemptsCount.value >= maxAttempts) {
+      showToast('Muitas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.', 'error')
+      return
+    }
+
+    // Se passou o período de cooldown, reiniciar contador
+    if (now - lastAttempt.value > cooldownPeriod) {
+      attemptsCount.value = 0
+    }
+
+    // Incrementar contagem e registrar timestamp
+    attemptsCount.value++
+    lastAttempt.value = now
+
     loading.value = true
     error.value = ''
 
@@ -89,18 +111,25 @@ const handleResetPassword = async () => {
     let accessToken = null
     let type = null
 
-    // Verifica se está usando hash ou query params (para compatibilidade)
-    if (window.location.hash) {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      accessToken = hashParams.get('access_token')
-      type = hashParams.get('type')
-    } else if (window.location.search) {
-      const queryParams = new URLSearchParams(window.location.search)
-      accessToken = queryParams.get('access_token')
-      type = queryParams.get('type')
+    // Extrai os parâmetros diretamente da URL completa
+    const fullUrl = window.location.href
+    console.log('URL completa:', fullUrl)
+
+    // Verifica se contém "access_token=" na URL
+    if (fullUrl.includes('access_token=')) {
+      // Extrai o token usando regex
+      const tokenMatch = fullUrl.match(/access_token=([^&]+)/)
+      if (tokenMatch && tokenMatch[1]) {
+        accessToken = tokenMatch[1]
+      }
+
+      // Extrai o tipo usando regex
+      const typeMatch = fullUrl.match(/type=([^&]+)/)
+      if (typeMatch && typeMatch[1]) {
+        type = typeMatch[1]
+      }
     }
 
-    console.log('Parâmetros da URL:', { hash: window.location.hash, search: window.location.search })
     console.log('Token recuperado:', accessToken)
     console.log('Tipo de operação:', type)
 
@@ -205,8 +234,14 @@ const handleResetPassword = async () => {
 
   } catch (e: any) {
     console.error('Erro detalhado:', e)
-    error.value = 'Erro ao redefinir senha. Por favor, solicite um novo link de recuperação.'
-    showToast('Erro ao redefinir senha: ' + (e.message || 'Erro desconhecido'), 'error')
+
+    if (e.status === 429) {
+      error.value = 'Muitas tentativas de redefinição de senha. Por favor, aguarde alguns minutos antes de tentar novamente.'
+      showToast('Limite de tentativas excedido. Tente novamente mais tarde.', 'error')
+    } else {
+      error.value = 'Erro ao redefinir senha. Por favor, solicite um novo link de recuperação.'
+      showToast('Erro ao redefinir senha: ' + (e.message || 'Erro desconhecido'), 'error')
+    }
   } finally {
     loading.value = false
   }

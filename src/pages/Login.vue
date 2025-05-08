@@ -97,6 +97,7 @@ import { ref, onMounted } from 'vue'
 import { supabase } from '../config/supabase'
 import { useRouter } from 'vue-router'
 import { AuthTokenResponse } from '@supabase/supabase-js'
+import { requestPasswordReset } from '@/utils/passwordReset'
 
 const router = useRouter()
 const email = ref('')
@@ -167,28 +168,28 @@ const handleLogin = async () => {
     error.value = 'Por favor, preencha todos os campos'
     return
   }
-  
+
   try {
     loading.value = true
     error.value = ''
-    
+
     // Verifica conectividade antes
     const isOnline = await checkConnectivity();
     if (!isOnline) {
       throw new Error('Sem conexão com a internet. Verifique sua conexão e tente novamente.');
     }
-    
+
     // Tente conectar-se com o Supabase com timeout
     const authPromise = supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     })
-    
+
     // Adicione um timeout para a requisição
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('Timeout: O servidor não respondeu em tempo hábil')), 10000)
     })
-    
+
     // Race entre a autenticação e o timeout
     const { data: authData, error: authError } = await Promise.race([
       authPromise,
@@ -213,11 +214,11 @@ const handleLogin = async () => {
     const intendedUrl = sessionStorage.getItem('intendedUrl')
     router.push(intendedUrl || '/')
     sessionStorage.removeItem('intendedUrl')
-    
+
     showToast('Login realizado com sucesso!', 'success')
   } catch (e) {
     console.error('Login error:', e)
-    
+
     // Tratamento específico para diferentes erros
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       error.value = 'Erro de conexão com o servidor. Verifique sua conexão com a internet.'
@@ -257,16 +258,15 @@ const handleResetPassword = async () => {
   try {
     loading.value = true
 
-    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.value, {
-      redirectTo: import.meta.env.VITE_SUPABASE_REDIRECT_URL ||
-        'https://cursos-itilh.vercel.app/reset-password'
-    })
+    await requestPasswordReset(
+      resetEmail.value,
+      import.meta.env.VITE_SUPABASE_REDIRECT_URL || 'https://cursos-itilh.vercel.app/reset-password'
+    )
 
-    if (error) throw error
     showForgotModal.value = false
     showToast('Email de recuperação enviado com sucesso!', 'success')
   } catch (err) {
-    const error = err as AuthError
+    const error = err as Error
     showToast('Erro ao enviar email: ' + error.message, 'error')
   } finally {
     loading.value = false
@@ -857,6 +857,4 @@ input:focus {
 .retry-button:hover {
   background-color: #e9ecef;
 }
-
-
 </style>
