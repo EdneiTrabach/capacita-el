@@ -2,7 +2,7 @@
   <div class="reset-container">
     <div class="reset-card">
       <div class="header">
-        <img src="/icons/logo-itilh.svg" alt="Logo ITILH" class="logo" />
+        <img src="/icons/logo.png" alt="Logo ITILH" class="logo" />
         <h1>Redefinir Senha</h1>
       </div>
 
@@ -14,7 +14,7 @@
               :class="{ error: error }" required />
             <button type="button" class="toggle-password" @click="showPassword = !showPassword">
               <span class="toggle-password-icon">
-                {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+                {{ showPassword ? '👁️' : '👁️‍🗨️' }}
               </span>
             </button>
           </div>
@@ -23,8 +23,8 @@
         <div class="form-group">
           <div class="input-container">
             <span class="input-icon">🔒</span>
-            <input :type="showConfirmPassword ? 'text' : 'password'" v-model="confirmPassword" placeholder="Confirmar Senha"
-              :class="{ error: error }" required />
+            <input :type="showConfirmPassword ? 'text' : 'password'" v-model="confirmPassword"
+              placeholder="Confirmar Senha" :class="{ error: error }" required />
             <button type="button" class="toggle-password" @click="showConfirmPassword = !showConfirmPassword">
               <span class="toggle-password-icon">
                 {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
@@ -90,6 +90,10 @@ const handleResetPassword = async () => {
     const accessToken = hashParams.get('access_token')
     const type = hashParams.get('type')
 
+    console.log('Hash params:', window.location.hash)
+    console.log('Access token:', accessToken)
+    console.log('Type:', type)
+
     if (!accessToken || type !== 'recovery') {
       throw new Error('Link de recuperação inválido ou expirado')
     }
@@ -110,20 +114,41 @@ const handleResetPassword = async () => {
     if (updateError) throw updateError
 
     if (user) {
-      // Update the profiles table
-      const { error: profileError } = await supabase
+      // Primeiro verifique se o usuário existe na tabela profiles
+      const { data: profileData, error: fetchError } = await supabase
         .from('profiles')
-        .update({ 
-          updated_at: new Date().toISOString(),
-          last_password_reset: new Date().toISOString()
-        })
+        .select('id')
         .eq('id', user.id)
+        .single()
 
-      if (profileError) throw profileError
+      if (fetchError || !profileData) {
+        console.log('Usuário não encontrado na tabela profiles, criando...')
+        // Crie o perfil se não existir
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            updated_at: new Date().toISOString(),
+            last_password_reset: new Date().toISOString()
+          })
+
+        if (insertError) throw insertError
+      } else {
+        // Atualiza o perfil existente
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            updated_at: new Date().toISOString(),
+            last_password_reset: new Date().toISOString()
+          })
+          .eq('id', user.id)
+
+        if (profileError) throw profileError
+      }
     }
 
     showToast('Senha alterada com sucesso!', 'success')
-    
+
     // Fazer logout para garantir que o usuário não fique logado
     await supabase.auth.signOut()
 
@@ -132,7 +157,7 @@ const handleResetPassword = async () => {
     }, 2000)
 
   } catch (e: any) {
-    console.error('Erro ao redefinir senha:', e)
+    console.error('Erro completo:', e)
     error.value = 'Erro ao redefinir senha. Por favor, solicite um novo link de recuperação.'
     showToast('Erro ao redefinir senha', 'error')
   } finally {
