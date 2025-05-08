@@ -79,15 +79,6 @@
         <div class="card-action">Acessar →</div>
       </div>
 
-      <div class="nav-card" @click="$router.push('/usuarios-sistema')">
-        <div class="card-icon">
-          <img src="/public/icons/usuario-sistema.svg" alt="Usuários do Sistema" class="icon-home" />
-        </div>
-        <h2>Usuários do Sistema</h2>
-        <p>Gerenciar acessos e enviar links para redefinição de senha</p>
-        <div class="card-action">Acessar →</div>
-      </div>
-
       <div class="nav-card info-card" @click="handleInfoCardClick">
         <div class="card-icon">
           <img src="/public/icons/informacao.svg" alt="Info" class="icon-home" />

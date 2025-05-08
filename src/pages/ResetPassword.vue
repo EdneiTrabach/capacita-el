@@ -13,9 +13,8 @@
             <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Nova Senha"
               :class="{ error: error }" required />
             <button type="button" class="toggle-password" @click="showPassword = !showPassword">
-              <span class="toggle-password-icon">
-                {{ showPassword ? '👁️' : '👁️‍🗨️' }}
-              </span>
+              <img :src="showPassword ? '/icons/eye-off.svg' : '/icons/eye.svg'" alt="Mostrar/Ocultar senha"
+                class="icon-toggle" />
             </button>
           </div>
         </div>
@@ -26,9 +25,8 @@
             <input :type="showConfirmPassword ? 'text' : 'password'" v-model="confirmPassword"
               placeholder="Confirmar Senha" :class="{ error: error }" required />
             <button type="button" class="toggle-password" @click="showConfirmPassword = !showConfirmPassword">
-              <span class="toggle-password-icon">
-                {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
-              </span>
+              <img :src="showConfirmPassword ? '/icons/eye-off.svg' : '/icons/eye.svg'" alt="Mostrar/Ocultar senha"
+                class="icon-toggle" />
             </button>
           </div>
           <span class="error-message" v-if="error">{{ error }}</span>
@@ -68,6 +66,7 @@ const error = ref('')
 const loading = ref(false)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+const debug = ref('')
 
 const toast = ref({
   show: false,
@@ -83,165 +82,55 @@ const cooldownPeriod = 60000 // 1 minuto em milissegundos
 
 const handleResetPassword = async () => {
   try {
-    // Verificar se o usuário atingiu o limite de tentativas
-    const now = Date.now()
-    if (now - lastAttempt.value < cooldownPeriod && attemptsCount.value >= maxAttempts) {
-      showToast('Muitas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.', 'error')
-      return
-    }
-
-    // Se passou o período de cooldown, reiniciar contador
-    if (now - lastAttempt.value > cooldownPeriod) {
-      attemptsCount.value = 0
-    }
-
-    // Incrementar contagem e registrar timestamp
-    attemptsCount.value++
-    lastAttempt.value = now
-
-    loading.value = true
-    error.value = ''
-
+    // Verificar senhas
     if (password.value !== confirmPassword.value) {
       error.value = 'As senhas não conferem'
       return
     }
 
-    // Obter o token da URL com tratamento mais robusto
-    let accessToken = null
-    let type = null
+    loading.value = true
 
-    // Extrai os parâmetros diretamente da URL completa
-    const fullUrl = window.location.href
-    console.log('URL completa:', fullUrl)
-
-    // Verifica se contém "access_token=" na URL
-    if (fullUrl.includes('access_token=')) {
-      // Extrai o token usando regex
-      const tokenMatch = fullUrl.match(/access_token=([^&]+)/)
-      if (tokenMatch && tokenMatch[1]) {
-        accessToken = tokenMatch[1]
-      }
-
-      // Extrai o tipo usando regex
-      const typeMatch = fullUrl.match(/type=([^&]+)/)
-      if (typeMatch && typeMatch[1]) {
-        type = typeMatch[1]
-      }
-    }
-
-    console.log('Token recuperado:', accessToken)
-    console.log('Tipo de operação:', type)
+    // Recuperar tokens armazenados
+    const accessToken = localStorage.getItem('reset_access_token')
+    const refreshToken = localStorage.getItem('reset_refresh_token')
 
     if (!accessToken) {
-      throw new Error('Token de recuperação não encontrado na URL')
+      error.value = 'Token de recuperação não encontrado ou expirado'
+      loading.value = false
+      return
     }
 
-    // Use setSession com tratamento melhorado de erros
+    // Configurar sessão
     const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
       access_token: accessToken,
-      refresh_token: ''
+      refresh_token: refreshToken || ''
     })
 
-    if (sessionError) {
-      console.error('Erro ao definir sessão:', sessionError)
-      throw new Error(`Erro ao validar token: ${sessionError.message}`)
-    }
+    if (sessionError) throw sessionError
 
-    if (!sessionData.session) {
-      throw new Error('Sessão inválida após definir token')
-    }
-
-    console.log('Sessão estabelecida:', sessionData.session.user.id)
-
-    // Atualizar a senha
+    // Atualizar senha
     const { data: userData, error: updateError } = await supabase.auth.updateUser({
       password: password.value
     })
 
-    if (updateError) {
-      console.error('Erro ao atualizar senha:', updateError)
-      throw new Error(`Erro ao atualizar senha: ${updateError.message}`)
-    }
+    if (updateError) throw updateError
 
-    if (!userData.user) {
-      throw new Error('Usuário não encontrado após atualização de senha')
-    }
-
-    console.log('Senha atualizada com sucesso para usuário:', userData.user.id)
-
-    // Atualização do perfil com melhor tratamento de erros
-    try {
-      // Verificar se o perfil existe
-      const { data: profileData, error: fetchError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', userData.user.id)
-        .single()
-
-      if (fetchError && fetchError.code !== 'PGRST116') {  // PGRST116 = not found
-        console.error('Erro ao verificar perfil:', fetchError)
-      }
-
-      if (!profileData) {
-        console.log('Criando perfil para usuário:', userData.user.id)
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: userData.user.id,
-            email: userData.user.email,
-            updated_at: new Date().toISOString(),
-            last_password_reset: new Date().toISOString(),
-            status: 'ativo',
-            role: 'user'
-          })
-
-        if (insertError) {
-          console.error('Erro ao criar perfil:', insertError)
-          // Continue mesmo com erro no perfil
-        }
-      } else {
-        console.log('Atualizando perfil existente:', profileData.id)
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({
-            updated_at: new Date().toISOString(),
-            last_password_reset: new Date().toISOString()
-          })
-          .eq('id', userData.user.id)
-
-        if (updateError) {
-          console.error('Erro ao atualizar perfil:', updateError)
-          // Continue mesmo com erro no perfil
-        }
-      }
-    } catch (profileError) {
-      console.error('Erro ao processar perfil:', profileError)
-      // Continue mesmo com erro no perfil
-    }
+    // Limpar tokens armazenados
+    localStorage.removeItem('reset_access_token')
+    localStorage.removeItem('reset_refresh_token')
 
     showToast('Senha alterada com sucesso!', 'success')
 
-    // Logout com verificação
-    const { error: signOutError } = await supabase.auth.signOut()
-    if (signOutError) {
-      console.error('Erro ao fazer logout:', signOutError)
-    }
+    // Fazer logout
+    await supabase.auth.signOut()
 
     setTimeout(() => {
       router.push('/login')
     }, 2000)
-
   } catch (e: any) {
-    console.error('Erro detalhado:', e)
-
-    if (e.status === 429) {
-      error.value = 'Muitas tentativas de redefinição de senha. Por favor, aguarde alguns minutos antes de tentar novamente.'
-      showToast('Limite de tentativas excedido. Tente novamente mais tarde.', 'error')
-    } else {
-      error.value = 'Erro ao redefinir senha. Por favor, solicite um novo link de recuperação.'
-      showToast('Erro ao redefinir senha: ' + (e.message || 'Erro desconhecido'), 'error')
-    }
+    console.error('Erro ao redefinir senha:', e)
+    error.value = 'Erro ao redefinir senha: ' + (e.message || 'Erro desconhecido')
+    showToast('Erro ao redefinir senha', 'error')
   } finally {
     loading.value = false
   }
@@ -250,18 +139,51 @@ const handleResetPassword = async () => {
 const handleCancel = () => {
   router.push('/login')
 }
-const showToast = (message: string, type: string) => {
+
+const showToast = (message: string, type = 'success') => {
   toast.value = {
     show: true,
     message,
     type
   }
 
-  // Hide toast after 3 seconds
   setTimeout(() => {
     toast.value.show = false
   }, 3000)
 }
+
+// Verificar URL ao montar o componente
+onMounted(() => {
+  console.log('ResetPassword montado - URL atual:', window.location.href)
+
+  // Extrair os tokens do hash ou query string
+  const processTokens = () => {
+    // Verificar o hash primeiro (formato: #access_token=xyz&refresh_token=abc)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1))
+    let accessToken = hashParams.get('access_token')
+    let refreshToken = hashParams.get('refresh_token')
+
+    // Se não encontrou no hash, verificar na query string
+    if (!accessToken) {
+      accessToken = route.query.access_token as string
+      refreshToken = route.query.refresh_token as string
+    }
+
+    if (accessToken) {
+      // Armazenar temporariamente os tokens para uso no formulário
+      localStorage.setItem('reset_access_token', accessToken)
+      if (refreshToken) {
+        localStorage.setItem('reset_refresh_token', refreshToken)
+      }
+
+      console.log('Tokens armazenados para redefinição de senha')
+    } else {
+      console.warn('Nenhum token de acesso encontrado na URL')
+    }
+  }
+
+  processTokens()
+})
 </script>
 
 <style scoped>

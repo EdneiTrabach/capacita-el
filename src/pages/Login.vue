@@ -162,13 +162,8 @@ const checkConnectivity = (): Promise<boolean> => {
   });
 }
 
-// Modifique o handleLogin para verificar conectividade
+// Modifique a função de login no arquivo Login.vue
 const handleLogin = async () => {
-  if (!email.value || !password.value) {
-    error.value = 'Por favor, preencha todos os campos'
-    return
-  }
-
   try {
     loading.value = true
     error.value = ''
@@ -179,61 +174,80 @@ const handleLogin = async () => {
       throw new Error('Sem conexão com a internet. Verifique sua conexão e tente novamente.');
     }
 
-    // Tente conectar-se com o Supabase com timeout
-    const authPromise = supabase.auth.signInWithPassword({
+    // Login com timeout
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     })
 
-    // Adicione um timeout para a requisição
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Timeout: O servidor não respondeu em tempo hábil')), 10000)
-    })
-
-    // Race entre a autenticação e o timeout
-    const { data: authData, error: authError } = await Promise.race([
-      authPromise,
-      timeoutPromise
-    ]) as AuthTokenResponse
-
     if (authError) throw authError
 
-    // Verificar se o usuário tem acesso
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', authData.user.id)
-      .single()
+    // Use um método RPC dedicado para verificar autenticação em vez de consulta direta
+    // Isso evita problemas com políticas RLS
+    try {
+      const { data: isAdmin, error: checkError } = await supabase.rpc('check_user_access')
 
-    if (profileError || !profileData) {
-      await supabase.auth.signOut()
-      throw new Error('Usuário não autorizado')
+      if (checkError) {
+        console.error("Erro na verificação de acesso:", checkError)
+        // Se falhar a verificação RPC, tente criar um perfil para o usuário
+        await criarPerfilSeNaoExistir(authData.user)
+      }
+
+      // Redirecionar para a página principal
+      router.push('/')
+      showToast('Login realizado com sucesso!', 'success')
+    } catch (err) {
+      console.error("Erro ao verificar acesso:", err)
+      await criarPerfilSeNaoExistir(authData.user)
+      router.push('/')
     }
-
-    // Redirecionar para a página inicial ou a URL pretendida
-    const intendedUrl = sessionStorage.getItem('intendedUrl')
-    router.push(intendedUrl || '/')
-    sessionStorage.removeItem('intendedUrl')
-
-    showToast('Login realizado com sucesso!', 'success')
   } catch (e) {
     console.error('Login error:', e)
 
-    // Tratamento específico para diferentes erros
-    if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-      error.value = 'Erro de conexão com o servidor. Verifique sua conexão com a internet.'
-      showToast('Erro de conexão com o servidor', 'error')
-    } else if (e instanceof Error && e.message.includes('Timeout')) {
-      error.value = 'O servidor está demorando para responder. Tente novamente mais tarde.'
-      showToast('Tempo limite excedido', 'error')
+    const err = e as Error
+    if (err.message && err.message.includes('Invalid login credentials')) {
+      error.value = 'Email ou senha incorretos'
+      showToast('Email ou senha incorretos', 'error')
     } else {
-      error.value = 'Erro ao fazer login. Verifique suas credenciais.'
-      showToast('Falha na autenticação', 'error')
+      error.value = err.message || 'Erro ao fazer login'
+      showToast('Erro ao fazer login: ' + error.value, 'error')
     }
   } finally {
     loading.value = false
   }
 }
+
+// Função para criar perfil se não existir
+const criarPerfilSeNaoExistir = async (user: { id: string, email?: string | null }) => {
+  if (!user || !user.email) return
+
+  try {
+    // Verificar se o perfil já existe
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .single()
+
+    // Se não existir ou der erro, criar um novo
+    if (error || !profile) {
+      console.log("Criando perfil para usuário:", user.id)
+
+      // Insere o perfil com os dados básicos
+      await supabase.from('profiles').insert({
+        id: user.id,
+        email: user.email,
+        nome: user.email.split('@')[0], // Nome básico derivado do email
+        role: 'user',
+        status: 'ativo',
+        created_at: new Date().toISOString()
+      })
+    }
+  } catch (err) {
+    console.error("Erro ao verificar/criar perfil:", err)
+  }
+}
+
 const handleRegister = async () => {
   try {
     // Implementation goes here

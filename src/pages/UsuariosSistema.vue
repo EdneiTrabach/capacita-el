@@ -458,8 +458,12 @@ export default {
 
       confirmAction.value = async () => {
         try {
+          // URL de redirecionamento completa e absoluta
+          const redirectUrl = new URL('/reset-password', window.location.origin).toString();
+          console.log('URL de redirecionamento:', redirectUrl);
+
           const { error } = await supabase.auth.resetPasswordForEmail(usuario.email, {
-            redirectTo: `${window.location.origin}/reset-password`
+            redirectTo: redirectUrl
           })
 
           if (error) throw error
