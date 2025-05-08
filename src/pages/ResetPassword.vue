@@ -85,81 +85,128 @@ const handleResetPassword = async () => {
       return
     }
 
-    // Obter o token da URL
-    const hashParams = new URLSearchParams(window.location.hash.substring(1))
-    const accessToken = hashParams.get('access_token')
-    const type = hashParams.get('type')
+    // Obter o token da URL com tratamento mais robusto
+    let accessToken = null
+    let type = null
 
-    console.log('Hash params:', window.location.hash)
-    console.log('Access token:', accessToken)
-    console.log('Type:', type)
-
-    if (!accessToken || type !== 'recovery') {
-      throw new Error('Link de recuperação inválido ou expirado')
+    // Verifica se está usando hash ou query params (para compatibilidade)
+    if (window.location.hash) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      accessToken = hashParams.get('access_token')
+      type = hashParams.get('type')
+    } else if (window.location.search) {
+      const queryParams = new URLSearchParams(window.location.search)
+      accessToken = queryParams.get('access_token')
+      type = queryParams.get('type')
     }
 
-    // Use setSession first to set the access token
-    const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+    console.log('Parâmetros da URL:', { hash: window.location.hash, search: window.location.search })
+    console.log('Token recuperado:', accessToken)
+    console.log('Tipo de operação:', type)
+
+    if (!accessToken) {
+      throw new Error('Token de recuperação não encontrado na URL')
+    }
+
+    // Use setSession com tratamento melhorado de erros
+    const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
       access_token: accessToken,
       refresh_token: ''
     })
 
-    if (sessionError) throw sessionError
+    if (sessionError) {
+      console.error('Erro ao definir sessão:', sessionError)
+      throw new Error(`Erro ao validar token: ${sessionError.message}`)
+    }
 
-    // Then update the password
-    const { data: { user }, error: updateError } = await supabase.auth.updateUser({
+    if (!sessionData.session) {
+      throw new Error('Sessão inválida após definir token')
+    }
+
+    console.log('Sessão estabelecida:', sessionData.session.user.id)
+
+    // Atualizar a senha
+    const { data: userData, error: updateError } = await supabase.auth.updateUser({
       password: password.value
     })
 
-    if (updateError) throw updateError
+    if (updateError) {
+      console.error('Erro ao atualizar senha:', updateError)
+      throw new Error(`Erro ao atualizar senha: ${updateError.message}`)
+    }
 
-    if (user) {
-      // Primeiro verifique se o usuário existe na tabela profiles
+    if (!userData.user) {
+      throw new Error('Usuário não encontrado após atualização de senha')
+    }
+
+    console.log('Senha atualizada com sucesso para usuário:', userData.user.id)
+
+    // Atualização do perfil com melhor tratamento de erros
+    try {
+      // Verificar se o perfil existe
       const { data: profileData, error: fetchError } = await supabase
         .from('profiles')
         .select('id')
-        .eq('id', user.id)
+        .eq('id', userData.user.id)
         .single()
 
-      if (fetchError || !profileData) {
-        console.log('Usuário não encontrado na tabela profiles, criando...')
-        // Crie o perfil se não existir
+      if (fetchError && fetchError.code !== 'PGRST116') {  // PGRST116 = not found
+        console.error('Erro ao verificar perfil:', fetchError)
+      }
+
+      if (!profileData) {
+        console.log('Criando perfil para usuário:', userData.user.id)
         const { error: insertError } = await supabase
           .from('profiles')
           .insert({
-            id: user.id,
+            id: userData.user.id,
+            email: userData.user.email,
             updated_at: new Date().toISOString(),
-            last_password_reset: new Date().toISOString()
+            last_password_reset: new Date().toISOString(),
+            status: 'ativo',
+            role: 'user'
           })
 
-        if (insertError) throw insertError
+        if (insertError) {
+          console.error('Erro ao criar perfil:', insertError)
+          // Continue mesmo com erro no perfil
+        }
       } else {
-        // Atualiza o perfil existente
-        const { error: profileError } = await supabase
+        console.log('Atualizando perfil existente:', profileData.id)
+        const { error: updateError } = await supabase
           .from('profiles')
           .update({
             updated_at: new Date().toISOString(),
             last_password_reset: new Date().toISOString()
           })
-          .eq('id', user.id)
+          .eq('id', userData.user.id)
 
-        if (profileError) throw profileError
+        if (updateError) {
+          console.error('Erro ao atualizar perfil:', updateError)
+          // Continue mesmo com erro no perfil
+        }
       }
+    } catch (profileError) {
+      console.error('Erro ao processar perfil:', profileError)
+      // Continue mesmo com erro no perfil
     }
 
     showToast('Senha alterada com sucesso!', 'success')
 
-    // Fazer logout para garantir que o usuário não fique logado
-    await supabase.auth.signOut()
+    // Logout com verificação
+    const { error: signOutError } = await supabase.auth.signOut()
+    if (signOutError) {
+      console.error('Erro ao fazer logout:', signOutError)
+    }
 
     setTimeout(() => {
       router.push('/login')
     }, 2000)
 
   } catch (e: any) {
-    console.error('Erro completo:', e)
+    console.error('Erro detalhado:', e)
     error.value = 'Erro ao redefinir senha. Por favor, solicite um novo link de recuperação.'
-    showToast('Erro ao redefinir senha', 'error')
+    showToast('Erro ao redefinir senha: ' + (e.message || 'Erro desconhecido'), 'error')
   } finally {
     loading.value = false
   }
