@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '@/config/supabase'
 import type { RouteRecordRaw } from 'vue-router'
 import Home from '../pages/Home.vue'
-import AdminPanel from '../pages/AdminPanel.vue'
+import AdminPanel from '@/pages/AdminPanel.vue'
 import Login from '@/pages/Login.vue'
 import Dashboard from '../pages/Dashboard.vue'
 import CadastroUsuarios from '../pages/CadastroUsuarios.vue'
@@ -19,6 +19,8 @@ import RelatoriosTempo from '@/components/RelatoriosTempo/RelatoriosTempo.vue'
 import RelatoriosTipo from '@/components/RelatoriosTipo/RelatoriosTipo.vue'
 import RelatoriosAgendados from '@/components/RelatoriosAgendados/RelatoriosAgendados.vue'
 import RelatoriosPendentes from '@/components/RelatoriosPendentes/RelatoriosPendentes.vue'
+import UsuariosSistema from '@/pages/UsuariosSistema.vue'
+import AuditoriaAcessos from '@/pages/AuditoriaAcessos.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -94,7 +96,7 @@ const router = createRouter({
     },
     {
       path: '/relatorios',
-      name: 'Relatorios', 
+      name: 'Relatorios',
       component: () => import('@/pages/Relatorios.vue'),
       meta: { requiresAuth: true }
     },
@@ -109,8 +111,9 @@ const router = createRouter({
     },
     {
       path: '/admin',
+      name: 'AdminPanel',
       component: AdminPanel,
-      meta: { 
+      meta: {
         requiresAuth: true,
         requiresAdmin: true
       }
@@ -118,7 +121,7 @@ const router = createRouter({
     {
       path: '/usuarios-sistema',
       name: 'UsuariosSistema',
-      component: () => import('../pages/UsuariosSistema.vue'),
+      component: UsuariosSistema,
       meta: { requiresAuth: true, requiresAdmin: true }
     },
     {
@@ -130,7 +133,7 @@ const router = createRouter({
     {
       path: '/auditoria-acessos',
       name: 'AuditoriaAcessos',
-      component: () => import('../pages/AuditoriaAcessos.vue'),
+      component: AuditoriaAcessos,
       meta: { requiresAuth: true, requiresAdmin: true }
     },
     {
@@ -152,7 +155,7 @@ const router = createRouter({
     },
     {
       path: '/relatorios/setor',
-      name: 'RelatoriosSetor', 
+      name: 'RelatoriosSetor',
       component: RelatoriosSetor,
       meta: { requiresAuth: true }
     },
@@ -185,7 +188,7 @@ const router = createRouter({
       name: 'NotFound',
       component: () => import('@/pages/NotFound.vue'),
       meta: { requiresAuth: false }
-    }  
+    }
   ]
 })
 
@@ -232,7 +235,7 @@ router.beforeEach(async (to, from, next) => {
       .select('role')
       .eq('id', user?.id)
       .single()
-    
+
     if (userData?.role !== 'admin') {
       next('/')
       return

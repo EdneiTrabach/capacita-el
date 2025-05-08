@@ -24,7 +24,7 @@
         <div class="card-action">Acessar →</div>
       </div>
 
-      
+
       <div class="nav-card" @click="$router.push('/lista-usuarios')">
         <div class="card-icon">
           <img src="/public/icons/config-usuario.svg" alt="Gestao de pessoas" class="icon-home" />
@@ -33,7 +33,7 @@
         <p>Visualizar e gerenciar Pessoas cadastradas</p>
         <div class="card-action">Acessar →</div>
       </div>
-      
+
       <div class="nav-card" @click="$router.push('/cursos')">
         <div class="card-icon">
           <img src="/public/icons/novo-curso.svg" alt="Cadastro de cursos" class="icon-home" />
@@ -79,6 +79,15 @@
         <div class="card-action">Acessar →</div>
       </div>
 
+      <div class="nav-card" @click="$router.push('/usuarios-sistema')">
+        <div class="card-icon">
+          <img src="/public/icons/usuario-sistema.svg" alt="Usuários do Sistema" class="icon-home" />
+        </div>
+        <h2>Usuários do Sistema</h2>
+        <p>Gerenciar acessos e enviar links para redefinição de senha</p>
+        <div class="card-action">Acessar →</div>
+      </div>
+
       <div class="nav-card info-card" @click="handleInfoCardClick">
         <div class="card-icon">
           <img src="/public/icons/informacao.svg" alt="Info" class="icon-home" />
@@ -90,7 +99,7 @@
       </div>
 
     </div>
-    
+
     <!-- Easter Egg Modal -->
     <div v-if="showEasterEgg" class="easter-egg-overlay" @click.self="closeEasterEgg">
       <div class="easter-egg-modal">
@@ -124,10 +133,10 @@ export default {
       try {
         const { error } = await supabase.auth.signOut()
         if (error) throw error
-        
+
         // Clear local storage
         localStorage.removeItem('isAuthenticated')
-        
+
         // Redirect to login
         this.$router.push('/login')
       } catch (error) {
@@ -138,12 +147,12 @@ export default {
     handleInfoCardClick() {
       clearTimeout(this.clickTimer);
       this.clickCount++;
-      
+
       // Se atingir 5 cliques, ativa o Easter Egg
       if (this.clickCount === 5) {
         this.activateEasterEgg();
       }
-      
+
       // Reset do contador após 3 segundos sem cliques
       this.clickTimer = setTimeout(() => {
         this.clickCount = 0;
@@ -153,7 +162,7 @@ export default {
       this.showEasterEgg = true;
       this.easterEggUnlocked = true;
       this.clickCount = 0;
-      
+
       // Salvar no localStorage que o usuário já descobriu o easter egg
       localStorage.setItem('easterEggFound', 'true');
     },
@@ -424,8 +433,13 @@ h2.about {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .easter-egg-modal {
@@ -442,8 +456,15 @@ h2.about {
 }
 
 @keyframes modalSlideUp {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .close-btn {
