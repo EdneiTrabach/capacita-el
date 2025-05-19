@@ -184,6 +184,18 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/envio-emails',
+      name: 'EnvioEmails',
+      component: () => import('../pages/EnvioEmails.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/envio-emails/:cursoId',
+      name: 'EnvioEmailsDetalhes',
+      component: () => import('../pages/EnvioEmailsDetalhes.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: () => import('@/pages/NotFound.vue'),

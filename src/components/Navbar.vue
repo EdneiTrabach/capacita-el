@@ -4,7 +4,7 @@
       <button class="toggle-btn" @click="toggleSidebar">
         {{ isExpanded ? '◀' : '▶' }}
       </button>
-      
+
       <div class="logo-section">
         <img src="../../public/icons/logo-fill.jpeg" alt="Logo" class="logo" />
         <span v-if="isExpanded">Capacita.EL</span>
@@ -65,6 +65,13 @@
             <span v-if="isExpanded" class="link-text">Painel Admin</span>
           </router-link>
         </li>
+        <!-- Adicione o item para envio de emails no menu -->
+        <li v-if="isAdmin">
+          <router-link to="/envio-emails">
+            <img src="/public/icons/email.svg" alt="Envio de Emails" class="icon" />
+            <span v-if="isExpanded" class="link-text">Envio de Emails</span>
+          </router-link>
+        </li>
       </ul>
 
       <div class="utility-section">
@@ -102,6 +109,7 @@ const emit = defineEmits(['sidebarToggle']) // Adicione esta linha
 
 const router = useRouter()
 const isAdmin = ref(false)
+const isManager = ref(false) // Adicione esta linha
 const isExpanded = ref(true)
 
 const checkAdminStatus = async () => {
@@ -112,8 +120,9 @@ const checkAdminStatus = async () => {
       .select('role')
       .eq('id', user.id)
       .single()
-    
+
     isAdmin.value = profile?.role === 'admin'
+    isManager.value = profile?.role === 'gerente' || profile?.role === 'admin'
   }
 }
 
@@ -129,10 +138,10 @@ const handleLogout = async () => {
 
     // Clear any necessary storage
     localStorage.clear()
-    
+
     // Navigate to login page
     await router.push('/login')
-    
+
   } catch (error) {
     console.error('Erro ao fazer logout:', error)
     alert('Erro ao sair do sistema. Tente novamente.')
@@ -140,7 +149,7 @@ const handleLogout = async () => {
 }
 
 const isDarkMode = ref(false)
-const toggleTheme = () => {}
+const toggleTheme = () => { }
 
 onMounted(() => {
   checkAdminStatus()
@@ -176,8 +185,10 @@ onMounted(() => {
   flex-direction: column;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   padding: 1.5rem 1rem;
-  height: 100vh; /* Altura total da viewport */
-  min-height: min-content; /* Garante que o conteúdo mínimo seja mostrado */
+  height: 100vh;
+  /* Altura total da viewport */
+  min-height: min-content;
+  /* Garante que o conteúdo mínimo seja mostrado */
 }
 
 .sidebar.collapsed {
@@ -209,13 +220,14 @@ onMounted(() => {
 }
 
 /* Remove any previous positioning adjustments */
-.sidebar.collapsed ~ .toggle-btn {
+.sidebar.collapsed~.toggle-btn {
   left: auto;
 }
 
 .logo-section {
   padding: 1rem;
-  padding-right: 3rem; /* Add space for toggle button */
+  padding-right: 3rem;
+  /* Add space for toggle button */
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -244,23 +256,27 @@ onMounted(() => {
 
 /* Scrollbar personalizada */
 .nav-links::-webkit-scrollbar {
-  width: 6px;  /* Largura da scrollbar */
+  width: 6px;
+  /* Largura da scrollbar */
 }
 
 .nav-links::-webkit-scrollbar-track {
-  background: rgba(181, 102, 111, 0.1);  /* Track em bordô sutil */
+  background: rgba(181, 102, 111, 0.1);
+  /* Track em bordô sutil */
   border-radius: 3px;
 }
 
 .nav-links::-webkit-scrollbar-thumb {
-  background: rgba(181, 102, 111, 0.3);  /* Thumb em bordô */
+  background: rgba(181, 102, 111, 0.3);
+  /* Thumb em bordô */
   border-radius: 3px;
   cursor: pointer;
 }
 
 /* Hover na scrollbar */
 .nav-links::-webkit-scrollbar-thumb:hover {
-  background: rgba(181, 102, 111, 0.5);  /* Hover em bordô mais forte */
+  background: rgba(181, 102, 111, 0.5);
+  /* Hover em bordô mais forte */
 }
 
 .nav-links li {
@@ -287,7 +303,8 @@ onMounted(() => {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1rem 0;
   margin-top: auto;
-  flex-shrink: 0; /* Impede que a seção encolha */
+  flex-shrink: 0;
+  /* Impede que a seção encolha */
 }
 
 .logout-btn {
@@ -314,7 +331,8 @@ onMounted(() => {
   opacity: 1;
   transition: opacity 0.3s ease;
   overflow: hidden;
-  text-overflow: ellipsis; /* Adiciona "..." quando o texto é muito longo */
+  text-overflow: ellipsis;
+  /* Adiciona "..." quando o texto é muito longo */
   font-size: 15px;
 }
 
@@ -329,16 +347,16 @@ onMounted(() => {
     width: 60px;
     padding: 1.5rem 0.5rem;
   }
-  
+
   .sidebar.collapsed {
     width: 0;
     padding: 0;
   }
-  
+
   .link-text {
     display: none;
   }
-  
+
   .toggle-btn {
     top: 10px;
   }
@@ -350,8 +368,10 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-top: auto; /* Empurra para baixo */
-  flex-shrink: 0; /* Impede que a seção encolha */
+  margin-top: auto;
+  /* Empurra para baixo */
+  flex-shrink: 0;
+  /* Impede que a seção encolha */
 }
 
 /* Ajuste para os botões de utilidade */
@@ -398,12 +418,12 @@ onMounted(() => {
   .utility-section {
     align-items: center;
   }
-  
+
   .utility-btn {
     width: auto;
     padding: 0.75rem;
   }
-  
+
   .notification-badge {
     right: 0;
   }

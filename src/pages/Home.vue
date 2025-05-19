@@ -79,6 +79,15 @@
         <div class="card-action">Acessar →</div>
       </div>
 
+      <div class="nav-card" @click="$router.push('/envio-emails')">
+        <div class="card-icon">
+          <img src="/public/icons/email.svg" alt="Envio de Emails" class="icon-home" />
+        </div>
+        <h2>Envio de Emails</h2>
+        <p>Enviar emails personalizados a alunos de treinamentos</p>
+        <div class="card-action">Acessar →</div>
+      </div>
+
       <div class="nav-card info-card" @click="handleInfoCardClick">
         <div class="card-icon">
           <img src="/public/icons/informacao.svg" alt="Info" class="icon-home" />
