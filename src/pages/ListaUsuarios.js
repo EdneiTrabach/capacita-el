@@ -35,7 +35,23 @@ export default {
     const showDeleteDialog = ref(false)
     const userToDelete = ref(null)
 
-    // No início do setup()
+    // Estados dos dados
+    const usuarios = ref([])
+    const setores = ref([])
+    const searchTerm = ref('')
+    const setorFilter = ref('')
+    const loading = ref(false)
+    const error = ref(null)
+    const statusFilter = ref('')
+    const sortBy = ref('recent')
+    const municipios = ref([])
+    const toast = ref({
+      show: false,
+      message: '',
+      type: 'success'
+    })
+
+    // Estados do Brasil
     const estados = [
       { uf: 'AC', nome: 'Acre' },
       { uf: 'AL', nome: 'Alagoas' },
@@ -61,41 +77,55 @@ export default {
       { uf: 'RO', nome: 'Rondônia' },
       { uf: 'RR', nome: 'Roraima' },
       { uf: 'SC', nome: 'Santa Catarina' },
-      { uf: 'SP', nome: 'São Paulo' },	
+      { uf: 'SP', nome: 'São Paulo' },
       { uf: 'SE', nome: 'Sergipe' },
       { uf: 'TO', nome: 'Tocantins' },
       { uf: 'EX', nome: 'Exterior' }
     ]
 
-    // Inicialize municipios como ref
-    const municipios = ref([])
-
-    const toast = ref({
-      show: false,
-      message: '',
-      type: 'success'
+    // Computed properties
+    const setoresUnicos = computed(() => {
+      const setoresSet = new Set(usuarios.value.map(u => u.setor).filter(Boolean))
+      return Array.from(setoresSet).sort()
     })
 
-    // Composables
-    const { 
-      usuarios,
-      loading,
-      error,
-      loadUsuarios,
-      loadSetores,
-      setores
-    } = useUsuarios()
+    const usuariosFiltrados = computed(() => {
+      let filtered = usuarios.value
 
-    const {
-      searchTerm,
-      setorFilter,
-      statusFilter,
-      sortBy,
-      setoresUnicos,
-      usuariosFiltrados
-    } = useFilters(usuarios)
+      // Filtrar por termo de busca
+      if (searchTerm.value) {
+        const term = searchTerm.value.toLowerCase()
+        filtered = filtered.filter(usuario =>
+          usuario.nome?.toLowerCase().includes(term) ||
+          usuario.email?.toLowerCase().includes(term) ||
+          usuario.setor?.toLowerCase().includes(term)
+        )
+      }
 
-    // Funções
+      // Filtrar por setor
+      if (setorFilter.value) {
+        filtered = filtered.filter(usuario => usuario.setor === setorFilter.value)
+      }
+
+      // Filtrar por status
+      if (statusFilter.value) {
+        filtered = filtered.filter(usuario => usuario.status === statusFilter.value)
+      }
+
+      // Ordenar
+      switch (sortBy.value) {
+        case 'recent':
+          return filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        case 'oldest':
+          return filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        case 'alpha':
+          return filtered.sort((a, b) => a.nome.localeCompare(b.nome))
+        default:
+          return filtered
+      }
+    })
+
+    // Funções de demonstração
     const showToast = (message, type = 'success') => {
       toast.value = {
         show: true,
@@ -107,51 +137,158 @@ export default {
       }, 3000)
     }
 
+    // Função principal para carregar usuários com dados de demonstração
+    const loadUsuarios = async () => {
+      try {
+        loading.value = true
+        
+        // 🎯 DADOS DE DEMONSTRAÇÃO - pessoas fictícias
+        const pessoasDemo = [
+          {
+            id: 'demo-user-001',
+            nome: 'Maria Silva Santos',
+            email: 'maria.silva@empresa.com',
+            data_nascimento: '1985-03-15',
+            telefone: '(11) 99999-8888',
+            cidade: 'São Paulo',
+            estado: 'SP',
+            setor: 'Recursos Humanos',
+            status: 'ativo',
+            created_at: new Date().toISOString(),
+            isDemo: true // Flag para identificar dados demo
+          },
+          {
+            id: 'demo-user-002',
+            nome: 'João Pedro Oliveira',
+            email: 'joao.pedro@empresa.com',
+            data_nascimento: '1990-08-22',
+            telefone: '(21) 98888-7777',
+            cidade: 'Rio de Janeiro',
+            estado: 'RJ',
+            setor: 'Tecnologia da Informação',
+            status: 'cursando',
+            created_at: new Date(Date.now() - 86400000).toISOString(), // 1 dia atrás
+            isDemo: true
+          },
+          {
+            id: 'demo-user-003',
+            nome: 'Ana Carolina Ferreira',
+            email: 'ana.ferreira@empresa.com',
+            data_nascimento: '1988-11-10',
+            telefone: '(31) 97777-6666',
+            cidade: 'Belo Horizonte',
+            estado: 'MG',
+            setor: 'Financeiro',
+            status: 'ativo',
+            created_at: new Date(Date.now() - 172800000).toISOString(), // 2 dias atrás
+            isDemo: true
+          }
+        ]
+
+        // Simular carregamento do banco de dados
+        await new Promise(resolve => setTimeout(resolve, 800))
+        
+        // Em modo demo, usar apenas dados de demonstração
+        usuarios.value = pessoasDemo
+        
+        console.log(`Usuários carregados: ${usuarios.value.length} (modo demonstração)`)
+        
+      } catch (error) {
+        console.error('Erro ao carregar usuários:', error)
+        // Em caso de erro, pelo menos mostrar dados demo básicos
+        usuarios.value = [{
+          id: 'demo-user-001',
+          nome: 'Maria Silva Santos',
+          email: 'maria.silva@empresa.com',
+          data_nascimento: '1985-03-15',
+          telefone: '(11) 99999-8888',
+          cidade: 'São Paulo',
+          estado: 'SP',
+          setor: 'Recursos Humanos',
+          status: 'ativo',
+          created_at: new Date().toISOString(),
+          isDemo: true
+        }]
+        showToast('Carregando dados de demonstração', 'success')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const loadSetores = async () => {
+      try {
+        // Setores de demonstração baseados nos usuários demo
+        setores.value = [
+          { id: 'demo-setor-001', nome: 'Recursos Humanos' },
+          { id: 'demo-setor-002', nome: 'Tecnologia da Informação' },
+          { id: 'demo-setor-003', nome: 'Financeiro' },
+          { id: 'demo-setor-004', nome: 'Operações' },
+          { id: 'demo-setor-005', nome: 'Marketing' }
+        ]
+      } catch (error) {
+        console.error('Erro ao carregar setores:', error)
+        showToast('Erro ao carregar setores', 'error')
+      }
+    }
+
+    const formatDate = (date) => {
+      if (!date) return '--'
+      try {
+        const [year, month, day] = date.split('-')
+        return new Date(year, month - 1, day).toLocaleDateString('pt-BR')
+      } catch (error) {
+        console.error('Erro ao formatar data:', error)
+        return '--'
+      }
+    }
+
+    const getInitials = (name) => {
+      return name
+        ?.split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2) || '??'
+    }
+
+    const toggleStatus = async (usuario, status) => {
+      if (usuario.status !== status) {
+        try {
+          // Simular atualização no banco
+          await new Promise(resolve => setTimeout(resolve, 300))
+          
+          // Update local state
+          const index = usuarios.value.findIndex(u => u.id === usuario.id)
+          if (index !== -1) {
+            usuarios.value[index] = { ...usuarios.value[index], status }
+            showToast(`Status atualizado para ${status}`, 'success')
+          }
+        } catch (error) {
+          console.error('Erro ao atualizar status:', error)
+          showToast('Erro ao atualizar status do usuário', 'error')
+        }
+      }
+    }
+
     const deletarUsuario = async (id) => {
       const usuario = usuarios.value.find(u => u.id === id)
       if (!usuario) return
 
-      // Primeiro, verificar se o usuário tem matrículas
-      try {
-        const { data: matriculas, error: matriculasError } = await supabase
-          .from('matriculas')
-          .select('id')
-          .eq('aluno_id', id)
-        
-        if (matriculasError) throw matriculasError
-
-        if (matriculas?.length > 0) {
-          showToast(
-            'Não é possível excluir um usuário que possui matrículas. Remova primeiro as matrículas do usuário.',
-            'error'
-          )
-          return
-        }
-
-        // Se não tiver matrículas, mostra o diálogo de confirmação
-        userToDelete.value = usuario
-        showDeleteDialog.value = true
-
-      } catch (error) {
-        console.error('Erro ao verificar matrículas:', error)
-        showToast('Erro ao verificar matrículas do usuário', 'error')
-      }
+      userToDelete.value = usuario
+      showDeleteDialog.value = true
     }
 
     const confirmDelete = async () => {
-      if (!userToDelete.value) return
-
       try {
-        const { error } = await supabase
-          .from('usuarios')
-          .delete()
-          .eq('id', userToDelete.value.id)
-
-        if (error) throw error
+        const id = userToDelete.value.id
         
-        usuarios.value = usuarios.value.filter(u => u.id !== userToDelete.value.id)
+        // Simular exclusão no banco
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        usuarios.value = usuarios.value.filter(u => u.id !== id)
         showToast('Usuário excluído com sucesso!', 'success')
         showDeleteDialog.value = false
+        userToDelete.value = null
       } catch (error) {
         console.error('Erro ao excluir usuário:', error)
         showToast(
@@ -160,6 +297,7 @@ export default {
         )
       } finally {
         userToDelete.value = null
+        showDeleteDialog.value = false
       }
     }
 
@@ -219,24 +357,18 @@ export default {
     const handleEditSubmit = async () => {
       try {
         loading.value = true
-        const { error: err } = await supabase
-          .from('usuarios')
-          .update({
-            nome: editingUser.value.nome,
-            email: editingUser.value.email,
-            data_nascimento: editingUser.value.data_nascimento,
-            telefone: editingUser.value.telefone,
-            cidade: editingUser.value.cidade,
-            estado: editingUser.value.estado,
-            setor: editingUser.value.setor
-          })
-          .eq('id', editingUser.value.id)
-
-        if (err) throw err
         
-        await loadUsuarios()
+        // Simular atualização no banco
+        await new Promise(resolve => setTimeout(resolve, 800))
+        
+        // Atualizar o usuário na lista local
+        const index = usuarios.value.findIndex(u => u.id === editingUser.value.id)
+        if (index !== -1) {
+          usuarios.value[index] = { ...usuarios.value[index], ...editingUser.value }
+        }
+        
         showEditModal.value = false
-        showToast('Usuário atualizado com sucesso')
+        showToast('Usuário atualizado com sucesso', 'success')
       } catch (error) {
         console.error('Erro ao atualizar usuário:', error)
         showToast('Erro ao atualizar usuário', 'error')
@@ -245,22 +377,7 @@ export default {
       }
     }
 
-    const formatDate = (date) => {
-      if (!date) return ''
-      return new Date(date).toLocaleDateString('pt-BR')
-    }
-
-    const getInitials = (name) => {
-      if (!name) return ''
-      return name
-        .split(' ')
-        .map(word => word[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    }
-
-    // Adicionar configurações do IntroJS
+    // Configurações do IntroJS
     const introSteps = [
       {
         element: '.usuarios-header',
@@ -317,7 +434,7 @@ export default {
         intro: 'Gerencie o status do aluno facilmente clicando em um destes botões',
         position: 'top'
       }
-    ];
+    ]
     
     const introOptions = {
       showStepNumbers: true,
@@ -327,7 +444,7 @@ export default {
       nextLabel: 'Próximo',
       prevLabel: 'Anterior',
       doneLabel: 'Concluir'
-    };
+    }
 
     // Lifecycle hooks
     onMounted(async () => {
@@ -365,14 +482,13 @@ export default {
       editarUsuario,
       closeEditModal,
       handleEditSubmit,
-      loadUsuarios,
-      loadSetores,
       deletarUsuario,
       confirmDelete,
       formatDate,
       getInitials,
       sanitizeHTML,
       buscarMunicipios,
+      toggleStatus,
       introSteps,
       introOptions
     }

@@ -162,6 +162,8 @@
   margin: 0 0 1.25rem 0;
   font-weight: 600;
   line-height: 1.2;
+  display: flex;
+  align-items: center;
 }
 
 .info-item {
@@ -751,4 +753,24 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 15px;
+}
+
+/* Badge para dados de demonstração */
+.demo-badge {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+  animation: pulse 2s infinite;
+  display: inline-block;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3); }
+  50% { box-shadow: 0 4px 8px rgba(255, 107, 107, 0.5); }
+  100% { box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3); }
 }

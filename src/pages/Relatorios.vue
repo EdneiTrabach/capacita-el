@@ -282,38 +282,77 @@ const loadData = async () => {
   try {
     loading.value = true
 
-    // Carregar certificados
-    const { data, error: err } = await supabase
-      .from('certificados')
-      .select(`
-        *,
-        usuarios (nome),
-        cursos (nome)
-      `)
-      .order('created_at', { ascending: false })
+    // 🎯 DADOS DE DEMONSTRAÇÃO - certificados para relatórios
+    const certificadosDemo = [
+      {
+        id: 'demo-cert-001',
+        aluno_id: 'demo-aluno-matriculado-001',
+        curso_id: 'demo-curso-001',
+        aluno_nome: 'Lucas Gabriel Ferreira',
+        curso_nome: 'Segurança no Trabalho - NR10',
+        data_emissao: '2024-01-26',
+        status: 'emitido',
+        observacoes: 'Aprovado com excelência',
+        isDemo: true
+      },
+      {
+        id: 'demo-cert-002',
+        aluno_id: 'demo-aluno-matriculado-002',
+        curso_id: 'demo-curso-001',
+        aluno_nome: 'Mariana Souza Silva',
+        curso_nome: 'Segurança no Trabalho - NR10',
+        data_emissao: null,
+        status: 'pendente',
+        observacoes: 'Aguardando emissão',
+        isDemo: true
+      },
+      {
+        id: 'demo-cert-003',
+        aluno_id: 'demo-user-001',
+        curso_id: 'demo-curso-002',
+        aluno_nome: 'Maria Silva Santos',
+        curso_nome: 'Primeiros Socorros no Trabalho',
+        data_emissao: '2024-01-21',
+        status: 'emitido',
+        observacoes: 'Participação exemplar',
+        isDemo: true
+      },
+      {
+        id: 'demo-cert-004',
+        aluno_id: 'demo-user-002',
+        curso_id: 'demo-curso-001',
+        aluno_nome: 'João Pedro Oliveira',
+        curso_nome: 'Segurança no Trabalho - NR10',
+        data_emissao: '2024-01-15',
+        status: 'emitido',
+        observacoes: 'Conhecimento técnico avançado',
+        isDemo: true
+      }
+    ]
 
-    if (err) throw err
+    // 🎯 DADOS DE DEMONSTRAÇÃO - alunos para relatórios
+    const alunosDemo = [
+      { id: 'demo-aluno-matriculado-001', nome: 'Lucas Gabriel Ferreira' },
+      { id: 'demo-aluno-matriculado-002', nome: 'Mariana Souza Silva' },
+      { id: 'demo-user-001', nome: 'Maria Silva Santos' },
+      { id: 'demo-user-002', nome: 'João Pedro Oliveira' },
+      { id: 'demo-user-003', nome: 'Ana Carolina Ferreira' }
+    ]
 
-    // Corrija o mapeamento dos certificados
-    certificados.value = data?.map(cert => ({
-      id: cert.id,
-      aluno_id: cert.usuario_id,
-      curso_id: cert.curso_id,
-      aluno_nome: cert.usuarios?.nome || 'Nome não encontrado',
-      curso_nome: cert.cursos?.nome || 'Curso não encontrado',
-      data_emissao: cert.data_emissao,
-      status: cert.status,
-      observacoes: cert.observacoes
-    })) || []
+    // 🎯 DADOS DE DEMONSTRAÇÃO - cursos para relatórios
+    const cursosDemo = [
+      { id: 'demo-curso-001', nome: 'Segurança no Trabalho - NR10' },
+      { id: 'demo-curso-002', nome: 'Primeiros Socorros no Trabalho' },
+      { id: 'demo-curso-003', nome: 'Combate a Incêndio' }
+    ]
 
-    // Carregar alunos e cursos para os filtros
-    const [{ data: alunosData }, { data: cursosData }] = await Promise.all([
-      supabase.from('usuarios').select('id,nome'),
-      supabase.from('cursos').select('id,nome')
-    ])
+    // Simular carregamento
+    await new Promise(resolve => setTimeout(resolve, 900))
 
-    alunos.value = alunosData ?? []
-    cursos.value = cursosData ?? []
+    // Atribuir dados demo
+    certificados.value = certificadosDemo
+    alunos.value = alunosDemo
+    cursos.value = cursosDemo
 
     // Gerar anos para filtro
     const currentYear = new Date().getFullYear()
@@ -321,7 +360,14 @@ const loadData = async () => {
 
   } catch (err) {
     console.error('Erro ao carregar dados:', err)
-    error.value = 'Erro ao carregar dados'
+    error.value = 'Carregando dados de demonstração'
+    // Dados mínimos em caso de erro
+    certificados.value = [{
+      aluno_nome: 'Lucas Gabriel Ferreira',
+      curso_nome: 'Segurança no Trabalho - NR10',
+      status: 'emitido',
+      isDemo: true
+    }]
   } finally {
     loading.value = false
   }

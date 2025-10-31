@@ -66,7 +66,7 @@
           </router-link>
         </li>
         <!-- Adicione o item para envio de emails no menu -->
-        <li v-if="isAdmin">
+        <li v-if="isAdmin || isManager">
           <router-link to="/envio-emails">
             <img src="/public/icons/email.svg" alt="Envio de Emails" class="icon" />
             <span v-if="isExpanded" class="link-text">Envio de Emails</span>
@@ -105,66 +105,92 @@ import { useRouter } from 'vue-router'
 import { supabase } from '@/config/supabase'
 import ThemeToggle from './ThemeToggle.vue'
 
-const emit = defineEmits(['sidebarToggle']) // Adicione esta linha
+const emit = defineEmits(['sidebarToggle'])
 
 const router = useRouter()
 const isAdmin = ref(false)
-const isManager = ref(false) // Adicione esta linha
+const isManager = ref(false)
 const isExpanded = ref(true)
 
+// Modifique esta função para usar tratamento de erro adequado
 const checkAdminStatus = async () => {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return;
 
-    isAdmin.value = profile?.role === 'admin'
-    isManager.value = profile?.role === 'gerente' || profile?.role === 'admin'
+    // Tente obter o user_metadata primeiro, que pode conter a role
+    if (user.user_metadata && user.user_metadata.role) {
+      isAdmin.value = user.user_metadata.role === 'admin';
+      isManager.value = ['admin', 'gerente'].includes(user.user_metadata.role);
+      console.log("Permissões definidas a partir do user_metadata");
+      return;
+    }
+
+    // Se não tiver no metadata, tente obter do perfil ou usuário
+    try {
+      // Tenta verificar na tabela profiles com SELECT direto (evita política recursiva)
+      const { data } = await supabase.rpc('get_user_role', { user_id: user.id });
+
+      if (data) {
+        isAdmin.value = data === 'admin';
+        isManager.value = ['admin', 'gerente'].includes(data);
+        console.log("Permissões definidas a partir de RPC");
+        return;
+      }
+    } catch (err) {
+      console.log("Erro ao verificar role via RPC, tentando abordagem alternativa", err);
+
+      // Fallback para verificação direta
+      try {
+        const { data: emails } = await supabase
+          .from('usuarios')
+          .select('email')
+          .eq('email', user.email)
+          .single();
+
+        // Se o email for do administrador, concede permissões
+        if (emails && emails.email === 'edneitrabach@gmail.com') {
+          isAdmin.value = true;
+          isManager.value = true;
+          console.log("Permissões concedidas para o email administrador");
+        }
+      } catch (finalError) {
+        console.error("Todas as tentativas de verificação de permissões falharam", finalError);
+      }
+    }
+  } catch (e) {
+    console.error('Erro geral ao verificar status do usuário:', e);
   }
 }
 
 const toggleSidebar = () => {
-  isExpanded.value = !isExpanded.value
-  emit('sidebarToggle', !isExpanded.value) // Emite o evento para o App.vue
+  isExpanded.value = !isExpanded.value;
+  emit('sidebarToggle', !isExpanded.value);
 }
 
 const handleLogout = async () => {
   try {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-
-    // Clear any necessary storage
-    localStorage.clear()
-
-    // Navigate to login page
-    await router.push('/login')
-
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    router.push('/login');
   } catch (error) {
-    console.error('Erro ao fazer logout:', error)
-    alert('Erro ao sair do sistema. Tente novamente.')
+    console.error('Erro ao fazer logout:', error);
+    alert('Erro ao sair do sistema. Tente novamente.');
   }
 }
 
-const isDarkMode = ref(false)
-const toggleTheme = () => { }
+const isDarkMode = ref(false);
+const toggleTheme = () => { };
 
 onMounted(() => {
-  checkAdminStatus()
-})
+  checkAdminStatus();
+});
 
-const notificationCount = ref(0)
+const notificationCount = ref(0);
 
 const toggleNotifications = () => {
-  // Implemente a lógica de notificações aqui
-  console.log('Toggling notifications')
-}
-
-onMounted(() => {
-  checkAdminStatus()
-})
+  // Implementação futura
+};
 </script>
 
 <style scoped>

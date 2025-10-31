@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { supabase } from '@/config/supabase'
+import { authDemo } from '@/services/authDemo'
 import type { RouteRecordRaw } from 'vue-router'
 import Home from '../pages/Home.vue'
 import AdminPanel from '@/pages/AdminPanel.vue'
@@ -205,22 +205,17 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const { data: { session } } = await supabase.auth.getSession()
+  const session = authDemo.getSession()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth !== false)
   const isAuthRoute = to.matched.some(record => record.meta.isAuthRoute)
-  const allowResetPassword = to.matched.some(record => record.meta.allowResetPassword)
-  const isAdmin = to.matched.some(record => record.meta.requiresAdmin)
 
-  // Permitir acesso à página de reset de senha mesmo com sessão ativa
-  if (allowResetPassword) {
-    next()
-    return
-  }
-
-  // Verifica se é uma rota de autenticação (login, reset-password)
+  // Verifica se é uma rota de autenticação (login)
   if (isAuthRoute) {
-    if (session) {
-      next('/')
+    if (session.isAuthenticated) {
+      // Se já está logado e tenta acessar login, redireciona para a página inicial
+      const intendedUrl = sessionStorage.getItem('intendedUrl')
+      sessionStorage.removeItem('intendedUrl')
+      next(intendedUrl || '/')
     } else {
       next()
     }
@@ -229,7 +224,7 @@ router.beforeEach(async (to, from, next) => {
 
   // Verifica se a rota requer autenticação
   if (requiresAuth) {
-    if (!session) {
+    if (!session.isAuthenticated) {
       // Salva a URL tentada para redirect após login
       sessionStorage.setItem('intendedUrl', to.fullPath)
       next('/login')
@@ -240,55 +235,8 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (to.meta.requiresAdmin) {
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data: userData } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', user?.id)
-      .single()
-
-    if (userData?.role !== 'admin') {
-      next('/')
-      return
-    }
-  }
-
-  // Adicione uma verificação específica para a rota de lista de presença
-  if (to.name === 'ListaPresenca') {
-    const cursoId = to.params.id
-    const { data, error } = await supabase
-      .from('cursos')
-      .select('status')
-      .eq('id', cursoId)
-      .single()
-
-    if (error || data?.status !== 'Em andamento') {
-      next('/')
-      return
-    }
-  }
-
+  // Para rotas que não requerem autenticação
   next()
 })
 
-// Adicione um guard global de erro
-router.beforeEach((to, from, next) => {
-  // Se a rota não existe, redireciona para NotFound
-  if (!to.matched.length) {
-    next({ name: 'NotFound' })
-    return
-  }
-  next()
-})
-
-// Adicione um handler de erro global
-router.onError((error) => {
-  console.error('Router error:', error)
-  if (error.message.includes('Failed to fetch dynamically imported module')) {
-    window.location.reload()
-  }
-})
-
-// Certifique-se de que esta seja a única exportação default
 export default router

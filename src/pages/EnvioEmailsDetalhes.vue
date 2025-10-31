@@ -154,6 +154,16 @@
         </div>
       </div>
     </div>
+
+    <!-- Adicionar aqui um indicador de status para cada email -->
+    <div v-if="envioStatus.loading" class="envio-status loading">
+      <div class="spinner"></div>
+      <p>Enviando emails... ({{ envioStatus.enviados }} de {{ envioStatus.total }})</p>
+    </div>
+
+    <div v-if="envioStatus.success" class="envio-status success">
+      <p>{{ envioStatus.enviados }} de {{ envioStatus.total }} emails enviados com sucesso!</p>
+    </div>
   </div>
 </template>
 
@@ -322,11 +332,23 @@ const voltarParaSelecao = () => {
   router.push('/envio-emails')
 }
 
+// Adicionar variável reativa para status de envio
+const envioStatus = ref({
+  loading: false,
+  enviados: 0,
+  total: 0,
+  success: false
+})
+
 // Confirmar e executar o envio de emails
 const confirmarEnvio = async () => {
   try {
     isSubmitting.value = true
     showConfirmModal.value = false
+    envioStatus.value.loading = true
+    envioStatus.value.enviados = 0
+    envioStatus.value.total = alunosSelecionados.value.length
+    envioStatus.value.success = false
 
     // Obter detalhes do curso
     const { data: cursoData } = await supabase
@@ -361,7 +383,10 @@ const confirmarEnvio = async () => {
       throw new Error(result.error?.message || 'Erro ao enviar emails')
     }
 
-    showToast(`${result.count || alunosSelecionados.value.length} emails enviados com sucesso!`, 'success')
+    // Atualizar status de envio
+    envioStatus.value.enviados = result.enviados || 0
+    envioStatus.value.success = true
+    showToast(`${result.enviados || alunosSelecionados.value.length} emails enviados com sucesso!`, 'success')
 
     // Limpar seleções
     alunosSelecionados.value = []
@@ -374,8 +399,10 @@ const confirmarEnvio = async () => {
   } catch (err) {
     console.error('Erro ao enviar emails:', err)
     showToast('Erro ao enviar emails. Por favor, tente novamente.', 'error')
+    envioStatus.value.success = false
   } finally {
     isSubmitting.value = false
+    envioStatus.value.loading = false
   }
 }
 
@@ -798,6 +825,44 @@ onMounted(() => {
   to {
     opacity: 0;
     transform: translateY(-20px);
+  }
+}
+
+.envio-status {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.envio-status.loading {
+  background-color: #f0f8ff;
+  border: 1px solid #b3d7ff;
+}
+
+.envio-status.success {
+  background-color: #e6fffa;
+  border: 1px solid #b2f5ea;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #b3d7ff;
+  border-top: 2px solid #1e88e5;
+  border-radius: 50%;
+  margin-right: 10px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

@@ -6,6 +6,7 @@ import router from './router/index'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faFilePdf, faFileExcel } from '@fortawesome/free-solid-svg-icons'
+import './styles/demo-badges.css'
 
 library.add(faFilePdf, faFileExcel)
 

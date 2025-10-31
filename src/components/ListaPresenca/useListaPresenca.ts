@@ -22,21 +22,79 @@ export function useListaPresenca() {
 
   const loadPresencas = async () => {
     try {
-      const { data, error } = await supabase
-        .from('lista_presenca')
-        .select(`
-          *,
-          aluno:usuarios(nome)
-        `)
-        .eq('curso_id', cursoId)
-        .eq('data_aula', filtros.value.dataAula) // Usar o filtro aqui
-        .order('horario_registro', { ascending: false })
+      loading.value = true
+      error.value = ''
 
-      if (error) throw error
-      presencas.value = data
+      // 🎯 DADOS DE DEMONSTRAÇÃO - registros de presença
+      const presencasDemo = [
+        {
+          id: 'demo-presenca-001',
+          aluno_id: 'demo-aluno-matriculado-001',
+          aluno_nome: 'Lucas Gabriel Ferreira',
+          curso_id: cursoId,
+          data_aula: new Date().toISOString().split('T')[0], // Hoje
+          horario_registro: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2h atrás
+          status: 'presente',
+          feedback: '5',
+          comentarios: 'Excelente treinamento, muito esclarecedor sobre segurança elétrica.',
+          isDemo: true
+        },
+        {
+          id: 'demo-presenca-002',
+          aluno_id: 'demo-aluno-matriculado-002',
+          aluno_nome: 'Mariana Souza Silva',
+          curso_id: cursoId,
+          data_aula: new Date().toISOString().split('T')[0], // Hoje
+          horario_registro: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString(), // 1.5h atrás
+          status: 'presente',
+          feedback: '4',
+          comentarios: 'Conteúdo muito importante para nossa área de trabalho.',
+          isDemo: true
+        },
+        {
+          id: 'demo-presenca-003',
+          aluno_id: 'demo-aluno-matriculado-003',
+          aluno_nome: 'Rafael Costa Pereira',
+          curso_id: cursoId,
+          data_aula: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Ontem
+          horario_registro: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(), // Ontem
+          status: 'presente',
+          feedback: '5',
+          comentarios: 'Professor muito experiente, aprendi muito sobre NR10.',
+          isDemo: true
+        },
+        {
+          id: 'demo-presenca-004',
+          aluno_id: 'demo-aluno-004',
+          aluno_nome: 'Carlos Eduardo Mendes',
+          curso_id: cursoId,
+          data_aula: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString().split('T')[0], // Anteontem
+          horario_registro: new Date(Date.now() - 50 * 60 * 60 * 1000).toISOString(),
+          status: 'presente',
+          feedback: '4',
+          comentarios: 'Ótima didática do instrutor.',
+          isDemo: true
+        }
+      ]
+
+      // Simular carregamento
+      await new Promise(resolve => setTimeout(resolve, 700))
+      
+      presencas.value = presencasDemo
     } catch (err) {
       console.error('Erro ao carregar presenças:', err)
       error.value = 'Erro ao carregar lista de presença'
+      // Mostrar pelo menos uma presença demo em caso de erro
+      presencas.value = [{
+        id: 'demo-presenca-001',
+        aluno_nome: 'Lucas Gabriel Ferreira',
+        data_aula: new Date().toISOString().split('T')[0],
+        horario_registro: new Date().toISOString(),
+        status: 'presente',
+        isDemo: true
+      }]
+    } finally {
+      loading.value = false
     }
   }
 

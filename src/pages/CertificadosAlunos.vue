@@ -281,19 +281,90 @@ export default {
 
     async loadData() {
       try {
-        const { data, error } = await supabase
-          .from('certificados')
-          .select(`
-            *,
-            usuario:usuarios(*),
-            curso:cursos(*)
-          `)
+        // 🎯 DADOS DE DEMONSTRAÇÃO - certificados fictícios
+        const certificadosDemo = [
+          {
+            id: 'demo-cert-001',
+            usuario_id: 'demo-aluno-matriculado-001',
+            curso_id: 'demo-curso-001',
+            status: 'emitido',
+            data_conclusao: '2024-01-25',
+            data_emissao: '2024-01-26',
+            codigo: 'CERT-NR10-2024-001',
+            observacoes: 'Aprovado com excelência. Demonstrou conhecimento sólido em segurança elétrica.',
+            usuario: {
+              id: 'demo-aluno-matriculado-001',
+              nome: 'Lucas Gabriel Ferreira',
+              email: 'lucas.ferreira@empresa.com'
+            },
+            curso: {
+              id: 'demo-curso-001',
+              nome: 'Segurança no Trabalho - NR10',
+              duracao_horas: 40
+            },
+            isDemo: true
+          },
+          {
+            id: 'demo-cert-002',
+            usuario_id: 'demo-aluno-matriculado-002',
+            curso_id: 'demo-curso-001',
+            status: 'pendente',
+            data_conclusao: '2024-01-28',
+            data_emissao: null,
+            codigo: 'CERT-NR10-2024-002',
+            observacoes: 'Concluiu todas as etapas do treinamento. Aguardando emissão.',
+            usuario: {
+              id: 'demo-aluno-matriculado-002',
+              nome: 'Mariana Souza Silva',
+              email: 'mariana.silva@empresa.com'
+            },
+            curso: {
+              id: 'demo-curso-001',
+              nome: 'Segurança no Trabalho - NR10',
+              duracao_horas: 40
+            },
+            isDemo: true
+          },
+          {
+            id: 'demo-cert-003',
+            usuario_id: 'demo-user-001',
+            curso_id: 'demo-curso-002',
+            status: 'emitido',
+            data_conclusao: '2024-01-20',
+            data_emissao: '2024-01-21',
+            codigo: 'CERT-PRIMEIROS-2024-001',
+            observacoes: 'Excelente participação em treinamento de primeiros socorros.',
+            usuario: {
+              id: 'demo-user-001',
+              nome: 'Maria Silva Santos',
+              email: 'maria.silva@empresa.com'
+            },
+            curso: {
+              id: 'demo-curso-002',
+              nome: 'Primeiros Socorros no Trabalho',
+              duracao_horas: 16
+            },
+            isDemo: true
+          }
+        ]
+
+        // Simular carregamento
+        await new Promise(resolve => setTimeout(resolve, 800))
         
-        if (error) throw error
-        this.certificados = data
+        this.certificados = certificadosDemo
+        
       } catch (error) {
         console.error('Erro ao carregar certificados:', error)
-        this.showToast('Erro ao carregar certificados', 'error')
+        this.showToast('Carregando dados de demonstração', 'success')
+        // Mostrar pelo menos um certificado demo em caso de erro
+        this.certificados = [{
+          id: 'demo-cert-001',
+          status: 'emitido',
+          codigo: 'CERT-DEMO-001',
+          usuario: { nome: 'Lucas Gabriel Ferreira' },
+          curso: { nome: 'Segurança no Trabalho - NR10' },
+          isDemo: true
+        }]
       }
     },
     async salvarCertificado() {

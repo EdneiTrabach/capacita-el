@@ -93,7 +93,7 @@
           <img src="/public/icons/informacao.svg" alt="Info" class="icon-home" />
         </div>
         <h2 class="about">Sobre o Sistema</h2>
-        <p>Sistema desenvolvido por Ednei Trabach and Gilcimar Schunk</p>
+        <p>Sistema desenvolvido por Ednei Trabach</p>
         <p class="version">Versão 1.0</p>
         <p v-if="clickCount > 0 && clickCount < 5" class="easter-hint">{{ 5 - clickCount }} cliques para surpresa...</p>
       </div>

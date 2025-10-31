@@ -44,18 +44,50 @@ export function useMatriculaAlunos() {
 
   const loadMatriculas = async () => {
     try {
-      const { data, error } = await supabase
-        .from('matriculas')
-        .select(`
-          id,
-          aluno:usuarios(id, nome, email)
-        `)
-        .eq('curso_id', cursoSelecionado.value)
+      // 🎯 DADOS DE DEMONSTRAÇÃO - alunos já matriculados
+      const matriculasDemo = [
+        {
+          id: 'demo-matricula-001',
+          aluno: {
+            id: 'demo-aluno-matriculado-001',
+            nome: 'Lucas Gabriel Ferreira',
+            email: 'lucas.ferreira@empresa.com'
+          },
+          data_matricula: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 dias atrás
+          status: 'ativo',
+          isDemo: true
+        },
+        {
+          id: 'demo-matricula-002',
+          aluno: {
+            id: 'demo-aluno-matriculado-002',
+            nome: 'Mariana Souza Silva',
+            email: 'mariana.silva@empresa.com'
+          },
+          data_matricula: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 dias atrás
+          status: 'ativo',
+          isDemo: true
+        },
+        {
+          id: 'demo-matricula-003',
+          aluno: {
+            id: 'demo-aluno-matriculado-003',
+            nome: 'Rafael Costa Pereira',
+            email: 'rafael.pereira@empresa.com'
+          },
+          data_matricula: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 dia atrás
+          status: 'ativo',
+          isDemo: true
+        }
+      ]
 
-      if (error) throw error
-      matriculas.value = data
+      // Simular carregamento
+      await new Promise(resolve => setTimeout(resolve, 400))
+      
+      matriculas.value = matriculasDemo
     } catch (error) {
       console.error('Erro ao carregar matrículas:', error)
+      matriculas.value = []
     }
   }
 
@@ -63,25 +95,70 @@ export function useMatriculaAlunos() {
     if (!cursoSelecionado.value) return
     
     try {
-      const { data: matriculadosData } = await supabase
-        .from('matriculas')
-        .select('aluno_id')
-        .eq('curso_id', cursoSelecionado.value)
+      // 🎯 DADOS DE DEMONSTRAÇÃO - alunos fictícios disponíveis para matrícula
+      const alunosDemo = [
+        {
+          id: 'demo-aluno-001',
+          nome: 'Carlos Eduardo Mendes',
+          email: 'carlos.mendes@empresa.com',
+          setor: 'Operações',
+          status: 'ativo',
+          isDemo: true
+        },
+        {
+          id: 'demo-aluno-002',
+          nome: 'Fernanda Costa Lima',
+          email: 'fernanda.lima@empresa.com',
+          setor: 'Qualidade',
+          status: 'ativo',
+          isDemo: true
+        },
+        {
+          id: 'demo-aluno-003',
+          nome: 'Roberto Silva Santos',
+          email: 'roberto.santos@empresa.com',
+          setor: 'Manutenção',
+          status: 'ativo',
+          isDemo: true
+        },
+        {
+          id: 'demo-aluno-004',
+          nome: 'Patricia Oliveira',
+          email: 'patricia.oliveira@empresa.com',
+          setor: 'Segurança do Trabalho',
+          status: 'ativo',
+          isDemo: true
+        },
+        {
+          id: 'demo-aluno-005',
+          nome: 'Anderson Rodrigues',
+          email: 'anderson.rodrigues@empresa.com',
+          setor: 'Elétrica',
+          status: 'ativo',
+          isDemo: true
+        }
+      ]
 
-      const alunosMatriculados = matriculadosData?.map(m => m.aluno_id) || []
-
-      const { data: alunos, error } = await supabase
-        .from('usuarios')
-        .select('id, nome, email')
-        .eq('status', 'ativo')
-        .not('id', 'in', `(${alunosMatriculados.join(',')})`)
-
-      if (error) throw error
-      alunosDisponiveis.value = alunos
-
+      // Simular carregamento
+      await new Promise(resolve => setTimeout(resolve, 600))
+      
+      // Em modo demo, usar apenas alunos de demonstração
+      alunosDisponiveis.value = alunosDemo
+      
       await loadMatriculas()
     } catch (error) {
       console.error('Erro ao buscar alunos:', error)
+      // Em caso de erro, mostrar pelo menos alguns alunos demo
+      alunosDisponiveis.value = [
+        {
+          id: 'demo-aluno-001',
+          nome: 'Carlos Eduardo Mendes',
+          email: 'carlos.mendes@empresa.com',
+          setor: 'Operações',
+          status: 'ativo',
+          isDemo: true
+        }
+      ]
     }
   }
 

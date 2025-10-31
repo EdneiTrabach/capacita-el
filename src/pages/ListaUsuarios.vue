@@ -154,6 +154,7 @@
 
         <div class="usuario-body">
           <h3>{{ sanitizeHTML(usuario.nome) }}</h3>
+          <span v-if="usuario.isDemo" class="demo-badge">DEMO</span>
           <div class="info-grid-users">
             <div class="info-item">
               <span class="label">Email:</span>

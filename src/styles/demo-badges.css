@@ -1,0 +1,91 @@
+/* Badges universais para dados de demonstração */
+.demo-badge-universal {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+  animation: pulse-demo 2s infinite;
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+@keyframes pulse-demo {
+  0% { box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3); }
+  50% { box-shadow: 0 4px 8px rgba(255, 107, 107, 0.5); }
+  100% { box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3); }
+}
+
+/* Badge específico para matrículas */
+.demo-badge-matricula {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+/* Badge específico para presença */
+.demo-badge-presenca {
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+  color: white;
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+/* Badge específico para certificados */
+.demo-badge-certificado {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  color: #212529;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+/* Badge específico para relatórios */
+.demo-badge-relatorio {
+  background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+/* Estilos para headers com dados demo */
+.demo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.demo-header h3,
+.demo-header h4 {
+  margin: 0;
+  flex: 1;
+}
+
+/* Responsividade para badges */
+@media (max-width: 768px) {
+  .demo-badge-universal,
+  .demo-badge-matricula,
+  .demo-badge-presenca,
+  .demo-badge-certificado,
+  .demo-badge-relatorio {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+    margin-left: 0.25rem;
+  }
+}

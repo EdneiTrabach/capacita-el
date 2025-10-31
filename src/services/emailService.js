@@ -22,30 +22,84 @@ export const emailService = {
           conteudoPersonalizado: emailConfig.conteudo,
         });
 
-        // Verifique as colunas existentes na tabela emails_enviados
-        // e remova 'conteudo' se não existir
         return {
           usuario_id: dest.id,
           curso_id: emailConfig.cursoId,
           assunto: emailConfig.assunto,
           modelo: emailConfig.modelo,
-          // Armazene o conteúdo em um campo chamado 'corpo' ou outro existente
-          // ou remova completamente se não houver campo para isso
-          // conteudo: conteudoEmail, // Remover esta linha
-          corpo_email: conteudoEmail, // Use o nome correto da coluna
+          conteudo: conteudoEmail,
           enviado_em: new Date().toISOString(),
+          status: "pendente",
         };
       });
 
-      // Inserir registro de emails enviados
+      // Inserir registro de emails enviados e retornar os IDs
       const { data, error } = await supabase
         .from("emails_enviados")
-        .insert(envios);
+        .insert(envios)
+        .select("id");
 
       if (error) throw error;
 
-      console.log(`${envios.length} emails registrados com sucesso`);
-      return { success: true, data, count: envios.length };
+      console.log(`${envios.length} emails registrados no banco`);
+
+      // Array para armazenar promessas de envio
+      const envioPendentes = [];
+
+      // Para cada email registrado, chamar a Edge Function para envio real
+      for (const email of data) {
+        try {
+          const envioPromise = fetch(
+            // Use bright-task em vez de send-email
+            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/bright-task`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${
+                  import.meta.env.VITE_SUPABASE_ANON_KEY
+                }`,
+              },
+              body: JSON.stringify({ emailId: email.id }),
+            }
+          ).then(async (res) => {
+            if (!res.ok) {
+              const errorText = await res.text();
+              throw new Error(`Erro no envio: ${errorText}`);
+            }
+            return res.json();
+          });
+
+          envioPendentes.push(envioPromise);
+        } catch (err) {
+          console.error(`Erro ao agendar envio do email ${email.id}:`, err);
+        }
+      }
+
+      // Aguardar todos os envios (com timeout de 10 segundos para não bloquear UI)
+      const enviosResultados = await Promise.allSettled(
+        envioPendentes.map((p) =>
+          Promise.race([
+            p,
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Timeout")), 10000)
+            ),
+          ])
+        )
+      );
+
+      // Contar envios bem-sucedidos
+      const enviados = enviosResultados.filter(
+        (r) => r.status === "fulfilled"
+      ).length;
+
+      console.log(`${enviados}/${data.length} emails enviados com sucesso`);
+      return {
+        success: true,
+        data,
+        count: data.length,
+        enviados,
+      };
     } catch (error) {
       console.error("Erro ao enviar emails:", error);
       return { success: false, error };

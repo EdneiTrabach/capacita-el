@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from './config/supabase'
 import type { Component } from 'vue'
@@ -9,8 +9,11 @@ import NavigationButtons from '@/components/NavigationButtons/NavigationButtons.
 import FirstTimeModal from '@/components/FirstTimeModal.vue'
 import '@/assets/theme.css'
 import { useTheme } from '@/composables/useTheme'
+import { verificarEstruturaBanco, sincronizarDados } from '@/utils/dbAdmin'
+
 const route = useRoute()
 const isSidebarCollapsed = ref(false)
+const isAdmin = ref(false)
 
 // Use Supabase session for authentication
 const isAuthenticated = computed(() => {
@@ -38,26 +41,66 @@ supabase.auth.onAuthStateChange((event, session) => {
 const shouldShowNavbar = computed(() => {
   // Não mostra o navbar em rotas de autenticação
   if (route.meta.isAuthRoute) return false
-  
+
   // Não mostra o navbar em rotas que não requerem autenticação
   if (!route.meta.requiresAuth) return false
-  
+
   return true
 })
 
 // Inicializa o tema
 const { isDark } = useTheme()
+
+// Função para verificar se o usuário é administrador
+const checkAdminPermission = async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      try {
+        // Tente verificar na tabela profiles
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+
+        isAdmin.value = profile?.role === 'admin'
+      } catch (err) {
+        // Se falhar, tente verificar na tabela usuarios
+        try {
+          const { data: usuario } = await supabase
+            .from('usuarios')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+
+          isAdmin.value = usuario?.role === 'admin'
+        } catch (userErr) {
+          isAdmin.value = false
+        }
+      }
+
+      // Se for administrador, verificar estrutura do banco
+      if (isAdmin.value) {
+        await verificarEstruturaBanco()
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao verificar permissões:', error)
+  }
+}
+
+onMounted(async () => {
+  await checkAdminPermission()
+})
 </script>
 <template>
   <div id="app" class="app-container" :class="{ 'dark': isDark }">
     <Navbar v-if="shouldShowNavbar" @sidebar-toggle="handleSidebarToggle" />
-    <main 
-      class="main-content" 
-      :class="{ 
-        'with-sidebar': shouldShowNavbar, 
-        'sidebar-collapsed': isSidebarCollapsed 
-      }"
-    >
+    <main class="main-content" :class="{
+      'with-sidebar': shouldShowNavbar,
+      'sidebar-collapsed': isSidebarCollapsed
+    }">
       <router-view />
       <NavigationButtons />
     </main>
@@ -208,14 +251,16 @@ body {
 }
 
 .main-content.with-sidebar {
-  margin-left: 280px; /* Largura do sidebar expandido */
+  margin-left: 280px;
+  /* Largura do sidebar expandido */
   width: calc(100% - 250px);
   transition: all 0.3s ease;
   background: var(--bg-secondary);
 }
 
 .main-content.with-sidebar.sidebar-collapsed {
-  margin-left: 60px; /* Largura do sidebar recolhido */
+  margin-left: 60px;
+  /* Largura do sidebar recolhido */
   width: calc(100% - 60px);
   transition: all 0.3s ease;
 }
